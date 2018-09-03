@@ -1,0 +1,47 @@
+﻿@model List<SG_SST.Models.Planificacion.ActividadModel>
+@if (Model != null && Model.Count() > 0)
+{
+    <div class="row form-group">
+        <h3>Plan de Mejora para los Estándares Mínimos SGSST</h3>
+
+        <table id="Grid" class="table table-bordered" style="border: 2px solid lightslategray">
+            <thead>
+                <tr class="titulos_tabla">
+                    <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                        <span>Actividad</span>
+                    </th>
+                    <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                        <span>Responsable</span>
+                    </th>
+                    <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                        <span>Fecha Fin</span>
+                    </th>
+                    <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                        <span>Item Estandar</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model)
+                {
+                <tr>
+                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify;">
+                        <span>@Html.Label(a.Descripcion)</span>
+                    </td>
+                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;">
+                        <span>@string.Format("{0}", a.Responsable)</span>
+                    </td>
+                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;">
+                        <span>@string.Format("{0}", a.strFechaFin)</span>
+                    </td>
+                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;">
+                        <span>@string.Format("{0}", a.Accion)</span>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+}
+

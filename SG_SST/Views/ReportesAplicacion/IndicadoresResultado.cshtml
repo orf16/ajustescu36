@@ -1,0 +1,1439 @@
+﻿@model IEnumerable<SG_SST.EntidadesDominio.Participacion.EDIndicadores>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = null;
+}
+
+<script type="text/javascript">
+    ////window.onload = function () {
+    ////    window.frames['ReportFrame<%= ReportViewer1.ClientID %>'].
+    ////    window.frames['report'].
+    ////    document.getElementById('oReportCell').
+    ////    style.width = '100%';
+    //}
+
+   
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/Reportes")
+
+
+}
+
+<script>
+
+    $(document).ready(function () {
+        $("a[title='PDF']").parent().hide();  // Remove from export dropdown.
+
+        var nitEmpresa = @Html.Raw(Json.Encode(ViewBag.nitEmpresa));
+
+        if (nitEmpresa == "")
+        {
+            $("#IDReportesRes").hide();
+  
+
+        }
+        else
+        {
+            $("#IDReportesRes").show();
+         
+        }
+        $(".menu-text").each(function () { $(this).hide(); });
+        $("#sidebar").css('width', '82px');
+        $("#sidebar-wrapper").css('min-width', '82px');
+        $(".sub-menu").each(function () { $(this).css('left', '82px'); });
+        $(".open-close-sidebar").css('left', '82px');
+        $(this).html("<i class='fa fa-arrow-right' ></i>");
+
+        //$("a[title='MHTML (web archive)']").parent().hide();
+        //$("a[title='TIFF file']").parent().hide();
+
+        var radios = document.getElementsByName("indicadoresResultado"); // list of radio buttons
+        var val = sessionStorage.getItem('indicadoresResultado'); // local storage value
+
+        $("#"+val).prop("checked", true);
+   
+        $('input[name="indicadoresResultado"]').on('change', function () {
+            sessionStorage.setItem('indicadoresResultado', $(this).val());
+
+        });
+
+    });
+</script>
+
+<style>
+    td {
+        border: 0px;
+    }
+</style>
+
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index","Home")">Medición y Evaluación SG-SST</a></li>
+    <li><a href="javascript:void(0)">Indicadores</a></li>
+    <li class="active">Indicadores de Resultado</li>
+</ol>
+
+<body onload="CargarSemaforos('Resultado')">
+
+    <div class="row">
+
+        @*Boton ayuda*@
+        <div align="right">
+            <div id="ayuda" style="text-align:right">
+                <a href="" data-toggle="modal" data-target="#@string.Format("modalAyuda")"
+                   title="Ayuda" class="btn btn-ayuda btn-md">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </a>
+                <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Ayuda </h4>
+                            </div>
+
+                            <div class="modal-body" style="color:black">
+                                @* ayuda*@
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaAccidentesDeTrabajo" style="text-align:right">
+                <div id="@string.Format("modalAyudaAccidentesDeTrabajo")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoAccidentesDeTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloAccidentesDeTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeAccidentesDeTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaTasaAccidentalidad" style="text-align:right">
+                <div id="@string.Format("modalAyudaTasaAccidentalidad")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoTasaAccidentalidad" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloTasaAccidentalidad" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeTasaAccidentalidad" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaCapacitacionEntrenamiento" style="text-align:right">
+                <div id="@string.Format("modalAyudaCapacitacionEntrenamiento")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoCapacitacionEntrenamiento" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloCapacitacionEntrenamiento" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeCapacitacionEntrenamiento" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaFrecuenciaAusentismo" style="text-align:right" >
+                <div id="@string.Format("modalAyudaFrecuenciaAusentismo")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoFrecuenciaAusentismo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloFrecuenciaAusentismo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeFrecuenciaAusentismo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaSeveridadAusentismo" style="text-align:right">
+                <div id="@string.Format("modalAyudaSeveridadAusentismo")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoSeveridadAusentismo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloSeveridadAusentismo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeSeveridadAusentismo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaSeveridadAccidenteTrabajo" style="text-align:right">
+                <div id="@string.Format("modalAyudaSeveridadAccidenteTrabajo")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoSeveridadAccidenteTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloSeveridadAccidenteTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeSeveridadAccidenteTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaLesionesIncapacitantes" style="text-align:right">
+                <div id="@string.Format("modalAyudaLesionesIncapacitantes")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoLesionesIncapacitantes" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloLesionesIncapacitantes" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeLesionesIncapacitantes" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaCumplimientoRequisitosLegales" style="text-align:right">
+                <div id="@string.Format("modalAyudaCumplimientoRequisitosLegales")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoCumplimientoRequisitosLegales" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloCumplimientoRequisitosLegales" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeCumplimientoRequisitosLegales" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaAnalisisVulnerabilidad" style="text-align:right">
+                <div id="@string.Format("modalAyudaAnalisisVulnerabilidad")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoAnalisisVulnerabilidad" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloAnalisisVulnerabilidad" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeAnalisisVulnerabilidad" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaPeligroYRiesgos" style="text-align:right">
+                <div id="@string.Format("modalAyudaPeligroYRiesgos")" c class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoPeligroYRiesgos" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloPeligroYRiesgos" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdePeligroYRiesgos" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaPlanesDeAccion" style="text-align:right">
+                <div id="@string.Format("modalAyudaPlanesDeAccion")" c class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoPlanesDeAccion" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloPlanesDeAccion" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdePlanesDeAccion" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaMortalidadAccidenteTrabajo" style="text-align:right">
+                <div id="@string.Format("modalAyudaMortalidadAccidenteTrabajo")" c class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoMortalidadAccidenteTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloMortalidadAccidenteTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeMortalidadAccidenteTrabajo" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaPrevalenciaEnfermedadLaboral" style="text-align:right">
+                <div id="@string.Format("modalAyudaPrevalenciaEnfermedadLaboral")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoPrevalenciaEnfermedadLaboral" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloPrevalenciaEnfermedadLaboral" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdePrevalenciaEnfermedadLaboral" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="ayudaIncidenciaEnfermedadLaboral" style="text-align:right">
+                <div id="@string.Format("modalAyudaIncidenciaEnfermedadLaboral")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Clasificación</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray">
+                                    <tr class="titulos_tabla">
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:75%">
+                                            Criterio
+                                        </th>
+                                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:25%">
+                                            Valoración
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="rojoIncidenciaEnfermedadLaboral" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:red">
+                                            CRÍTICO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="amarilloIncidenciaEnfermedadLaboral" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:yellow">
+                                            MODERADAMENTE ACEPTABLE
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                            <input type="text" id="verdeIncidenciaEnfermedadLaboral" style="border:none; width:100%; text-align: center" readonly>
+                                        </td>
+                                        <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; background-color:green">
+                                            ACEPTABLE
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+            <div class="panel-heading" style="color:white">Indicadores de  Resultado</div>
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <br />
+                        <table id="tIndResultado" style="width:100%">
+                            <tr>
+                                <td colspan="4">
+                                    <h4>Indicadores del SG-SST</h4>
+                                    <br />
+                                </td>
+                            </tr>
+                            @*<tr>
+                                <td style="text-align:center; width:25%">
+                                    <canvas data-type="radial-gauge" id="relojSeveridadAccidenteTrabajo" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(73,255,0,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(255,40,14,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeSeveridadAccidenteTrabajo = new RadialGauge({
+                                            renderTo: '#relojSeveridadAccidenteTrabajo'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaSeveridadAccidenteTrabajo" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td style="text-align: center; width:25%">
+                                    <canvas data-type="radial-gauge" id="relojAccidentesDeTrabajo" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(255,40,14,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(73,255,0,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeAccidentesDeTrabajo = new RadialGauge({
+                                            renderTo: '#relojAccidentesDeTrabajo'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaAccidentesDeTrabajo" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+
+                                <td style="text-align:center; width:25%">
+                                    <canvas data-type="radial-gauge" id="relojMortalidadAccidenteTrabajo" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(255,40,14,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(73,255,0,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeMortalidadAccidenteTrabajo = new RadialGauge({
+                                            renderTo: '#relojMortalidadAccidenteTrabajo'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaMortalidadAccidenteTrabajo" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td style="text-align:center; width:25%">
+                                    <canvas data-type="radial-gauge" id="relojPrevalenciaEnfermedadLaboral" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(255,40,14,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(73,255,0,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugePrevalenciaEnfermedadLaboral = new RadialGauge({
+                                            renderTo: '#relojPrevalenciaEnfermedadLaboral'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaPrevalenciaEnfermedadLaboral" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="SeveridadAccidenteTrabajo" name="indicadoresResultado" value="SeveridadAccidenteTrabajo" onclick="SeleccionarReporteIndicador('SeveridadAccidenteTrabajo')">
+                                    <br />
+                                    <label id="tipoSeveridadAccidenteTrabajo" for="SeveridadAccidenteTrabajo">Severidad de los accidentes laborales</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaSeveridadAccidenteTrabajo")" title="AyudaSeveridadAccidenteTrabajo">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoSeveridadAccidenteTrabajo" />
+                                    </a>
+                                </td>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="AccidentesDeTrabajo" name="indicadoresResultado" value="AccidentesDeTrabajo" onclick="SeleccionarReporteIndicador('AccidentesDeTrabajo')">
+                                    <br />
+                                    <label id="tipoAccidentesDeTrabajo" for="AccidentesDeTrabajo">Frecuencia de los accidentes laborales</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaAccidentesDeTrabajo")" title="AyudaAccidentesDeTrabajo">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoAccidentesDeTrabajo" />
+                                    </a>
+                                </td>
+
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="MortalidadAccidenteTrabajo" name="indicadoresResultado" value="MortalidadAccidenteTrabajo" onclick="SeleccionarReporteIndicador('MortalidadAccidenteTrabajo')">
+                                    <br />
+                                    <label id="tipoMortalidadAccidenteTrabajo" for="MortalidadAccidenteTrabajo">Mortalidad de los accidentes laborales</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaMortalidadAccidenteTrabajo")" title="AyudaMortalidadAccidenteTrabajo">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoMortalidadAccidenteTrabajo" />
+                                    </a>
+                                </td>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="PrevalenciaEnfermedadLaboral" name="indicadoresResultado" value="PrevalenciaEnfermedadLaboral" onclick="SeleccionarReporteIndicador('PrevalenciaEnfermedadLaboral')">
+                                    <br />
+                                    <label id="tipoPrevalenciaEnfermedadLaboral" for="PrevalenciaEnfermedadLaboral">Prevalencia de la enfermedad laboral</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaPrevalenciaEnfermedadLaboral")" title="AyudaPrevalenciaEnfermedadLaboral">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoPrevalenciaEnfermedadLaboral" />
+                                    </a>
+                                </td>
+                            </tr>*@
+                            <tr>
+                                @*<td style="text-align:center; width:25%">
+                                    <canvas data-type="radial-gauge" id="relojIncidenciaEnfermedadLaboral" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(255,40,14,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(73,255,0,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeIncidenciaEnfermedadLaboral = new RadialGauge({
+                                            renderTo: '#relojIncidenciaEnfermedadLaboral'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaIncidenciaEnfermedadLaboral" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>*@
+                                <td style="text-align:center; width:25%">
+                                    <canvas data-type="radial-gauge" id="relojFrecuenciaAusentismo" data-width="190" data-height="190" data-units="Días"></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeFrecuenciaAusentismo = new RadialGauge({
+                                            renderTo: '#relojFrecuenciaAusentismo'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaFrecuenciaAusentismo" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>@*Borrar cuando se hagan los indicadores de la Res. 1111*@ 
+                            </tr>
+                            <tr>
+                                @*<td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="IncidenciaEnfermedadLaboral" name="indicadoresResultado" value="IncidenciaEnfermedadLaboral" onclick="SeleccionarReporteIndicador('IncidenciaEnfermedadLaboral')">
+                                    <br />
+                                    <label id="tipoIncidenciaEnfermedadLaboral" for="IncidenciaEnfermedadLaboral">Incidencia de la enfermedad laboral</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaIncidenciaEnfermedadLaboral")" title="AyudaIncidenciaEnfermedadLaboral">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoIncidenciaEnfermedadLaboral" />
+                                    </a>
+                                </td>*@
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="FrecuenciaAusentismo" name="indicadoresResultado" value="FrecuenciaAusentismo" onclick="SeleccionarReporteIndicador('FrecuenciaAusentismo')">
+                                    <br />
+                                    <label id="tipoFrecuenciaAusentismo" for="FrecuenciaAusentismo">Ausentismo por incapacidad médica</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaFrecuenciaAusentismo")" title="AyudaFrecuenciaAusentismo">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoFrecuenciaAusentismo" />
+                                    </a>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>@*Borrar cuando se hagan los indicadores de la Res. 1111*@
+                            </tr>
+
+                            <tr>
+                                <td colspan="4">
+                                    <br />
+                                    <h4>Indicadores Adicionales</h4>
+                                    <br />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center; width:25%">
+                                    <canvas data-type="radial-gauge" id="relojTasaAccidentalidad" data-width="190" data-height="190"  data-units="%"></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeTasaAccidentalidad = new RadialGauge({
+                                            renderTo: '#relojTasaAccidentalidad'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaTasaAccidentalidad" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td style="text-align:center;">
+                                    <canvas data-type="radial-gauge" id="relojSeveridadAusentismo" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(73,255,0,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(255,40,14,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeSeveridadAusentismo = new RadialGauge({
+                                            renderTo: '#relojSeveridadAusentismo'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaSeveridadAusentismo" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td style="text-align:center;">
+                                    <canvas data-type="radial-gauge" id="relojLesionesIncapacitantes" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(73,255,0,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(255,40,14,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeLesionesIncapacitantes = new RadialGauge({
+                                            renderTo: '#relojLesionesIncapacitantes'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaLesionesIncapacitantes" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td style="text-align:center;">
+                                    <canvas data-type="radial-gauge" id="relojCumplimientoRequisitosLegales" data-width="190" data-height="190" data-units="%"></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeCumplimientoRequisitosLegales = new RadialGauge({
+                                            renderTo: '#relojCumplimientoRequisitosLegales'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaCumplimientoRequisitosLegales" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="TasaAccidentalidad" name="indicadoresResultado" value="TasaAccidentalidad" onclick="SeleccionarReporteIndicador('TasaAccidentalidad')">
+                                    <br />
+                                    <label id="tipoTasaAccidentalidad" for="TasaAccidentalidad">Tasa Accidentalidad</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaTasaAccidentalidad")" title="AyudaTasaAccidentalidad">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoTasaAccidentalidad" />
+                                    </a>
+                                </td>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="SeveridadAusentismo" name="indicadoresResultado" value="SeveridadAusentismo" onclick="SeleccionarReporteIndicador('SeveridadAusentismo')">
+                                    <br />
+                                    <label id="tipoSeveridadAusentismo" for="SeveridadAusentismo">Índice de Severidad del Ausentismo</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaSeveridadAusentismo")" title="AyudaSeveridadAusentismo">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoSeveridadAusentismo" />
+                                    </a>
+                                </td>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="LesionesIncapacitantes" name="indicadoresResultado" value="LesionesIncapacitantes" onclick="SeleccionarReporteIndicador('LesionesIncapacitantes')">
+                                    <br />
+                                    <label id="tipoLesionesIncapacitantes" for="LesionesIncapacitantes">Índice de Lesiones Incapacitantes por A.T</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaLesionesIncapacitantes")" title="AyudaLesionesIncapacitantes">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoLesionesIncapacitantes" />
+                                    </a>
+                                </td>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="CumplimientoRequisitosLegales" name="indicadoresResultado" value="CumplimientoRequisitosLegales" onclick="SeleccionarReporteIndicador('CumplimientoRequisitosLegales')">
+                                    <br />
+                                    <label id="tipoCumplimientoRequisitosLegales" for="CumplimientoRequisitosLegales">Indicador del cumplimiento de los requisitos legales</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaCumplimientoRequisitosLegales")" title="AyudaCumplimientoRequisitosLegales">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoCumplimientoRequisitosLegales" />
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center;">
+                                    <canvas data-type="radial-gauge" id="relojAnalisisVulnerabilidad" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(255,40,14,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(73,255,0,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeAnalisisVulnerabilidad = new RadialGauge({
+                                            renderTo: '#relojAnalisisVulnerabilidad'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaAnalisisVulnerabilidad" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td style="text-align:center;">
+                                    <canvas data-type="radial-gauge" id="relojPeligroYRiesgos" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(255,40,14,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(73,255,0,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugePeligroYRiesgos = new RadialGauge({
+                                            renderTo: '#relojPeligroYRiesgos'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaPeligroYRiesgos" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td style="text-align:center;">
+                                    <canvas data-type="radial-gauge" id="relojPlanesDeAccion" data-width="190" data-height="190" data-highlights='[{"from": 0, "to": 10, "color": "rgba(255,40,14,0.9)"},{"from": 10, "to": 90, "color": "rgba(150, 160, 172, 0.9)"},{"from": 90, "to": 100, "color": "rgba(73,255,0,0.9)"}]'></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugePlanesDeAccion = new RadialGauge({
+                                            renderTo: '#relojPlanesDeAccion'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaPlanesDeAccion" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                                <td style="text-align:center; width:25%">
+                                    <canvas data-type="radial-gauge" id="relojCapacitacionEntrenamiento" data-width="190" data-height="190"  data-units="%"></canvas>
+                                    <script src="~/Scripts/gauge.min.js"></script>
+                                    <script>
+                                        var gaugeCapacitacionEntrenamiento = new RadialGauge({
+                                            renderTo: '#relojCapacitacionEntrenamiento'
+                                        }).draw();
+                                    </script>
+                                    <br />
+                                    <input type="text" id="metaCapacitacionEntrenamiento" style="border:double; width:90px; height:25px; text-align: center" readonly>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="AnalisisVulnerabilidad" name="indicadoresResultado" value="AnalisisVulnerabilidad" onclick="SeleccionarReporteIndicador('AnalisisVulnerabilidad')">
+                                    <br />
+                                    <label id="tipoAnalisisVulnerabilidad" for="AnalisisVulnerabilidad">Indicador ánalisis vulnerabilidad</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaAnalisisVulnerabilidad")" title="AyudaAnalisisVulnerabilidad">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoAnalisisVulnerabilidad" />
+                                    </a>
+                                </td>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="PeligroYRiesgos" name="indicadoresResultado" value="PeligroYRiesgos" onclick="SeleccionarReporteIndicador('PeligroYRiesgos')">
+                                    <br />
+                                    <label id="tipoPeligroYRiesgos" for="PeligroYRiesgos">Indicador de identificación y valoración de peligros y riesgos</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaPeligroYRiesgos")" title="AyudaPeligroYRiesgos">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoPeligroYRiesgos" />
+                                    </a>
+                                </td>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="PlanesDeAccion" name="indicadoresResultado" value="PlanesDeAccion" onclick="SeleccionarReporteIndicador('PlanesDeAccion')">
+                                    <br />
+                                    <label id="tipoPlanesDeAccion" for="PlanesDeAccion">Indicador de eficacia de cierre de planes de acción</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaPlanesDeAccion")" title="AyudaPlanesDeAccion">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoPlanesDeAccion" />
+                                    </a>
+                                </td>
+                                <td style="text-align:center; padding:2px 5px;">
+                                    <input type="radio" id="CapacitacionEntrenamiento" name="indicadoresResultado" value="CapacitacionEntrenamiento" onclick="SeleccionarReporteIndicador('CapacitacionEntrenamiento')">
+                                    <br />
+                                    <label id="tipoCapacitacionEntrenamiento" for="CapacitacionEntrenamiento">Cumplimiento programa de Capacitación y entrenamiento</label>
+                                    <br />
+                                    <a href="" data-toggle="modal" data-target="#@string.Format("modalAyudaCapacitacionEntrenamiento")" title="AyudaCapacitacionEntrenamiento">
+                                        <img src="~/Content/Images/Semaforo/semaforoApagado.png" id="semaforoCapacitacionEntrenamiento" />
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                        <input type="hidden" id="TipoReporteInd" name="TipoReporteInd" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-4" id="divParametrosRes" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7"> Parámetros:</label>
+
+            </div>
+        </div>
+    </div>
+
+
+    <br />
+    <div class="row">
+
+
+        <div class="col-sm-4" id="divModulo" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Módulo:</label>
+                <div class="col-md-10">
+                    @Html.DropDownList("modulo", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "-- Seleccionar --")
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-4" id="divAnio" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Año:</label>
+                <div class="col-md-10">
+
+                    @{
+                        var anioStr = DateTime.Today.Year.ToString();
+                        var anioStr1 = DateTime.Today.AddYears(-1).Year.ToString();
+                        var anioStr2 = DateTime.Today.AddYears(-2).Year.ToString();
+                        var anioStr3 = DateTime.Today.AddYears(-3).Year.ToString();
+                        var anioStr4 = DateTime.Today.AddYears(-4).Year.ToString();
+                        var anioStr5 = DateTime.Today.AddYears(-5).Year.ToString();
+                        var anioStr6 = DateTime.Today.AddYears(-6).Year.ToString();
+                        var anioStr7 = DateTime.Today.AddYears(-7).Year.ToString();
+                        var anioStr8 = DateTime.Today.AddYears(-8).Year.ToString();
+                        var anioStr9 = DateTime.Today.AddYears(-9).Year.ToString();
+
+                        <select class="form-control" id="anio" name="anio">
+                            <option value="">--Seleccionar--</option>
+                            <option value=@anioStr>@anioStr</option>
+                            <option value=@anioStr1>@anioStr1</option>
+                            <option value=@anioStr2>@anioStr2</option>
+                            <option value=@anioStr3>@anioStr3</option>
+                            <option value=@anioStr4>@anioStr4</option>
+                            <option value=@anioStr5>@anioStr5</option>
+                            <option value=@anioStr6>@anioStr6</option>
+                            <option value=@anioStr7>@anioStr7</option>
+                            <option value=@anioStr8>@anioStr8</option>
+                            <option value=@anioStr9>@anioStr9</option>
+                        </select>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4" id="SedeInd" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Sede:</label>
+                <div class="col-md-10">
+                    @Html.DropDownList("FKSede", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "-- Seleccionar --")
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-sm-4" id="divSedePeligro" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Sede:</label>
+                <div class="col-md-10">
+                    @Html.DropDownList("FKSedePeligro", null, htmlAttributes: new { @class = "form-control", @onchange = "obtenerMetodologias(this)" }, optionLabel: "-- Seleccionar --")
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3" id="divMetodologia" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Metodologia:</label>
+                <div class="col-md-10">
+                    <select class="form-control" id="Fk_Metodologia" name="Fk_Metodologia" onchange="obtenerProceso(), obtenerTipoPeligro()"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3" id="divProceso" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Proceso:</label>
+                <div class="col-md-10">
+                    <select class="form-control" id="Fk_Proceso" name="Fk_Proceso" onchange="obtenerZonaLugar(), obtenerTipoPeligro()"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3" id="divZona" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Zona/Lugar:</label>
+                <div class="col-md-10">
+                    <select class="form-control" id="Fk_ZonaLugar" name="Fk_ZonaLugar" onchange="obtenerActividadMetodologia(),obtenerTipoPeligro()"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3" id="divActividad" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Actividad:</label>
+                <div class="col-md-10">
+                    <select class="form-control" id="Fk_Actividad" name="Fk_Actividad" onchange="obtenerTipoPeligro()"></select>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-3" id="divTipoDePeligro" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Tipo de peligro:</label>
+                <div class="col-md-10">
+                    <select class="form-control" id="Fk_TipoDePeligro" name="Fk_TipoDePeligro"></select>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-sm-4" id="divConstanteK" name="divConstanteK" hidden="hidden">
+            <div class=" form-group">
+                <label class="col-md-7">K:</label>
+                <div class="col-md-10">
+
+                    <select class="form-control" name="ConstanteK" id="ConstanteK">
+                        <option value="">
+                            --Seleccionar--
+                        </option>
+
+                        <option value="200000">200.000</option>
+                        <option value="220000">220.000</option>
+                        <option value="240000">240.000</option>
+                        <option value="1000000">1.000.000</option>
+                    </select>
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-sm-4" id="divContigencia" name="divContigencia" hidden="hidden">
+            <div class=" form-group">
+                <label class="col-md-7">Contigencia:</label>
+                <div class="col-md-10">
+
+                    <select class="form-control" name="Contigencia" id="Contigencia">
+                        <option value="">
+                            --Seleccionar--
+                        </option>
+
+                        <option value="1">Enfermedad General</option>
+                        <option value="2">Enfermedad Laboral</option>
+                        <option value="3">Accidente de Trabajo</option>
+
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+
+
+    <div class="col-md-5">
+        <button type="button" id="graficar" onclick="SeleccionarReporteInd()" class="boton botonactive">Mostrar Indicador</button>
+    </div>
+    <hr />
+
+    <form id="formReportesIndicadores">
+        <div id="IDReportesRes" class="panel-body">
+            @Html.Partial("VisorDeReportesIndRes")
+        </div>
+    </form>
+
+
+    @Scripts.Render("~/Scripts/Reportes/Reportes.js")
+
+
+</body>

@@ -1,0 +1,175 @@
+﻿@model List<SG_SST.Models.AdminUsuarios.AdministrarUsuarioAsesorSSTModel>
+@{
+    var totalPagPaginador = ViewBag.TotalPagPaginador;
+    var paginaActual = ViewBag.PaginaActual;
+    if (Model != null && Model.Count() > 0)
+    {
+        foreach (var usuario in Model)
+        {
+            var idNombAfi = string.Format("{0}_nomAfi", usuario.IdUsuarioSistema);
+            var idApeAfi = string.Format("{0}_apeAfi", usuario.IdUsuarioSistema);
+            var idRolAfi = string.Format("{0}_rolAfi", usuario.IdUsuarioSistema);
+            var idCorreoAfi = string.Format("{0}_correoAfi", usuario.IdUsuarioSistema);
+            <tr id="@usuario.IdUsuarioSistema">
+                @*<td style="border-right: 2px solid lightslategray; vertical-align:middle">
+                        @usuario.IdUsuarioSistema.ToString()
+                    </td>*@
+                <td style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.TipoDocumentoEmpresa
+                </td>
+                <td style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.DocumentoEmpresa
+                </td>
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.RazonSocialEmpresa
+                </td>
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.MunicipioSedePpalEmpresa
+                </td>
+                <td style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.TipoDocumento
+                </td>
+                <td style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.Documento
+                </td>
+                <td id="@idNombAfi" style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.Nombres
+                </td>
+                <td id="@idApeAfi" style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.Apellidos
+                </td>
+                <td id="@idRolAfi" style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.NombreRolSeleccionado
+                </td>
+                <td id="@idCorreoAfi" style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.EmailPersona
+                </td>
+                @if (usuario.RutaPdfAutorizacion.ToUpper().Equals("NO APLICA"))
+                {
+                    <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                        @Html.Label("No Aplica")
+                    </td>
+                }
+                else
+                {
+                    <td id="@string.Format("{0}_{1}", usuario.IdUsuarioSistema, "soporteUsuAsesor")" data-soporte="soporteusuario" style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                        <a id="@usuario.IdUsuarioSistema" class="linkSoporte" data-linksoporte="soporte" data-value="false" data-soporte="@usuario.RutaPdfAutorizacion" href="javascript:void(0);">
+                            Visualizar soporte
+                        </a>
+                    </td>
+                }
+                @*<td style="border-right: 2px solid lightslategray; vertical-align:middle">
+                        @Html.TextBoxFor(x => usuario.PeriodoInactividad, new { @Id = string.Format("{0}_{1}", usuario.IdUsuarioSistema, "PeriodoInactividad"), @Value = string.Empty, @placeholder = "DD/MM/AAAA" })
+                    </td>*@
+                @if (usuario.ConfigurarDatosAdicionalesModel.FechaInicioContrato == "01/01/0001")
+                {
+                    <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    </td>
+                    <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    </td>
+                }
+                else
+                {
+                    <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                        @usuario.ConfigurarDatosAdicionalesModel.FechaInicioContrato
+                    </td>
+                    <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                        @usuario.ConfigurarDatosAdicionalesModel.FechaFinContrato
+                    </td>
+                }
+                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center">
+                    @Html.RadioButtonFor(x => usuario.Aprobado, "Aprobar", new { @Id = string.Format("{0}_rbAprobar", usuario.IdUsuarioSistema), @Name = string.Format("{0}_Aprobar", usuario.IdUsuarioSistema), @class = "" })
+                </td>
+                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center">
+                    @Html.RadioButtonFor(x => usuario.Aprobado, "Rechazar", new { @Id = string.Format("{0}_rbRechazar", usuario.IdUsuarioSistema), @Name = string.Format("{0}_Aprobar", usuario.IdUsuarioSistema), @class = "" })
+                </td>
+                <td style="border-right: 2px solid lightslategray; vertical-align:middle">
+                    @Html.DropDownListFor(x => usuario.CausalRechazoSeleccionada, usuario.CausalesRechazoUsuarioSistema, "Seleccione una opción", new { @Id = string.Format("{0}_CausalRechazo", usuario.IdUsuarioSistema), @Disabled = "disabled", @class = "disabled bloqueado" })
+                </td>
+            </tr>
+        }
+    }
+}
+<script type="text/javascript">
+    var urlBase = utils.getBaseUrl();
+    $(document).ready(function () {
+        //setear datepicker para cada registro
+        $('#body_usu_aprob').find('tr').each(function () {
+            var idRegistro = $(this).attr('id');
+            $(this).find('td').each(function (i) {
+                var idFecha = $(this).find('input[type="text"]').attr('id');
+                ConstruirDatePickerPorElemento(idFecha);
+            });
+        });
+        //se controla la habilitacion del campo select para que se muestre
+        //solo cuando se escoge la opcion de rechazo
+        $('#body_usu_aprob').find('tr').each(function () {
+            var idRegistro = $(this).attr('id');
+            $(this).find('td').each(function (i) {
+                $(this).find('input[type="radio"]').on('change', function (e) {
+                    if ($(this).val() == 'Rechazar') {
+                        $(this).parent().siblings('td').find('input[type="text"]').prop('disabled', true).attr('class', '');
+                        $(this).parent().siblings('td').find('select').prop('disabled', false).attr('class', '').val('');
+                    } else {
+                        $(this).parent().siblings('td').find('input[type="text"]').prop('disabled', false).attr('class', '');
+                        $(this).parent().siblings('td').find('select').prop('disabled', true).attr('class', 'bloqueado').val('');
+                        console.log('ESOS');
+                        var validoSoporte = $(this).parent().siblings('td[data-soporte="soporteusuario"]').find('a[data-linksoporte="soporte"]').attr('data-value');
+                        if (validoSoporte === "false") {
+                            $(this).prop('checked', false);
+                            swal({
+                                title: "Atención",
+                                text: "No puede seleccionar al usuario sin antes validar su soporte.",
+                                type: "error",
+                                closeOnConfirm: false
+                            });
+                            return false;
+                        }
+                    }
+                });
+            });
+        });
+        $('.inner_paginado').bootpag({
+            total: @totalPagPaginador,
+            page: @paginaActual,
+            maxVisible: @totalPagPaginador,
+            leaps: false,
+            prev: 'Atrás',
+            next: 'Siguiente',
+        }).on("page", function (event, num) {
+            if ($(this).closest('li')) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+            BuscarUsuariosPaginador(num);
+        });
+        //$('a[data-linksoporte="soporte"]')
+        $('a[data-linksoporte="soporte"]').each(function(i, v) {
+            $(this).on('click', function(evt) {
+                evt.preventDefault();
+                $(this).attr('data-value', 'true');
+                var idUsuario = $(this).data('idusuario');
+                var rutaSoporte = $(this).data('soporte');
+                if (idUsuario != '' && rutaSoporte != '') {
+                    $.ajax({
+                        url: '../AdminUsuarios/VisualizarSoporte',
+                        type: 'post',
+                        data: {IdUsuario : idUsuario, RutaSoporte : rutaSoporte }
+                    }).done(function(response) {
+                        if(response != '' && response.status == '200') {
+                            $.fancybox({
+                                type: 'html',
+                                autoSize: false,
+                                content: '<embed src="' + urlBase + response.url + '#nameddest=self&page=1&view=FitH,0&zoom=80,0,0" type="text/html" height="99%" width="100%" />',
+                                //content: '<embed src="' + response.url + '#nameddest=self&page=1&view=FitH,0&zoom=80,0,0" type="application/pdf" height="99%" width="100%" />',
+                                beforeClose: function () {
+                                    $(".fancybox-inner").unwrap();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,84 @@
+﻿@model SG_SST.Models.Usuarios.UsuarioModel
+
+@{
+    ViewBag.Title = "ConsultaUsuariosSistema";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+
+<ol class="breadcrumb">
+    <li><a href="javascript:void(0)">Usuarios Sistema</a></li>
+    <li class="active">Consultar Usuarios Sistema</li>
+</ol>
+
+<div class="main">
+    <div class="page-header">
+        <div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+            <div class="panel-heading" style="color:black">
+                CONSULTAR USUARIOS DEL SISTEMA
+            </div>
+
+            @*Boton ayuda*@
+            <div align="right">
+                <div id="ayuda" style="text-align:right">
+                    <a href="" data-toggle="modal" data-target="#modalAyuda" title="Ayuda" class="btn btn-ayuda btn-md">
+                        <i class="glyphicon glyphicon-question-sign"></i>
+                    </a>
+                    <div id="@string.Format("modalAyuda")" class=" modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        @*<span aria-hidden="true">&times;</span>*@
+                                    </button>
+                                    <h4 class="modal-title title">Ayuda - Consulta de Usuarios</h4>
+                                </div>
+                                <div class="modal-body " style="color:black">
+                                    <p>·   Activo: El usuario se encuentra habilitado para ingresa al Sistema.</p>
+                                    <p>·   Suspendido:  El usuario es encuentra inhabilitado por el Administrador de Sistema para ingresar al software. </p>
+                                    <p>·   Bloqueado:  La vigencia de la clave de 30 días se encuentra vencida. Para activarla es necesario realizar el cambio de clave en la opción <img src="~/Images/iconos/submenus/admin-cambiar-contrasena.png" height="50" width="50" /> del login.</p>
+                                    <p>·   Eliminado: El usuario no podrá volver a entrar al sistema. Es un estado irreversible</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body form-horizontal">
+                @using (Html.BeginForm("", "", FormMethod.Post, new { @id = "FrmConsulUsuSistema", @class = "form-horizontal" }))
+                {
+                    <div class="row form-group">
+                        <div class="col-xs-3">
+                            @Html.DropDownListFor(x => x.IdEstado, Model.EstadosUsuario, new { @class = "form-control" })
+                        </div>
+                        <div class="col-xs-3">
+                            @Html.TextBoxFor(x => x.DocumentoEmpresa, new { @class = "form-control", placeholder = "No. Documento Empleador" })
+                        </div>
+                        <div class="col-xs-3">
+                            <button type="button" id="ConsultarUsuariosSistema" class="boton botonactive">Buscar</button>
+                        </div>
+                        <div class="col-xs-3">
+                            <button type="button" id="Limpiar" class="boton botonactive">Limpiar</button>
+                        </div>
+                    </div>
+                    
+                    <div id="Contenedor">
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/Scripts/AdminUsuarios/UsuarioSistema.js")

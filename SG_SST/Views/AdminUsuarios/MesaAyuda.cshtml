@@ -1,0 +1,236 @@
+﻿@model SG_SST.Models.AdminUsuarios.AdministrarUsuariosModel
+
+@{
+    ViewBag.Title = "Mesa de Ayuda";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-mesaAyuda {
+        padding: 0 !important;
+        min-width: 13em;
+        margin: 1em;
+    }
+    .swal2-popup {
+        width: 478px !important;
+        height: 320px !important;
+    }
+    .swal2-content{
+        font-size: 16px !important;
+    }
+    .swal2-confirm {
+        padding: 10px 32px !important;
+        font-size: 17px !important;
+    }
+    .swal2-cancel {
+        padding: 10px 32px !important;
+        font-size: 17px !important;
+    }
+</style>
+<script type="text/javascript" src="https://unpkg.com/sweetalert2@7.12.15/dist/sweetalert2.all.js"></script>
+@Scripts.Render("~/Scripts/Transversal/generales.js")
+<div class="panel panel-default" id="contenido">
+    <div class="panel-heading" style="color:black">
+        Mesa de Ayuda
+    </div>
+    @if (Model != null && Model.BuscadorUsuariosSistema != null)
+    {
+        <div class="panel-body form-horizontal">
+            <div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+                <div class="panel-heading" style="color:black">
+                    Buscar Usuario
+                </div>
+                <div class="panel-body form-horizontal">
+                    <div class="form-group col-md-12">
+                        <div class="col-md-3">
+                            @Html.Label("Tipo documento usuario", new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(x => Model.BuscadorUsuariosSistema.TipoDocumentoUsuario, Model.BuscadorUsuariosSistema.TiposDocumento, "Seleccione una opción...", new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.Label("Documento usuario", new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.TextBoxFor(x => Model.BuscadorUsuariosSistema.NumeroDocumentoUsuario, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="row" align="center">
+                        <div class="col-md-12">
+                            <button type="submit" id="btn_buscarUsuarios" class="boton botoninfo">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="panel-body form-horizontal">
+        <div class="row form-group">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped aprob-usuario" style="border: 2px solid lightslategray; overflow-x:scroll">
+                    <thead>
+                        <tr class="titulos_tabla">
+                            @*<th style="border-right: 2px solid lightslategray; text-align:center">
+                                    @Html.Label("#", new { @class = "" })
+                                </th>*@
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Tipo documento empleador", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Número documento empleador", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Razón social empleador", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Municipio empleador", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Tipo Documento Usuario", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Número Documento Usuario", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Nombres Usuario", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Apellidos Usuario", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Rol del Usuario", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Correo Electronico Usuario", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Estado Cuenta", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Fecha de Creación", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Fecha de Inicio", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Fecha de Finalización", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Pregunta/Respuesta Seguridad 1", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Pregunta/Respuesta Seguridad 2", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Pregunta/Respuesta Seguridad 3", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Enviar Clave", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                            <th style="font-size:0.6em; border-right: 2px solid lightslategray; text-align:center">
+                                @Html.Label("Cambiar Correo", new { @class = "", @style = "font - size: 3.1em;" })
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="body_usu_ma"></tbody>
+                </table>
+            </div>
+            <div class="paginado">
+                <div class="inner_paginado">
+                </div>
+            </div>
+            @*<div class="row" align="center">
+                    <div class="col-md-3">
+                        <button type="submit" id="enviarClaveUsu" data-id="" class="boton botonactive">Enviar Clave</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" id="cambiarCorreoUsu" data-id="" class="boton botonactive">Cambiar Correo</button>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+</div>
+@{
+    if (ViewBag.Mensaje != null)
+    {
+        <script type="text/javascript">
+            swal({
+                title: 'Estimado Usuario',
+                text: '@ViewBag.Mensaje',
+                type: 'warning',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Aceptar",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }, function () {
+                window.location.href = '../Home/Index';
+            });
+        </script>
+    }
+}
+<script type="text/javascript">
+    var paginaActual = 1;
+    $(document).ready(function () {
+        $('#btn_buscarUsuarios').on('click', function (evt) {
+            evt.preventDefault();
+            BuscarUsuariosPaginador(1);
+        });
+    });
+    //Buscar usuario para mesa de ayuda
+    function BuscarUsuariosPaginador(pagina) {
+        var tidDocUsu = $('#BuscadorUsuariosSistema_TipoDocumentoUsuario').val();
+        var numDocUsu = $('#BuscadorUsuariosSistema_NumeroDocumentoUsuario').val();
+        if (tidDocUsu != '' && numDocUsu != '') {
+            PopupPosition();
+            $.ajax({
+                url: 'BuscarUsuarioMesaAyuda',
+                type: 'post',
+                data: { 'tidDocUsu': tidDocUsu, 'numDocUsu': numDocUsu, paginaActual: pagina }
+            }).done(function (response) {
+                if (response != undefined && response != '' && response.Mensaje == 'OK') {
+                    $('#body_usu_ma').empty();
+                    $('#body_usu_ma').html(response.Datos);
+                    //$('#enviarClaveUsu').attr('data-id', response.IdUsuario);
+                    //$('#cambiarCorreoUsu').attr('data-id', response.IdUsuario);
+                    //$('#container_btnAprobar').show();
+                    paginaActual = response.PaginaActual;
+                    OcultarPopupposition();
+                } else if (response != undefined && response != '' && response.Mensaje == 'NOTFOUND') {
+                    swal({
+                        title: "Estimado Usuario",
+                        text: "No se encontró información para el criterio de búsqueda especificado.",
+                        type: "warning",
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                    OcultarPopupposition();
+                    return false;
+                }
+                OcultarPopupposition();
+                active = false;
+            }).fail(function (response) {
+                console.log(response);
+                swal({
+                    title: "Estimado Usuario",
+                    text: "Ocurrió un error en el sistema. Intente más tarde.",
+                    type: "warning",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Aceptar",
+                    closeOnConfirm: false
+                });
+                OcultarPopupposition();
+                return false;
+            });
+        } else {
+            swal({
+                title: "Estimado Usuario",
+                text: "No se ha especificado ningún criterio de búsqueda.",
+                type: "warning",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Aceptar",
+                closeOnConfirm: false
+            });
+            OcultarPopupposition();
+            return false;
+        }
+    }
+</script>

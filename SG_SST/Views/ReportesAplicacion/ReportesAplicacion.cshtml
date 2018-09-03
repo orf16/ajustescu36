@@ -1,0 +1,194 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = null;
+ }
+
+@Scripts.Render("~/Scripts/Reportes/Estadisticas.js")
+
+
+
+
+<style>
+    td {
+        border: 0px;
+    }
+</style>
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index","Home")">Medición y Evaluación SG-SST</a></li>
+    <li><a href="javascript:void(0)">Reportes y Estadisticas</a></li>
+    <li class="active">Estadísticas</li>
+</ol>
+<div class="row">
+
+    @*Boton ayuda*@
+    <div align="right">
+        <div id="ayuda" style="text-align:right">
+            <a href="" data-toggle="modal" data-target="#@string.Format("modalAyuda")"
+               title="Ayuda" class="btn btn-ayuda btn-md">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+            <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                @*<span aria-hidden="true">&times;</span>*@
+                            </button>
+                            <h4 class="modal-title title">Ayuda </h4>
+                        </div>
+
+                        <div class="modal-body" style="color:black">
+                            Hemos diseñado este comparativo estadístico, para que usted pueda visualizar gráficamente la  ejecución de las diferentes actividades del sistema de gestión en seguridad y salud en el trabajo. Información que le ayuda  para revisión gerencial, toma de decisiones, rendición de  cuentas y auditorias.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+        <div class="panel-heading" style="color:white">Estadísticas</div>
+
+        <div class="col-sm-6">
+            <div class="form-group">
+                <div class="col-md-12">
+                    <br />
+                    <br />
+                    
+                    <label>Tipo de Estadística:</label>
+                    <select class="form-control" name="TipoEstadisticaSis" id="TipoEstadisticaSis" oninput="SeleccionarReporteDesempeñoDelSistema()">
+                        <option value="">
+                            --Seleccionar--
+                        </option>
+
+                        <option value="DesempeñoDelSistema">Desempeño del SG-SST</option>
+                        <option value="GestiónDelRiesgo">Gestión del Riesgo del SG-SST</option>
+                        <option value="EntrenamientoSGSST">Entrenamiento del SG-SST</option>
+
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <br />
+    <br />
+    <br />
+    <div class="row" id="param" hidden="hidden">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label class="col-md-7"> Parámetros:</label>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <br />
+    <div class="row" >
+
+
+        <div class="col-sm-4" id="divAnio" name="divAnio" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Año:</label>
+                <div class="col-md-10">
+
+                    @{
+                        var anioStr = DateTime.Today.Year.ToString();
+                        var anioStr1 = DateTime.Today.AddYears(-1).Year.ToString();
+                        var anioStr2 = DateTime.Today.AddYears(-2).Year.ToString();
+                        var anioStr3 = DateTime.Today.AddYears(-3).Year.ToString();
+                        var anioStr4 = DateTime.Today.AddYears(-4).Year.ToString();
+                        var anioStr5 = DateTime.Today.AddYears(-5).Year.ToString();
+                        var anioStr6 = DateTime.Today.AddYears(-6).Year.ToString();
+                        var anioStr7 = DateTime.Today.AddYears(-7).Year.ToString();
+                        var anioStr8 = DateTime.Today.AddYears(-8).Year.ToString();
+                        var anioStr9 = DateTime.Today.AddYears(-9).Year.ToString();
+
+                        <select class="form-control" id="anio" name="anio" >
+                            <option value="">--Seleccionar--</option>
+                            <option value=@anioStr>@anioStr</option>
+                            <option value=@anioStr1>@anioStr1</option>
+                            <option value=@anioStr2>@anioStr2</option>
+                            <option value=@anioStr3>@anioStr3</option>
+                            <option value=@anioStr4>@anioStr4</option>
+                            <option value=@anioStr5>@anioStr5</option>
+                            <option value=@anioStr6>@anioStr6</option>
+                            <option value=@anioStr7>@anioStr7</option>
+                            <option value=@anioStr8>@anioStr8</option>
+                            <option value=@anioStr9>@anioStr9</option>
+                        </select>
+                    }
+                </div>
+            </div>
+        </div>
+
+
+
+ 
+        </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md-5">
+            <button type="button" id="mostrarReporteApl" onclick="SeleccionarReporteDesempeñoSistema()" class="boton botonactive">Mostrar Estadística</button>
+        </div>
+    </div>
+
+
+
+    <form id="formReportesAplicacion">
+        <div id="IDReportes" class="panel-body">
+            @Html.Partial("VisorDeReportes")
+        </div>
+    </form>
+
+<script>
+
+    $(document).ready(function () {
+        $("a[title='PDF']").parent().hide();  // Remove from export dropdown.
+
+
+        //$('#TipoReporte').change(function() {
+        //    localStorage.setItem('estadistica', this.value); //$(this).val()
+        //});
+        //if (localStorage.getItem('estadistica')) {
+        //    $('#TipoReporte').val(localStorage.getItem('estadistica')).trigger('change');
+        //}
+
+        var nitEmpresa = @Html.Raw(Json.Encode(ViewBag.nitEmpresa));
+
+        if (nitEmpresa == "")
+        {
+            $("#IDReportes").hide();
+
+
+        }
+        else
+        {
+            $("#IDReportes").show();
+
+        }
+
+        $(".menu-text").each(function () { $(this).hide(); });
+        $("#sidebar").css('width', '82px');
+        $("#sidebar-wrapper").css('min-width', '82px');
+        $(".sub-menu").each(function () { $(this).css('left', '82px'); });
+        $(".open-close-sidebar").css('left', '82px');
+        $(this).html("<i class='fa fa-arrow-right' ></i>");
+    });
+</script>

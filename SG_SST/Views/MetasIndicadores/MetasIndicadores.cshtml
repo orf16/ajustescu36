@@ -1,0 +1,331 @@
+﻿@model SG_SST.Models.Planificacion.MetasIndicadoresModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+
+<link href="~/Content/Acciones/Acciones.css" rel="stylesheet" />
+
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index", "Home")">Planificación</a></li>
+    <li><a href="javascript:void(0)">Ojbetivos SG-SST</a></li>
+    <li class="active">Metas Indicadores</li>
+</ol>
+
+<!DOCTYPE html>
+
+<body onload="ObtenerMetas()">
+    <div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+        <div class="panel-heading" style="color:white">Metas Indicadores</div>
+        <!-- Botón Ayuda -->
+        <div align="right">
+            <div id="ayuda" style="text-align:right">
+                <a href="" data-toggle="modal" data-target="#@string.Format("modalAyuda")"
+                   title="Ayuda" class="btn btn-ayuda btn-md">
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                </a>
+                <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Información de Ayuda/Metas Indicadores</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <ul>
+                                    <li><p style="margin-bottom:20px;line-height: 200%;text-align:left;"></p></li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div align="right">
+            <div id="formModificacion" style="text-align:right">
+                <div id="modalFormModificacion" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    @*<span aria-hidden="true">&times;</span>*@
+                                </button>
+                                <h4 class="modal-title title">Modificar Meta Indicador</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <input type="hidden" name="IdMeta" id="IdMeta" value="@Model.PKIdMetaIndicador" />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                @Html.TextBoxFor(model => Model.TipoIndicador, new { @class = "form-control", @readonly = "readonly", @style = "color:black; border:none; background-color:transparent; text-align:center; font-weight: bold", @id = "tipoIndicadorM", @name = "tipoIndicadorM" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                @Html.TextBoxFor(model => Model.NombreIndicador, new { @class = "form-control", @readonly = "readonly", @style = "color:black; border:none; background-color:transparent; text-align:center; font-weight: bold", @id = "nombreIndicadorM", @name = "nombreIndicadorM" })
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-12">Límite Superior Rojo:</label>
+                                            <div class="col-md-6">
+                                                <div>
+                                                    @Html.TextBoxFor(model => Model.Rojo, new { @class = "form-control", @style = "color:black;", @id = "rojoM", @name = "rojoM" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div>
+                                                    @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @style = "color:black; border:none; background-color:transparent;", @readonly = "readonly", @id = "unidadIndicadorM", @name = "unidadIndicadorM" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-12">Límite Superior Amarillo:</label>
+                                            <div class="col-md-6">
+                                                <div>
+                                                    @Html.TextBoxFor(model => Model.Amarillo, new { @class = "form-control", @style = "color:black;", @id = "amarilloM", @name = "amarilloM" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div>
+                                                    @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @style = "color:black; border:none; background-color:transparent;", @readonly = "readonly", @id = "unidadIndicador2M", @name = "unidadIndicador2M" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-12">Límite Superior Verde:</label>
+                                            <div class="col-md-6">
+                                                <div>
+                                                    @Html.TextBoxFor(model => Model.Verde, new { @class = "form-control", @style = "color:black;", @id = "verdeM", @name = "verdeM" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div>
+                                                    @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @style = "color:black; border:none; background-color:transparent;", @readonly = "readonly", @id = "unidadIndicador3M", @name = "unidadIndicador3M" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-12">Valor Meta:</label>
+                                            <div class="col-md-6">
+                                                <div>
+                                                    @Html.TextBoxFor(model => Model.Meta, new { @class = "form-control", @style = "color:black;", @id = "metaM", @name = "metaM" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div>
+                                                    @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @style = "color:black; border:none; background-color:transparent;", @readonly = "readonly", @id = "unidadIndicador4M", @name = "unidadIndicador4M" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-12">Frecuencia:</label>
+                                            <div class="col-md-10">
+                                                @Html.TextBoxFor(model => Model.FrecuenciaIndicador, new { @class = "form-control", @readonly = "readonly", @style = "color:black;background-color:#DDD", @id = "frecuenciaM", @name = "frecuenciaM" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-12">Unidad de Medida:</label>
+                                            <div class="col-md-10">
+                                                @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @readonly = "readonly", @style = "color:black;background-color:#DDD", @id = "unidadIndicador1M", @name = "unidadIndicador1M" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="row">
+                                    <button type="button" class="boton botonactive" id="btnGuardarEdicion" onclick="GuardarEdicionMeta(this)">Guardar</button>
+                                    <button type="button" class="boton botoncancel" data-dismiss="modal">SALIR</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form id="formMetas">
+            <div class=" panel-body form-horizontal">
+                <div style="background-color:transparent">
+                    <div class="form-group row internal-panel-body">
+                        <input type="hidden" name="IdEmpresa" id="IdEmpresa" value="@Model.FKEmpresa" />
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-md-10">Tipo Indicador:</label>
+                                <div class="col-md-10">
+                                    @Html.DropDownListFor(model => model.TipoIndicador, Model.TiposIndicadores, "---Seleccionar Tipo Indicador---", new { @value = "", @id = "tiposIndicadores", @name = "tiposIndicadores", @class = "form-control", @onchange = "ConsultarIndicadores(this.value);" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8" id="listaIndicadores">
+                            <div class="form-group">
+                                <label class="col-md-10">Indicador:</label>
+                                <div class="col-md-11">
+                                    <select class="form-control" id="FK_Id_Indicador" name="FK_Id_Indicador" onchange="ConsultarIndicador();"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="col-md-10">Límite Superior Rojo:</label>
+                                <div class="col-md-6">
+                                    <div>
+                                        @Html.TextBoxFor(model => Model.Rojo, new { @class = "form-control", @style = "color:black;", @id = "rojo", @name = "rojo" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @style = "color:black; border:none; background-color:transparent;", @readonly = "readonly", @id = "unidadIndicador", @name = "unidadIndicador" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-10">Límite Superior Amarillo:</label>
+                            <div class="col-md-6">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.Amarillo, new { @class = "form-control", @style = "color:black;", @id = "amarillo", @name = "amarillo" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @style = "color:black; border:none; background-color:transparent;", @readonly = "readonly", @id = "unidadIndicador2", @name = "unidadIndicador2" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-10">Límite Superior Verde:</label>
+                            <div class="col-md-6">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.Verde, new { @class = "form-control", @style = "color:black;", @id = "verde", @name = "verde" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @style = "color:black; border:none; background-color:transparent;", @readonly = "readonly", @id = "unidadIndicador3", @name = "unidadIndicador3" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-10">Valor Meta:</label>
+                            <div class="col-md-6">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.Meta, new { @class = "form-control", @style = "color:black;", @id = "meta", @name = "meta" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div>
+                                    @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @style = "color:black; border:none; background-color:transparent;", @readonly = "readonly", @id = "unidadIndicador4", @name = "unidadIndicador4" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-10">Frecuencia:</label>
+                            <div class="col-md-10">
+                                @Html.TextBoxFor(model => Model.FrecuenciaIndicador, new { @class = "form-control", @readonly = "readonly", @style = "color:black;background-color:#DDD", @id = "frecuencia", @name = "frecuencia" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-10">Unidad de Medida:</label>
+                            <div class="col-md-10">
+                                @Html.TextBoxFor(model => Model.UnidadIndicador, new { @class = "form-control", @readonly = "readonly", @style = "color:black;background-color:#DDD", @id = "unidadIndicador1", @name = "unidadIndicador1" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-5 col-md-offset-8">
+                        <button type="button" id="btnAdicionarMeta" class="boton botoninfo" onclick="AdicionarMeta(this)">ADICIONAR META</button>
+                    </div>
+                </div>
+                <hr style="border-top-color:lightslategray" />
+            </div>
+            <div class="table-responsive" id="divTmeta" style="margin:auto;">
+                <table class="table table-responsive table-bordered" id="tMetas1" style="border: 2px solid lightslategray">
+                    <tr class="titulos_tabla" id="trMetas">
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:30%">
+                            Indicador
+                        </th>
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:10%">
+                            Tipo Indicador
+                        </th>
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:10%">
+                            Frecuencia
+                        </th>
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:8%">
+                            Unidad
+                        </th>
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:8%">
+                            Rojo Hasta
+                        </th>
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:8%">
+                            Amarillo Hasta
+                        </th>
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:8%">
+                            Verde Hasta
+                        </th>
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:8%">
+                            Valor Meta
+                        </th>
+                        <th colspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:10%">
+                            Acciones
+                        </th>
+                    </tr>
+                    <tbody id="tMetas"></tbody>
+                </table>
+                <center><div class="pagination" id="paginadorMetas"></div></center>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+
+@Scripts.Render("~/Scripts/Planificacion/MetasIndicadores.js")
+@Scripts.Render("~/bundles/simplePagination")

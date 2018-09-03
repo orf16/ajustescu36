@@ -1,0 +1,257 @@
+﻿@model List<SG_SST.Models.AdminUsuarios.AdministrarUsuariosModel>
+@if (Model != null && Model.Count() > 0)
+{
+    foreach (var usuario in Model)
+    {
+        var idNombAfi = string.Format("{0}_nomAfi", usuario.IdUsuarioSistema);
+        var idApeAfi = string.Format("{0}_apeAfi", usuario.IdUsuarioSistema);
+        var idRolAfi = string.Format("{0}_rolAfi", usuario.IdUsuarioSistema);
+        var idCorreoAfi = string.Format("{0}_correoAfi", usuario.IdUsuarioSistema);
+        <tr id="@usuario.IdUsuarioSistema">
+            @*<td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.IdUsuarioSistema.ToString()
+                </td>*@
+            <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.TipoDocumentoEmpresa
+            </td>
+            <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.DocumentoEmpresa
+            </td>
+            <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @string.Format("{0}", usuario.RazonSocialEmpresa)
+            </td>
+            <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @string.Format("{0}", usuario.MunicipioSedePpalEmpresa)
+            </td>
+            <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.TipoDocumento
+            </td>
+            <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.Documento
+            </td>
+            <td id="@idNombAfi" style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.Nombres
+            </td>
+            <td id="@idApeAfi" style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.Apellidos
+            </td>
+            <td id="@idRolAfi" style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.NombreRolSeleccionado
+            </td>
+            <td id="@idCorreoAfi" style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.EmailPersona
+            </td>
+            <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @usuario.Estado
+            </td>
+            <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                @string.Format("{0}/{1}/{2}", usuario.PeriodoInactividad.Day, usuario.PeriodoInactividad.Month, usuario.PeriodoInactividad.Year)
+            </td>
+            @if (usuario.ConfigurarDatosAdicionalesModel.FechaInicioContrato == "01/01/0001")
+            {
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle"></td>
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle"></td>
+            }
+            else
+            {
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.ConfigurarDatosAdicionalesModel.FechaInicioContrato
+                </td>
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    @usuario.ConfigurarDatosAdicionalesModel.FechaFinContrato
+                </td>
+            }
+            @if (usuario.ConfiguracionPreguntasSeguridad == null)
+            {
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    No registrada
+                </td>
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    No registrada
+                </td>
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    No registrada
+                </td>
+            }
+            else
+            {
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    @string.Format("{0}/{1}", usuario.ConfiguracionPreguntasSeguridad.NombrePreguntaUno, usuario.ConfiguracionPreguntasSeguridad.RespuestaUno)
+                </td>
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    @string.Format("{0}/{1}", usuario.ConfiguracionPreguntasSeguridad.NombrePreguntaDos, usuario.ConfiguracionPreguntasSeguridad.RespuestaDos)
+                </td>
+                <td style="font-size:0.6em; border-right: 2px solid lightslategray; vertical-align:middle">
+                    @string.Format("{0}/{1}", usuario.ConfiguracionPreguntasSeguridad.NombrePreguntaTres, usuario.ConfiguracionPreguntasSeguridad.RespuestaTres)
+                </td>
+                <td>
+                    <button type="submit" id="enviarClaveUsu" data-id="@usuario.IdUsuarioSistema" class="boton botonactive btn-mesaAyuda">Enviar Clave</button>
+                </td>
+                <td>
+                    <button type="submit" id="cambiarCorreoUsu" data-id="@usuario.IdUsuarioSistema" class="boton botonactive btn-mesaAyuda">Cambiar Correo</button>
+                </td>
+            }
+        </tr>
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //enviar contraseña temporal
+        $('#enviarClaveUsu').on('click', function () {
+            var idUsuario = $(this).attr('data-id');
+            if (idUsuario != '') {
+                PopupPosition();
+                $.ajax({
+                    url: 'EnviarClaveTemporalUsuarioMesaAyuda',
+                    data: { 'idUsuario': idUsuario },
+                    type: 'post'
+                }).done(function (response) {
+                    if (response != '' && response.Mensaje == 'OK') {
+                        OcultarPopupposition();
+                        swal({
+                            title: "Estimado Usuario",
+                            text: "Se le asignó una clave temporal al usuario y se le envió a su correo electrónico.",
+                            type: "success",
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Aceptar",
+                            closeOnConfirm: false
+                        }).then((result) => {
+                            if (result.value) {
+                                window.location.href = '../Home/Index';
+                    }
+                });
+                return false;
+            } else if (response != undefined && response != '' && response.Mensaje == 'NOTFOUND') {
+                OcultarPopupposition();
+                swal({
+                    title: "Estimado Usuario",
+                    text: "No se logró asignar una clave temporal al usuario.",
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Aceptar",
+                    closeOnConfirm: false
+                }).then((result) => {
+                    window.location.href = '../Home/Index';
+            });
+            return false;
+        }
+        }).fail(function (response) {
+            OcultarPopupposition();
+            console.log(response);
+            swal({
+                title: "Estimado Usuario",
+                text: "Ocurrió un error en el sistema. Intente más tarde.",
+                type: "error",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Aceptar",
+                closeOnConfirm: false
+            });
+            return false;
+        });
+    } else {
+        swal({
+            title: "Estimado Usuario",
+            text: "Debe buscar un usuario para realizar esta acción.",
+            type: "error",
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Aceptar",
+            closeOnConfirm: false
+        });
+        return false;
+    }
+    });
+    //cambiar correo de usuario
+    $('#cambiarCorreoUsu').on('click', function () {
+        var idUsuario = $(this).attr('data-id');
+        if (idUsuario != '') {
+            swal({
+                title: 'Estimado Usuario',
+                text: "Ingrese el nuevo correo del usuario.",
+                //type: "success",
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: "#DD6B55",
+                showLoaderOnConfirm: true,
+                inputValidator: (email) => {
+                    return new Promise((resolve) => {
+                        if (!email)
+                            resolve('Ingrese un correo válido.')
+                else if (!isValidEmailAddress(email))
+            resolve('Ingrese un correo válido.')
+        else
+                            resolve()
+        })
+                    },
+        allowOutsideClick: () => !swal.isLoading()
+    }).then((result) => {
+        if (result.value) {
+            var nuevoCorreo = result.value;
+    PopupPosition();
+    $.ajax({
+        url: 'CambiarCorreoUsuario',
+        data: { 'idUsuario': idUsuario, 'nuevoCorreoUsuario': nuevoCorreo },
+        type: 'post'
+    }).done(function (response) {
+        if (response != '' && response.Mensaje == 'OK') {
+            OcultarPopupposition();
+            swal({
+                title: "Estimado Usuario",
+                text: "El correo del usuario se actualizó correctamente y se le envió una notificación de confirmación.",
+                type: "success",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Aceptar",
+                closeOnConfirm: false
+            }).then((result) => {
+                if (result.value) {
+                    window.location.href = '../Home/Index';
+        }
+    });
+    return false;
+    } else if (response != undefined && response != '' && response.Mensaje == 'NOTFOUND') {
+        OcultarPopupposition();
+        swal({
+            title: "Estimado Usuario",
+            text: "No se logró cambiar el correo del usuario.",
+            type: "warning",
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Aceptar",
+            closeOnConfirm: false
+        }).then((result) => {
+            window.location.href = '../Home/Index';
+    });
+    return false;
+    }
+    }).fail(function (response) {
+        console.log(response);
+        OcultarPopupposition();
+        swal({
+            title: "Estimado Usuario",
+            text: "Ocurrió un error en el sistema. Intente más tarde.",
+            type: "error",
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Aceptar",
+            closeOnConfirm: false
+        }).then((result) => {
+            window.location.href = '../Home/Index';
+    });
+    OcultarPopupposition();
+    return false;
+    });
+    }
+    })
+    } else {
+        swal({
+            title: "Estimado Usuario",
+            text: "Debe buscar un usuario para realizar esta acción.",
+            type: "error",
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Aceptar",
+            closeOnConfirm: false
+        });
+        return false;
+    }
+    });
+    });
+</script>

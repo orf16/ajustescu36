@@ -1,0 +1,2081 @@
+﻿@model SG_SST.Models.Emergencias.EmergenciasModel
+
+@{
+    ViewBag.Title = "Plan de Emergencia";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+
+<style>
+    .ui-widget-content a {
+		color: !important;
+	}
+    .noborder {
+        border: none;
+        padding: 4px 4px 4px 4px;
+    }
+
+    .custom_text {
+        height: 27px;
+    }
+
+    .rombo {
+        width: 15px;
+        height: 15px;
+        border: 1px solid #555;
+        margin: 5px 5px 5px 32px;
+        -webkit-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+
+    input[type=file] {
+        color: transparent;
+        /*width: 77%;*/
+        height: 8%;
+    }
+    
+    .rdiv {
+        transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+    }
+
+    .animation-1 {
+        width: 55px;
+        margin: 5% auto;
+        transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+    }
+
+    .animation-1 div {
+        display: inline-block;
+        border: 1px solid #000000;
+        /*background-color: #0088d0;*/
+        width: 25px;
+        height: 25px;
+        margin: 0;
+        padding: 0;
+    }
+    .nombreArchivo{
+       font-weight: bold;
+        font-size:90%;
+        color:blue;
+
+    }
+
+
+    .animation-0 div {
+        display: inline-block;
+        border: none;
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+
+    /*.animation-0 .box0 {
+        border: none;
+        -webkit-animation: animation1-box0 1.5s infinite;
+        animation: animation1-box0 2s infinite;
+    }*/
+    
+    .animation-1 .box1 {
+        -webkit-animation: animation1-box1 1.5s infinite;
+        animation: animation1-box1 2s infinite;
+    }
+
+    .animation-1 .box2 {
+        animation: animation1-box2 1.5s infinite;
+        animation: animation1-box2 2s infinite;
+    }
+
+    .animation-1 .box3 {
+        animation: animation1-box3 1.5s infinite;
+        animation: animation1-box3 2s infinite;
+    }
+
+    .animation-1 .box4 {
+        animation: animation1-box4 1.5s infinite;
+        animation: animation1-box4 2s infinite;
+    }
+
+ #mdialTamanio {
+      width: 80% !important;
+      height:80%;
+    }
+
+</style>
+
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index", "Home")">Planificación</a></li>
+    <li><a href="javascript:void(0)">Prevención, preparación y respuesta ante emergencias</a></li>
+    <li class="active">Generar Plan de Emergencia</li>
+</ol>
+
+
+<div class="panel panel-default std-panel-body" style="background-color: rgba(196, 202,196, 0.1)">
+    <div class="panel-heading" style="color:white">
+        GENERAR PLAN DE EMERGENCIA
+    </div>
+
+    <div class="panel-body form-horizontal">
+        <center>
+            <input type="text" id="fk_Sede" name="fk_Sede" hidden="hidden" value="@(ViewBag.fk_Sede)" /> 
+            <table border="0" width="70%" align="center">
+                <tr class="noborder">
+              @if (ViewBag.esEditado == false)
+              {
+                <td class="noborder">
+                    @Html.DropDownListFor(x => x.IdSede, Model.Sedes, "-- Seleccionar Sede --", new { @class = "form-control" })
+                </td>
+              }
+              else
+              {                   
+                    <td class="noborder">
+                        @Html.DropDownList("IdSede", null, htmlAttributes: new { @class = "form-control" }) </td>                  
+              }
+                   
+                    <td class="noborder">
+                        <button type="button" id="generarPlan"class="boton botonactive" onclick="GenerarPlanEmergenciaSede()">Generar</button>
+                    </td>
+                </tr>
+            </table>
+
+            <br />
+
+            <div id="tabs" style="background-color: rgba(196, 202,196, 0.1)">
+
+                <ul style="background-color: transparent; border:none; padding:0">
+                    <li class="active" style="padding-bottom:0px;"><a href="#tabs-1" style="font-size:13px; padding:.5em;">Información General</a></li>
+                    <li style="padding-bottom:0px;"><a href="#tabs-2" style="font-size:13px; padding:.5em;">Generalidades</a></li>
+                    <li style="padding-bottom:0px;"><a href="#tabs-3" style="font-size:13px; padding:.5em;">Georreferenciación</a></li>
+                    <li style="padding-bottom:0px;"><a href="#tabs-4" style="font-size:13px; padding:.5em;">Análisis de Riesgo</a></li>
+                    <li style="padding-bottom:0px;"><a href="#tabs-5" style="font-size:13px; padding:.5em;">Esquema Organización</a></li>
+                    <li style="padding-bottom:0px;"><a href="#tabs-6" style="font-size:13px; padding:.5em;">Recursos</a></li>
+                    <li style="padding-bottom:0px;"><a href="#tabs-7" style="font-size:13px; padding:.5em;">Frentes de Acción</a></li>
+                    <li style="padding-bottom:0px;"><a href="#tabs-8" style="font-size:13px; padding:.5em;">Procedimientos Operativos Normalizados</a></li>
+                </ul>
+
+                <div id="tabs-1" style="background-color: #F9FAF9;">
+                    <form id="frmInformacionGeneral">
+                        @Html.HiddenFor(x => x.fk_id_sede_infogeneral)
+                        <hr />
+                        <table width="100%" border="0">
+                            <tr class="noborder">
+                                <td class="noborder" width="213">Razón Social de la Empresa</td>
+                                <td class="noborder" width="236">Identificación Empleador/Contratante</td>
+                                <td class="noborder" width="227">&nbsp;</td>
+
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextBoxFor(x => x.razon_social, new { @class = "form-control", @readonly = "readonly" })</td>
+                                <td class="noborder">@Html.TextBoxFor(x => x.identificacion_sede, new { @class = "form-control", @readonly = "readonly" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Dirección de la Sede</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">Teléfono</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder" colspan="2">@Html.TextBoxFor(x => x.direccion_sede, new { @class = "form-control", @readonly = "readonly" })</td>
+                                <td class="noborder">@Html.TextBoxFor(x => x.telefono_sede, new { @class = "form-control", @readonly = "readonly" })</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Correo Electrónico</td>
+                                <td class="noborder">Departamento</td>
+                                <td class="noborder">Municipio</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextBoxFor(x => x.correo_electronico, new { @class = "form-control", @readonly = "readonly" })</td>
+                                <td class="noborder">@Html.TextBoxFor(x => x.departamento_sede, new { @class = "form-control", @readonly = "readonly" })</td>
+                                <td class="noborder">@Html.TextBoxFor(x => x.municipio_sede, new { @class = "form-control", @readonly = "readonly" })</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder" colspan="3">
+                                    <table width="100%" border="0">
+                                        <tr class="noborder">
+                                            <td class="noborder" colspan="2" align="center"><h4><b>Linderos Sectoriales</b></h4></td>
+                                            <td class="noborder" colspan="2" align="center"><h4><b>Vías de Acceso</b></h4></td>
+                                        </tr>
+                                        <tr class="noborder">
+                                            <td class="noborder" width="15%">Norte:</td>
+                                            <td class="noborder" width="30%">@Html.TextBoxFor(x => x.lindero_norte, new { @class = "form-control" })</td>
+                                            <td class="noborder" width="15%">Principales:</td>
+                                            <td class="noborder" width="40%">@Html.TextBoxFor(x => x.acceso_principales, new { @class = "form-control" })</td>
+                                        </tr>
+                                        <tr class="noborder">
+                                            <td class="noborder" width="15%">Sur:</td>
+                                            <td class="noborder" width="30%">@Html.TextBoxFor(x => x.lindero_sur, new { @class = "form-control" })</td>
+                                            <td class="noborder" width="15%">Alternas:</td>
+                                            <td class="noborder" width="40%">@Html.TextBoxFor(x => x.acceso_alternas, new { @class = "form-control" })</td>
+                                        </tr>
+                                        <tr class="noborder">
+                                            <td class="noborder" width="15%">Oriente:</td>
+                                            <td class="noborder" width="30%">@Html.TextBoxFor(x => x.lindero_oriente, new { @class = "form-control" })</td>
+                                            <td class="noborder" width="15%">&nbsp;</td>
+                                            <td class="noborder" width="40%">&nbsp;</td>
+                                        </tr>
+                                        <tr class="noborder">
+                                            <td class="noborder" width="15%">Occidente:</td>
+                                            <td class="noborder" width="30%">@Html.TextBoxFor(x => x.lindero_occidente, new { @class = "form-control" })</td>
+                                            <td class="noborder" width="15%">&nbsp;</td>
+                                            <td class="noborder" width="40%">&nbsp;</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Actividad Económica</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">Representante Legal</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder" colspan="2">
+                                    @*@Html.TextBoxFor(x => x.actividad_economica, new { @class = "form-control" })*@
+                                    @Html.TextAreaFor(x => x.actividad_economica, new { @class = "form-control", style = "resize:none", @readonly = "readonly" })
+                                </td>
+                                <td class="noborder">
+                                    @*@Html.TextBoxFor(x => x.representante, new { @class = "form-control" })*@
+                                    @Html.TextAreaFor(x => x.representante, new { @class = "form-control", style = "resize:none", @readonly = "readonly" })
+                                </td>
+                            </tr>
+                        </table>
+                        <hr />
+                    </form>
+
+                    <form id="frmDescripcionOcupacion">
+                        @Html.HiddenFor(x => x.fk_id_sede_descocupacion)
+                        <h4 align="center"><b>Descripción de la Ocupación</b></h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" style="border: 2px solid lightslategray">
+                                <tr class="titulos_tabla">
+                                    <td colspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase">&nbsp;</td>
+                                    <td width="118" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Cantidad</b></td>
+                                    <td width="388" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Horario de Ocupación</b></td>
+                                </tr>
+                                <tr>
+                                    <td width="59" rowspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; vertical-align:middle">Fijos</td>
+                                    <td width="87" style="border-right: 2px solid lightslategray; vertical-align:middle">Trabajadores</td>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">@Html.TextBoxFor(x => x.trabajadores_cantidad, new { @class = "form-control custom_text", @onKeyPress = "return soloNumeros(event)" })</td>
+                                    <td>
+                                        <table width="100%" border="0">
+                                            <tr class="noborder">
+                                                <td class="noborder" style="vertical-align:middle">Desde:</td>
+                                                <td class="noborder" style="vertical-align:middle">@Html.TextBoxFor(x => x.trabajadores_hdesde, new { @class = "form-control custom_text" })</td>
+                                                <td class="noborder" style="vertical-align:middle">Hasta:</td>
+                                                <td class="noborder" style="vertical-align:middle">@Html.TextBoxFor(x => x.trabajadore_hhasta, new { @class = "form-control custom_text" })</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; border-bottom: 2px solid lightslategray">Contratista</td>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; border-bottom: 2px solid lightslategray">@Html.TextBoxFor(x => x.contratista_cantidad, new { @class = "form-control custom_text", @onKeyPress = "return soloNumeros(event)" })</td>
+                                    <td style="border-bottom: 2px solid lightslategray">
+                                        <table width="100%" border="0">
+                                            <tr class="noborder">
+                                                <td class="noborder" style="vertical-align:middle">Desde:</td>
+                                                <td class="noborder" style="vertical-align:middle">@Html.TextBoxFor(x => x.contratista_hdesde, new { @class = "form-control custom_text" })</td>
+                                                <td class="noborder" style="vertical-align:middle">Hasta:</td>
+                                                <td class="noborder" style="vertical-align:middle">@Html.TextBoxFor(x => x.contratista_hhasta, new { @class = "form-control custom_text" })</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="2" style="border-right: 2px solid lightslategray; vertical-align:middle">Flotantes</td>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Visitante</td>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">@Html.TextBoxFor(x => x.visitante_cantidad, new { @class = "form-control custom_text", @onKeyPress = "return soloNumeros(event)" })</td>
+                                    <td>
+                                        <table width="100%" border="0">
+
+                                         
+                                            <tr class="noborder">
+                                                <td class="noborder" style="vertical-align:middle">Desde:</td>
+                                                <td class="noborder" style="vertical-align:middle">@Html.TextBoxFor(x => x.visitante_hdesde, new { @class = "form-control custom_text" })</td>
+                                                <td class="noborder" style="vertical-align:middle">Hasta:</td>
+                                                <td class="noborder" style="vertical-align:middle">@Html.TextBoxFor(x => x.visitantte_hhasta, new { @class = "form-control custom_text" })</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr class="noborder">
+                                    <td class="noborder" style="border-right: 2px solid lightslategray; vertical-align:middle">Cliente</td>
+                                    <td class="noborder" style="border-right: 2px solid lightslategray; vertical-align:middle">@Html.TextBoxFor(x => x.cliente_cantidad, new { @class = "form-control custom_text", @onKeyPress = "return soloNumeros(event)" })</td>
+                                    <td class="noborder" style="border-right: 2px solid lightslategray; vertical-align:middle">
+                                        <table width="100%" border="0">
+                                            <tr class="noborder">
+                                                <td class="noborder" style="vertical-align:middle">Desde:</td>
+                                                <td class="noborder" style="vertical-align:middle">@Html.TextBoxFor(x => x.cliente_hdesde, new { @class = "form-control custom_text" })</td>
+                                                <td class="noborder" style="vertical-align:middle">Hasta:</td>
+                                                <td class="noborder" style="vertical-align:middle">@Html.TextBoxFor(x => x.cliente_hhasta, new { @class = "form-control custom_text" })</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <hr />
+
+                        ¿Alguna persona cuenta con alguna condición especial que amerite un tratamiento especial?
+                        <table width="548" border="0">
+                            <tr class="noborder">
+                                <td class="noborder" width="50">@Html.RadioButtonFor(x => x.bo_tratamiento_especial, true)Si</td>
+                                <td class="noborder" width="61">@Html.RadioButtonFor(x => x.bo_tratamiento_especial,false)No</td>
+
+                                
+                             @*   <td class="noborder" width="61">@Html.RadioButtonFor(x => x.bo_tratamiento_especial, new { @Value = "N" })No</td>*@
+                                <td class="noborder" width="415">Cuál: @Html.TextBoxFor(x => x.cual)</td>
+                             
+
+                            </tr>
+                        </table>
+                        <hr />
+                    </form>
+
+                    <form id="frmCaracteristicasInstalacion">
+                        @Html.HiddenFor(x => x.fk_id_sede_cinstalaciones)
+                        <h4 align="center"><b>Características de las Instalaciones</b></h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" style="border: 2px solid lightslategray">
+                                <tr class="titulos_tabla">
+                                    <td width="150" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Elemento</b></td>
+                                    <td width="230" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Descripción</b></td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Sistema Ventilación Mecánica</td>
+                                    <td>@Html.TextBoxFor(x => x.ventilacion_mecanica, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Ascensores</td>
+                                    <td>@Html.TextBoxFor(x => x.ascensores, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Sótanos</td>
+                                    <td>@Html.TextBoxFor(x => x.sotanos, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Red Hidráulica</td>
+                                    <td>@Html.TextBoxFor(x => x.red_hidraulica, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Transformadores</td>
+                                    <td>@Html.TextBoxFor(x => x.transformadores, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Plantas Eléctricas</td>
+                                    <td>@Html.TextBoxFor(x => x.plantas_electricas, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Escaleras</td>
+                                    <td>@Html.TextBoxFor(x => x.escaleras, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Zonas de Parqueo</td>
+                                    <td>@Html.TextBoxFor(x => x.zonas_parqueo, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">Áreas Especiales</td>
+                                    <td>@Html.TextBoxFor(x => x.areas_especiales, new { @class = "form-control custom_text" })</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <hr />
+                    </form>
+
+                    <form id="frmelementos">
+                        @Html.HiddenFor(x => x.fk_id_sede_elementos)
+                        <div class="table-responsive">
+                            <table class="table" border="0">
+                                <tr class="noborder">
+                                    <td class="noborder">
+                                        <table width="350" class="table table-bordered" style="border: 2px solid lightslategray">
+                                            <tr class="titulos_tabla">
+                                                <td colspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Elementos Estructurales</b></td>
+                                            </tr>
+                                            <tr class="titulos_tabla">
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center; border-bottom: 2px solid lightslategray; font-weight:bold">Descripción</td>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center; border-bottom: 2px solid lightslategray; font-weight:bold">Ubicación</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; background-color: rgba(196, 202,196, 0.1)">@Html.TextBoxFor(x => x.estructurales_descripcion, new { @class = "form-control custom_text" })</td>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; background-color: rgba(196, 202,196, 0.1)">@Html.TextBoxFor(x => x.estructurales_ubicacion, new { @class = "form-control custom_text" })</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td class="noborder">
+                                        <table width="350" class="table table-bordered" style="border: 2px solid lightslategray">
+                                            <tr class="titulos_tabla">
+                                                <td colspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Equipos y/o Elementos</b></td>
+                                            </tr>
+                                            <tr class="titulos_tabla">
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center; border-bottom: 2px solid lightslategray; font-weight:bold">Descripción</td>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center; border-bottom: 2px solid lightslategray; font-weight:bold">Ubicación</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; background-color: rgba(196, 202,196, 0.1)">@Html.TextBoxFor(x => x.equipos_descripcion, new { @class = "form-control custom_text" })</td>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; background-color: rgba(196, 202,196, 0.1)">@Html.TextBoxFor(x => x.equipos_ubicacion, new { @class = "form-control custom_text" })</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td class="noborder">
+                                        <table width="350" class="table table-bordered" style="border: 2px solid lightslategray">
+                                            <tr class="titulos_tabla">
+                                                <td colspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Insumos y Materia Prima</b></td>
+                                            </tr>
+                                            <tr class="titulos_tabla">
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center; border-bottom: 2px solid lightslategray; font-weight:bold">Descripción</td>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center; border-bottom: 2px solid lightslategray; font-weight:bold">Ubicación</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; background-color: rgba(196, 202,196, 0.1)">@Html.TextBoxFor(x => x.insumos_descripcion, new { @class = "form-control custom_text" })</td>
+                                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; background-color: rgba(196, 202,196, 0.1)">@Html.TextBoxFor(x => x.insumos_ubicacion, new { @class = "form-control custom_text" })</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                    <button type="button" class="boton botoninfo" onclick="Siguiente(1)" style="float:right;margin-top:-2%">Siguiente</button>
+                    <br />
+                </div>
+
+                <div id="tabs-2" style="background-color: #F9FAF9;">
+                    <form id="frmgeneralidades">
+                        <p>
+                            @Html.HiddenFor(x => x.fk_id_sede_generalidades)
+                            <table width="50%" border="0" class="noborder">
+                                <tr class="noborder">
+                                    <td class="noborder" valign="top"><b>Objetivos:</b></td>
+                                    <td class="noborder">@Html.TextAreaFor(x => x.objetivos, new { @class = "form-control", @style = "width:250px; resize:none" })</td>
+                                    <td class="noborder" valign="top"><b>Alcance:</b></td>
+                                    <td class="noborder">@Html.TextAreaFor(x => x.alcance, new { @class = "form-control", @style = "width:250px; resize:none" })</td>
+                                </tr>
+                            </table>
+                            <button type="button" class="boton botoninfo" onclick="Siguiente(2)" style="float:right;">Siguiente</button>
+                            <br />
+                        </p>
+                    </form>
+                </div>
+
+                <div id="tabs-3" style="background-color: #F9FAF9;">
+                    <form id="frmGeoreferenciacion">
+                        @Html.HiddenFor(x => x.fk_id_sede_georeferenciacion)
+                        <b>Interno</b>
+                        <table width="100%" border="0">
+                            <tr>
+                                <td class="noborder">@Html.TextBoxFor(x => x.adjuntos, new { id = "upload_adjuntos", type = "file", @class = "form-control",style = "background-color:transparent", @onchange = "obtenerNombreAdjunto()"})</td>
+                                <td class="noborder"><a href="#" id="hl-start-upload_adjuntos" class="boton botonactive">Cargar Archivo</a></td>
+                                <td class="noborder"><a id="cargar_img" href="#" class="btn btn-search btn-md" title="Visualizar Archivo"><span class="glyphicon glyphicon-search"></span></a></td>
+                            </tr>
+                        </table>
+                        @Html.Hidden("upload_adjuntos_tmp")
+                        <label id="nombreUpload" class="nombreArchivo"></label>
+                        <br />
+                        <table width="100%" border="0">
+                            <tr class="noborder">
+                                <td class="noborder" colspan="4"><b>Seleccione en que zona y espacios de densidad poblacional se encuentra ubicada la empresa</b></td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder" width="54">&nbsp;</td>
+                                @*<td class="noborder" width="118">@Html.RadioButtonFor(x => x.bo_externo, new { @Value = "1" })Zona Industrial</td>*@
+                                <td class="noborder" width="118">@Html.CheckBoxFor(x => x.bo_ZonaIndustrial)Zona Industrial</td>
+
+                                <td class="noborder" width="159">&nbsp;</td>
+                                <td class="noborder" width="202">@Html.CheckBoxFor(x => x.bo_colegio)Colegios</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">@Html.CheckBoxFor(x => x.bo_ZonaResidencial)Zona Residencial</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">@Html.CheckBoxFor(x => x.bo_iglesia)Iglesias</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder"><b>Externo</b></td>
+                                <td class="noborder">@Html.CheckBoxFor(x => x.bo_ZonaComercial)Zona Comercial</td>
+                                <td class="noborder" rowspan="2"><b>Espacios de Densidad Poblacional cercanos</b></td>
+                                <td class="noborder">@Html.CheckBoxFor(x => x.bo_comercial)Centro Comercial</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">@Html.CheckBoxFor(x => x.bo_ZonaMixta)Zona Mixta</td>
+                                <td class="noborder">@Html.CheckBoxFor(x => x.bo_centro_atencion)Centro de Atención Médica</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">@Html.CheckBoxFor(x => x.bo_parque)Parques</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">@Html.CheckBoxFor(x => x.bo_otro)Otro</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder" align="right">Cuál:</td>
+                                <td class="noborder">@Html.TextBoxFor(x => x.tab3_cual, new { @class = "form-control custom_text" })</td>
+                            </tr>
+                        </table>
+                        <br>
+                        <br>
+                        <table width="100%" border="0">
+                            <tr class="noborder">
+                                <td class="noborder">Ubicación Punto de Encuentro</td>
+                                <td class="noborder">@Html.TextAreaFor(x => x.punto_encuentro, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">
+                                    <table border="0">
+                                        <tr>
+                                            <td class="noborder">@Html.TextBoxFor(x => x.adjuntos1, new { id = "upload_adjuntos1", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerNombreAdjunto1()" })</td>
+                                            <td class="noborder"><a href="#" id="hl-start-upload_adjuntos1" class="boton botonactive" style="text-align:center">Cargar</a></td>
+                                            <td class="noborder" align="left"><a id="cargar_img1" href="#" class="btn btn-search btn-md" title="Cargar Archivo"><span class="glyphicon glyphicon-search"></span></a></td>
+                                        </tr>
+                                    </table>
+                                    <label id="nombreUpload1" class="nombreArchivo"></label>
+                                    @Html.Hidden("upload_adjuntos1_tmp")
+                                </td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">&nbsp;</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder" width="24%">Ubicación Hidrantes</td>
+                                <td class="noborder" width="24%">@Html.TextAreaFor(x => x.ubicacion_hidrantes, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">
+                                    <table border="0">
+                                        <tr>
+                                            <td class="noborder">@Html.TextBoxFor(x => x.adjuntos2, new { id = "upload_adjuntos2", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerNombreAdjunto2()" })</td>
+                                            <td class="noborder"><a href="#" id="hl-start-upload_adjuntos2" class="boton botonactive" style="text-align:center">Cargar</a></td>
+                                            <td class="noborder" align="left"><a id="cargar_img2" href="#" class="btn btn-search btn-md" title="Cargar Archivo"><span class="glyphicon glyphicon-search"></span></a></td>
+                                        </tr>
+                                    </table>
+                                    @Html.Hidden("upload_adjuntos2_tmp")
+                                    <label id="nombreUpload2" class="nombreArchivo"></label>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <br />
+
+                        @*<button type="button" class="boton botonactive" onclick="Georeferenciacion();" style="float:left;">Guardar Georeferenciación</button>*@
+                        <button type="button" class="boton botoninfo" onclick="Siguiente(3)" style="float:right;">Siguiente</button>
+
+                        <br /><br />
+
+                        @*<table border="0">
+                        <tr class="noborder">
+                            <td class="noborder">
+                                <button type="button" class="boton botonactive" onclick="Georeferenciacion();">Guardar Georeferenciación</button>
+                            </td>
+                            <td class="noborder">&nbsp;</td>
+                            <td class="noborder">&nbsp;</td>
+                            <td class="noborder">
+                                <button type="button" class="boton botoninfo" onclick="Siguiente(3)" style="float:right;">Siguiente</button>
+                            </td>
+                        </tr>
+                    </table>*@
+                    </form>
+                </div>
+
+                <div id="tabs-4" style="background-color: #F9FAF9;">
+                
+
+                    <table class="noborder">
+
+                        <tr>
+                            <td class="noborder">  <h4><b>Crear Análisis de Vulnerabilidad</b></h4> </td>
+                            <td class="noborder"> <button type="button" class="boton botonactive" onclick="CrearVulnerabilidad()">Crear</button> </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <div class="table-responsive">
+                        <table id="gridriesgo" class="table table-bordered" style="border: 2px solid lightslategray">
+                            <tr class="titulos_tabla">
+                                <td width="50%" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Amenazas</b></td>
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Generar Intervención</b></td>
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Plan de Acción</b></td>
+                            </tr>
+                            <tr>
+                                <td style="border-right: 2px solid lightslategray; vertical-align:middle">&nbsp;</td>
+                                <td style="border-right: 2px solid lightslategray; vertical-align:middle"> </td>
+                                <td style="border-right: 2px solid lightslategray; vertical-align:middle"> </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <button type="button" class="boton botoninfo" onclick="Siguiente(4)" style="float:right;">Siguiente</button>
+                    <br /><br />
+
+                </div>
+
+                <div id="tabs-5" style="background-color: #F9FAF9;">
+
+                   <form id="frmEsquemaOrganizacion">
+                        <table border="0">
+                            <tr>
+                                <td class="noborder">Cargar estructura organizacional para la atención de emergencia </td>
+                                <td class="noborder">@Html.TextBoxFor(x => x.adjunto4, new { id = "upload", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerNombreEstructuraOrg()" })</td>
+                                <td class="noborder"><a href="#" id="hl-start-upload" class="boton botonactive" style="text-align:center">Cargar</a></td>
+                                <td class="noborder" align="left"><a id="cargar" href="#" class="btn btn-search btn-md" title="Ver Imagen"><span class="glyphicon glyphicon-search"></span></a></td>                             
+                           
+                             </tr>
+                            </table>
+                       <label id="cargarEstOrganizacional" class="nombreArchivo"></label>
+                       <br />
+                     
+                       <table>
+                           <tr>
+                               <td class="noborder" align="justify"> Crear estructura organizacional para la atención de emergencia</td>
+                               <td class="noborder"> <a href="#" class="boton botonactive" style="text-decoration:none" onclick="CrearEstructuraOrganizacional()">Crear</a></td>
+                               <td class="noborder"><a id="verEstructuraOrganizacional" href="#" class="btn btn-search btn-md" onclick="VerEstructuraOrganizacional()" title="Ver Estructura Organizacional"><span class="glyphicon glyphicon-search"></span></a></td>
+
+                         </tr>
+                           
+                      
+                       </table>
+                   
+                       
+                        <input type="hidden" id="adjunto_tmp" />
+                        <br />
+                       <br />
+                       <table class="noborder">
+
+                           <tr>
+                               <td class="noborder">  <h4><b>Funciones y Responsabilidades</b></h4> </td>
+                               <td class="noborder"> <button type="button" class="boton botonactive" onclick="CrearRolesFuncion()">Crear</button> </td>
+                           </tr>
+                       </table>
+                       
+                        <br />
+                        <div class="table-responsive">
+                            <table id="gridroles" width="573" class="table table-bordered" style="border: 2px solid lightslategray">
+                                <tr class="titulos_tabla">
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Rol</b></td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Antes</b></td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Durante</b></td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase"><b>Después</b></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <br />
+                        <h4><b></b></h4>
+                       <table class="noborder">
+
+                           <tr>
+                               <td class="noborder">  <h4><b>Base de Datos Interna</b></h4> </td>
+                               <td class="noborder"> <button type="button" class="boton botonactive" onclick="CrearBDInterna()">Crear</button> </td>
+                           </tr>
+                       </table>
+                        <br />
+                        <table width="80%">
+                            <tr class="noborder">
+                                <td colspan="3" class="noborder">Si desea puede registrar la información del trabajador cargue la información de forma masiva</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextBoxFor(x => x.adjunto1, new { id = "upload1", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerNombreInformacionTrabajador()" })</td>
+                                <td class="noborder"><a href="#" id="hl-start-upload1" class="boton botonactive">Cargar Archivo</a></td>
+                                <td class="noborder"><a href="#" title="Descargar Plantilla" onclick="DescargarExcel(1);"><img src="~/Content/Images/iconExcelp.png" /></a></td>
+                            </tr>
+
+                        </table>
+                        <label id="nombreUploadInfTrabajador" class="nombreArchivo"></label>
+                        <input id="adjunto_tmp" type="hidden" />
+                        <br />
+                        <div class="table-responsive">
+                            <table id="gridinterna" class="table table-bordered" style="border: 2px solid lightslategray;">
+                                <tr class="titulos_tabla">
+                                    <td colspan="5" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase">&nbsp;</td>
+                                    <td colspan="3" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Información del Contacto</td>
+                                    <td colspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase">&nbsp;</td>
+                                </tr>
+                                <tr class="titulos_tabla">
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Nombre</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Número de Documento</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Género</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">EPS</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">RH</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Nombre</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Teléfono</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Parentesco</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Requiere Manejo Especial</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Cuál</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <br />
+
+                    
+
+                       <table class="noborder">
+
+                           <tr>
+                               <td class="noborder">  <h4><b>Base de Datos Externa</b></h4> </td>
+                               <td class="noborder"> <button type="button" class="boton botonactive" onclick="CrearBDExterna()">Crear</button> </td>
+                           </tr>
+                       </table>
+
+                        <table width="80%">
+                           
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextBoxFor(x => x.adjunto2, new { id = "upload2", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerNombreBDExterna()" })</td>
+                                <td class="noborder"><a href="#" id="hl-start-upload2" class="boton botonactive" >Cargar Archivo</a><br /></td>
+                                <td class="noborder"><a href="#" title="Descargar Plantilla" onclick="DescargarExcel(2);"><img src="~/Content/Images/iconExcelp.png" /></a></td>
+                            </tr>
+                        </table>
+                        <label id="nombreUploadBDExterna" class="nombreArchivo"></label>
+                        <br />
+                        <div class="table-responsive">
+                            <table id="gridbdexterna" class="table table-bordered" style="border: 2px solid lightslategray">
+                                <tr class="titulos_tabla">
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Entidad</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Dirección</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Teléfono</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Nombre del Contacto</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">&nbsp;</td>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">&nbsp;</td>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center">&nbsp;</td>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle">&nbsp;</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <br />
+                       <table class="noborder">
+
+                           <tr>
+                               <td class="noborder">  <h4><b>Niveles de Emergencia</b></h4> </td>
+                               <td class="noborder"> <button type="button" class="boton botonactive" onclick="CrearNivelEmergencia()">Crear</button> </td>
+                           </tr>
+                       </table>
+                       
+                        <div class="table-responsive">
+                            <table id="gridemergencia" class="table table-bordered" style="border: 2px solid lightslategray">
+                                <tr class="titulos_tabla">
+                                    <td width="186" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Nivel</td>
+                                    <td width="237" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Tipo de Emergencia</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <br />
+                      
+                       <table class="noborder">
+
+                           <tr>
+                               <td class="noborder">  <h4><b>Plan de Ayuda Mutua</b></h4> </td>
+                               <td class="noborder"> <button type="button" class="boton botonactive" onclick="CrearPlanAyudaMutua()">Crear</button> </td>
+                           </tr>
+                       </table>
+
+                        <br />
+
+                       @*<table>
+                           <tr class="noborder">
+                              <td width="60%" class="noborder" align="left">Si desea puede cargar el Acta del Plan de Ayuda Mutua debidamente firmado entre las empresas</td>
+                               <td width="20%" class="noborder"><input type="file" id="archivoPlanAyuda" style="background-color:transparent"></td>
+                               <td width="20%" class="noborder"><a id="cargar_" href="#" class="btn btn-search btn-md" title="Descargar Archivo" onclick="DescargarArchivoFrente(5);"><span class="glyphicon glyphicon-download-alt"/></a></td>
+
+                           </tr>
+                       </table>*@
+                       <input type="hidden" id="adjunto_tmp_upload_adjuntoPAM" />
+                       <table>
+                           <tr class="noborder">
+                               <td class="noborder"><span>Si desea puede cargar el Acta del Plan de Ayuda Mutua debidamente firmado entre las empresas</span></td>
+                               <td class="noborder">
+                                   <table border="0">
+                                       <tr>
+                                           <td width="45%" class="noborder">@Html.TextBoxFor(x => x.adjuntoPAM, new { id = "upload_adjuntoPAM", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerPlanAyudaMutua()" })</td>
+                                           <td width="55%" class="noborder"><a href="#" id="hl-start-upload_adjuntoPAM" class="boton botonactive">Cargar Archivo</a></td>
+                                           <td class="noborder"><a id="cargar_" href="#" class="btn btn-search btn-md" title="Descargar Archivo" onclick="DescargarArchivoPlanAyuda();"><span class="glyphicon glyphicon-download-alt"></a></td>
+                                       </tr>
+                                   </table>
+                                   <label id="nombrePlanAyudaMutua" class="nombreArchivo"></label>
+                               </td>
+                           </tr>
+                       </table>
+                       <br />
+                        <table width="80%">
+                            
+                        
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextBoxFor(x => x.adjunto3, new { id = "upload3", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerNombrePlanAyuda()" })</td>
+                                <td class="noborder"><a href="#" id="hl-start-upload3" class="boton botonactive">Cargar Archivo</a></td>
+                                <td class="noborder"><a href="#" title="Descargar Platilla" onclick="DescargarExcel(3);"><img src="~/Content/Images/iconExcelp.png" /></a></td>
+                            </tr>
+                        </table>
+                        <label id="nombreUploadPlanAyuda" class="nombreArchivo"></label>
+                        <br />
+                        <div class="table-responsive">
+                            <table id="gridplanayuda" class="table table-bordered" style="border: 2px solid lightslategray">
+                                <tr class="titulos_tabla">
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">&nbsp;</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">&nbsp;</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">&nbsp;</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">&nbsp;</td>
+                                    <td colspan="3" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Información de Contacto</td>
+                                </tr>
+                                <tr class="titulos_tabla">
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Empresa Participante</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Recursos a Disposición</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Compensación económica por uso del recurso</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Reintegro del recurso</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Nombre</td>
+                                    <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Teléfono</td>
+                                </tr>
+                            </table>
+                    </form>
+                </div>
+
+                        <button type="button" class="boton botoninfo" onclick="Siguiente(5)" style="float:right;">Siguiente</button>
+                        <br /><br />
+</div>
+               
+
+                <div id="tabs-6" style="background-color: #F9FAF9;">
+                    <table class="noborder">
+
+                        <tr>
+                            <td class="noborder">  <h4><b>Recursos Humanos</b></h4> </td>
+                            <td class="noborder"> <button type="button" class="boton botonactive" onclick="CrearHR()">Crear</button> </td>
+                        </tr>
+                    </table>
+                   
+                     <br />
+                    <br />
+                    <div class="table-responsive">
+                        <table id="gridHR" class="table table-bordered" style="border: 2px solid lightslategray">
+                            <tr class="titulos_tabla">
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Brigadistas Primeros Auxilios</td>
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Brigadistas Contraincendios</td>
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Brigadistas de Evacuación y Rescate</td>
+                            </tr>
+                            <tr class="titulos_tabla">
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Nombre</td>
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Nombre</td>
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Nombre</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <table class="noborder">
+
+                        <tr>
+                            <td class="noborder">  <h4><b>Recursos Físico/Técnicos</b></h4> </td>
+                            <td class="noborder"> <button type="button" class="boton botonactive" onclick="CrearRecursosFisico()">Crear</button> </td>
+                        </tr>
+                    </table>
+                  
+                    <br />
+                    <br />
+                    <div class="table-responsive">
+                        <table id="gridRT" class="table table-bordered" style="border: 2px solid lightslategray">
+                            <tr class="titulos_tabla">
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Tipo</td>
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Cantidad</td>
+                                <td style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase; font-weight:bold">Ubicación</td>
+                            </tr>
+                            <tr>
+                                <td style="border-right: 2px solid lightslategray; vertical-align:middle">&nbsp;</td>
+                                <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center">&nbsp;</td>
+                                <td style="border-right: 2px solid lightslategray; vertical-align:middle">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <button type="button" class="boton botoninfo" onclick="Siguiente(6)" style="float:right;">Siguiente</button>
+                    <br /><br />
+
+                </div>
+
+                <div id="tabs-7" style="background-color: #F9FAF9;">
+                    <form id="frmFrentesAccion">
+                        @Html.HiddenFor(x => x.fk_id_sede_frenteaccion)
+
+                        <input type="hidden" id="adjunto_tmp_upload_frenteaccion_adjunto1" />
+                        <input type="hidden" id="adjunto_tmp_upload_frenteaccion_adjunto2" />
+                        <input type="hidden" id="adjunto_tmp_upload_frenteaccion_adjunto3" />
+                        <input type="hidden" id="adjunto_tmp_upload_frenteaccion_adjunto4" />
+                        <input type="hidden" id="adjunto_tmp_upload_frenteaccion_adjunto5" />
+
+                      
+                        <table>
+                            <tr class="noborder">
+                                <td class="noborder"><b>Plan de Seguridad Física</b></td>
+                                
+                                <td class="noborder">
+                                    <table border="0">
+                                        <tr>
+                                            <td width="40%" class="noborder">@Html.TextBoxFor(x => x.frenteaccion_adjunto1, new { id = "upload_frenteaccion_adjunto1", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerNombrePlanSeguridadFisica()" })</td>
+                                            <td class="noborder" width="55%"><a href="#" id="hl-start-upload_frenteaccion_adjunto1" class="boton botonactive">Cargar Archivo</a></td>
+                                            <td class="noborder"><a id="cargar_" href="#" class="btn btn-search btn-md" title="Descargar Archivo" onclick="DescargarArchivoFrente(1);"><span class="glyphicon glyphicon-download-alt"></a></td>
+                                        </tr>
+                                    </table>
+                                    <label id="nombreUploadSeguridadBasica" class="nombreArchivo"></label>  
+                                </td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.plan_seguridadfisica, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder"><b>Plan de Atención Médica</b></td>
+                                <td class="noborder">
+                                    <table border="0">
+                                        <tr>
+                                            <td width="40%" class="noborder">@Html.TextBoxFor(x => x.frenteaccion_adjunto2, new { id = "upload_frenteaccion_adjunto2", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerPlanAtencionMedica()" })</td>
+                                            <td class="noborder" width="55%"><a href="#" id="hl-start-upload_frenteaccion_adjunto2" class="boton botonactive">Cargar Archivo</a></td>
+                                            <td class="noborder"><a id="cargar_" href="#" class="btn btn-search btn-md" title="Descargar Archivo" onclick="DescargarArchivoFrente(2);"><span class="glyphicon glyphicon-download-alt"></a></td>
+                                        </tr>
+                                    </table>
+                                    <label id="nombreUploadPlanAtencionMedica" class="nombreArchivo"></label>  
+                                </td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.plan_primerosaux, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder"><b>Plan Contraincendios</b></td>
+                                <td class="noborder">
+                                    <table border="0">
+                                        <tr>
+                                            <td width="40%" class="noborder">@Html.TextBoxFor(x => x.frenteaccion_adjunto3, new { id = "upload_frenteaccion_adjunto3", type = "file", @class = "form-control", style = "background-color:transparent",@onchange="obtenerPlanContraIncendios()" })</td>
+                                            <td class="noborder" width="55%"><a href="#" id="hl-start-upload_frenteaccion_adjunto3" class="boton botonactive">Cargar Archivo</a></td>
+                                            <td class="noborder"><a id="cargar_" href="#" class="btn btn-search btn-md" title="Descargar Archivo" onclick="DescargarArchivoFrente(3);"><span class="glyphicon glyphicon-download-alt"></a></td>
+                                        </tr>
+                                    </table>
+                                    <label id="nombreUploadContraIncendios" class="nombreArchivo"></label>
+                                </td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.plan_contraincendios, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder"><b>Plan Evacuación</b></td>
+                                <td class="noborder">
+                                    <table border="0">
+                                        <tr>
+                                            <td class="noborder" width="40%">@Html.TextBoxFor(x => x.frenteaccion_adjunto4, new { id = "upload_frenteaccion_adjunto4", type = "file", @class = "form-control", style = "background-color:transparent",@onchange="obtenerNombrePlanEvaluacion()" })</td>
+                                            <td class="noborder" width="55%"><a href="#" id="hl-start-upload_frenteaccion_adjunto4" class="boton botonactive">Cargar Archivo</a></td>
+                                            <td class="noborder"><a id="cargar_" href="#" class="btn btn-search btn-md" title="Descargar Archivo" onclick="DescargarArchivoFrente(4);"><span class="glyphicon glyphicon-download-alt"></a></td>
+                                        </tr>
+                                    </table>
+                                    <label id="nombreUploadPlanEvacuacion" class="nombreArchivo"></label>
+                                </td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.plan_Evacuacion, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Nombre de Coordinador</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextBoxFor(x => x.nombrecoordinador, new { @class = "form-control" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Objetivos</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextBoxFor(x => x.tab7_objetivos, new { @class = "form-control" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Estructura</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextBoxFor(x => x.estructura, new { @class = "form-control" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Procedimientos de Coordinación</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.proc_coordinacion, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Procedimientos de Ocupantes Internos</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.proc_internos, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Procedimientos de Ocupantes Externos</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.proc_externos, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Mecanismos de Alerta - Alarma</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.mecanismos_alarma, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder"><b>Rutas de Evacuación</b></td>
+                                <td class="noborder">
+                                    <table border="0">
+                                        <tr>
+                                            <td width="40%" class="noborder">@Html.TextBoxFor(x => x.frenteaccion_adjunto5, new { id = "upload_frenteaccion_adjunto5", type = "file", @class = "form-control", style = "background-color:transparent", @onchange = "obtenerNombreRutaEvacuacion()" })</td>
+                                            <td width="55%" class="noborder"><a href="#" id="hl-start-upload_frenteaccion_adjunto5" class="boton botonactive">Cargar Archivo</a></td>
+                                            <td class="noborder"><a id="cargar_" href="#" class="btn btn-search btn-md" title="Descargar Archivo" onclick="DescargarArchivoFrente(5);"><span class="glyphicon glyphicon-download-alt"></a></td>
+                                        </tr>
+                                    </table>
+                                    <label id="nombreRutaEvacuacion" class="nombreArchivo"></label>
+                                </td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Simulacros</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.simulacros, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">Instructivo de Evacuación</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder">@Html.TextAreaFor(x => x.instructivo_evacuacion, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder" width="35%">Procedimiento para retornar al sitio de Trabajo</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                            <tr class="noborder">
+                                <td class="noborder" width="35%">@Html.TextAreaFor(x => x.proc_retorno, new { @class = "form-control", style = "resize:none" })</td>
+                                <td class="noborder">&nbsp;</td>
+                            </tr>
+                        </table>
+                        <br />
+
+                        @*<button type="button" class="boton botonactive" onclick="CargarFrentesAccionAdjuntos()" style="float:left;">Guardar Adjuntos</button>*@
+                        <button type="button" class="boton botoninfo" onclick="Siguiente(7)" style="float:right;">Siguiente</button>
+
+                        <br /><br />
+                        @*<table style="float:right;" border="0">
+                        <tr class="noborder">
+                            <td class="noborder">
+                                <button type="button" class="boton botonactive" onclick="CargarFrentesAccionAdjuntos()">Guardar Adjutos</button>
+                            </td>
+                            <td class="noborder">
+                                <button type="button" class="boton botonactive" onclick="Siguiente(7)" style="float:right;">Siguiente</button>
+                            </td>
+                        </tr>
+                    </table>*@
+
+                    </form>
+                </div>
+
+                <div id="tabs-8" style="background-color: #F9FAF9;">
+                    <div class="table-responsive">
+                        <table id="procopera" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                    </div>
+                    <button type="button" class="boton botonactive" onclick="CrearProcOperativos();" style="float:right;">Crear</button>
+                    <br /><br />
+                </div>
+
+            </div>
+        @*</center>*@
+    </div>
+@*</div>*@
+
+
+<form id="frmProcedimientosOperativosNormalizados">
+    <div id="myModal0" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                    <h4 class="modal-title title">Procedimientos Operativos Normalizados</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="pk_id_proc_normalizados" name="pk_id_proc_normalizados" hidden="hidden">
+
+                           @Html.HiddenFor(x => x.fk_id_sede_proc_normalizados)<table width="100%">
+                        <tr class="noborder">
+                            <td class="noborder" width="229">Nombre del Procedimiento</td>
+                            <td class="noborder" width="275">Responsable</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder">@Html.TextBoxFor(x => x.nombre_proc, new { @class = "form-control" })</td>
+                            <td class="noborder">@Html.TextBoxFor(x => x.responsable, new { @class = "form-control" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2"><b>Procedimientos y acciones para la Emergencia</b></td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top">Antes:@Html.TextAreaFor(x => x.proc_antes, new { @class = "form-control", style = "resize:none" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top">Durante:@Html.TextAreaFor(x => x.proc_durante, new { @class = "form-control", style = "resize:none" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top">Después:@Html.TextAreaFor(x => x.proc_despues, new { @class = "form-control", style = "resize:none" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top">Recursos:@Html.TextAreaFor(x => x.proc_recursos, new { @class = "form-control", style = "resize:none" })</td>
+                        </tr>
+                    </table>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="boton botonactive" id="guardarProcOperNormalizados" name="guardarProcOperNormalizados" onclick="validarProcedimientoOperativos()" style="margin-right:2%">Guardar</button>
+                    <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form id="frmRolFunciones">
+    <div id="myModal1" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                    <h4 class="modal-title title">Agregar Funciones Y Responsabilidades</h4>
+                </div>
+                <div class="modal-body">
+
+                    @Html.HiddenFor(x => x.fk_id_sede_roles)
+                    <table width="100%">
+                        <tr class="noborder">
+                            <td class="noborder"><b>Rol </b></td>
+                            <td class="noborder">&nbsp;</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder">@Html.TextBoxFor(x => x.nombre, new { @class = "form-control" })</td>
+                            <td class="noborder">&nbsp;</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2"><h4>Funciones y Responsabilidades en la Emergencia</h4></td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Antes:</b> @Html.TextBoxFor(x => x.antes, new { @class = "form-control" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Durante:</b>@Html.TextBoxFor(x => x.durante, new { @class = "form-control" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Después:</b>@Html.TextBoxFor(x => x.despues, new { @class = "form-control" })</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="boton botonactive" id="guardarRoles" name="guardarRoles" onclick="ValidarRoles();" style="margin-right:2%">Guardar</button>
+                    <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form id="frmNivelEmergencia">
+    <div id="myModal2" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                    <h4 class="modal-title title">Agregar Niveles de Emergencia</h4>
+                </div>
+                <div class="modal-body">
+                    @Html.HiddenFor(x => x.fk_id_sede_nivelemergencia)
+                    <table width="100%">
+                        <tr class="noborder">
+                             <td class="noborder" colspan="2" valign="top"><b>Nivel:</b>@Html.TextBoxFor(x => x.nivel, new { @class = "form-control" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Tipo de Emergencia:</b>@Html.TextBoxFor(x => x.emergencia, new { @class = "form-control" })</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="boton botonactive" id="guardarNivelEmergencia" name="guardarNivelEmergencia"  onclick="validadNivelEmergencia()" style="margin-right:2%">Guardar</button>
+                    <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form id="frmHR">
+    <div id="myModal3" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                    <h4 class="modal-title title">Agregar Recursos Humanos</h4>
+                </div>
+                <div class="modal-body">
+
+                    @Html.HiddenFor(x => x.fk_id_sede_recursosh)
+                    <table width="100%">
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Brigadistas Primeros Auxilios:</b>@Html.TextBoxFor(x => x.bpaux_nombre, new { @class = "form-control custom_text" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Brigadistas Contraincendios</b>:@Html.TextBoxFor(x => x.bcontra_nombre, new { @class = "form-control custom_text" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Brigadistas de Evacuación y Rescate:</b>@Html.TextBoxFor(x => x.bevalresc_nombre, new { @class = "form-control custom_text" })</td>
+                        </tr>
+                    </table>
+      
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="boton botonactive" id="guardarRecursosHumanos" name="guardarRecursosHumanos" style="margin-right:2%">Guardar</button>
+                    <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form id="frmRTecnicos">
+    <div id="myModal4" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                    <h4 class="modal-title title">Agregar Recursos Físicos/Técnicos</h4>
+                </div>
+                <div class="modal-body">
+
+                    @Html.HiddenFor(x => x.fk_id_sede_recursostecnicos)
+                    <table width="100%">
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Tipo:</b>@Html.TextBoxFor(x => x.tipo, new { @class = "form-control custom_text" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Cantidad:</b>@Html.TextBoxFor(x => x.cantidad, new { @class = "form-control custom_text" })</td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="noborder" colspan="2" valign="top"><b>Ubicacion:</b>@Html.TextBoxFor(x => x.ubicacion, new { @class = "form-control custom_text" })</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="boton botonactive" id="guardarRecursosTecnicos" name="guardarRecursosTecnicos" onclick="validarRecursosTecnicos()" style="margin-right:2%">Guardar</button>
+                    <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div id="myModal5" class="modal fade" role="dialog" style="overflow-y: scroll;">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content modal-lg">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <h3 class="modal-title title">Análisis de Vulnerabilidad</h3>
+            </div>
+          
+            <div class="modal-body">
+                                          
+                                       
+                                          <h4 style="text-align: center">@ViewBag.razonSocial</h4>
+                                          <h4 style="text-align: center"><span id="sedevultexto" name="sedeVultexto"></span></h4> 
+                                         <h4 style="text-align: center">@ViewBag.fechaSistema</h4>
+
+                <br />
+                <table border="0">
+
+                    <tr class="noborder">
+                        <th class="noborder">
+                            <div id="tabs_vulneravilidades">
+                                <ul>
+                                    <li><a href="#tabs_vulneraviilidades-1">Identificación de Amenaza</a></li>
+                                    <li><a href="#tabs_vulneraviilidades-2">Personas</a></li>
+                                    <li><a href="#tabs_vulneraviilidades-3">Recursos</a></li>
+                                    <li><a href="#tabs_vulneraviilidades-4">Sistemas y Procesos</a></li>
+                                    <li><a href="#tabs_vulneraviilidades-5">Consolidado</a></li>
+                                    <li><a href="#tabs_vulneraviilidades-6">Nivel de Riesgo</a></li>
+                                </ul>
+                                <div id="tabs_vulneraviilidades-1" style="background-color: #F9FAF9;">
+                                    <div class="table-responsive">
+                                        <table id="grid_ident_amenaza" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                    </div>
+
+                                    <button type="button" class="boton botoninfo" onclick="tabs_vulneravilidades_Siguiente(1)" style="float:right;">Siguiente</button>
+                                    <br />
+                                    <br />
+                                </div>
+                                <div id="tabs_vulneraviilidades-2" style="background-color: #F9FAF9;">
+                                    <div class="table-responsive">
+                                         
+                                        <table id="grid_personas" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+
+                                        <table id="grid_personas1" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_personas1A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+
+                                         <table id="grid_personas2" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_personas2A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+
+                                        <table id="grid_personas3" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_personas3A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+
+                                    </div>
+                                    <button type="button" class="boton botoninfo" onclick="tabs_vulneravilidades_Siguiente(2)" style="float:right;">Siguiente</button>
+                                    <br />
+                                    <br />
+                                </div>
+                                <div id="tabs_vulneraviilidades-3" style="background-color: #F9FAF9;">
+                                    <div class="table-responsive">
+                                        <table id="grid_recursos" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_recursos1" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_recursos1A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_recursos2" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_recursos2A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_recursos3" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_recursos3A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+
+                                    
+                                    </div>
+                                    <button type="button" class="boton botoninfo" onclick="tabs_vulneravilidades_Siguiente(3)" style="float:right;">Siguiente</button>
+                                    <br />
+                                    <br />
+                                </div>
+                                <div id="tabs_vulneraviilidades-4" style="background-color: #F9FAF9;">
+                                    <div class="table-responsive">
+                                        <table id="grid_sistemasprocesos" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_sistemasprocesos1" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_sistemasprocesos1A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_sistemasprocesos2" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_sistemasprocesos2A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_sistemasprocesos3" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                        <table id="grid_sistemasprocesos3A" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+
+                                    
+                                     </div>
+                                    <button type="button" class="boton botoninfo" onclick="tabs_vulneravilidades_Siguiente(4)" style="float:right;">Siguiente</button>
+                                    <br />
+                                    <br />
+                                </div>
+                                <div id="tabs_vulneraviilidades-5" style="background-color: #F9FAF9;">
+                                    <div class="table-responsive">
+                                        <table id="grid_consolidados" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                    </div>
+                                    <button type="button" class="boton botoninfo" onclick="tabs_vulneravilidades_Siguiente(5)" style="float:right;">Siguiente</button>
+                                    <br />
+                                    <br />
+                                </div>
+                                <div id="tabs_vulneraviilidades-6" style="background-color: #F9FAF9;">
+                                    <div class="table-responsive">
+                                        <table id="grid_nivel_riesgo" class="table table-bordered" style="border: 2px solid lightslategray"></table>
+                                    </div>
+                                    <button type="button" class="boton botonactive" onclick="tabs_vulneravilidades_Guardar()" style="float:right;">Guardar</button>
+                                    <br />
+                                    <br />
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="myModalimg" class="modal fade" role="dialog">
+    <div class="modal-dialog" >
+        
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <h4 class="modal-title title">Visualizar Imagen</h4>
+            </div>
+            <div class="modal-body">
+                <center> <img id="ImgCarga" class="img-responsive img-rounded"></center>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="formAnalVulPersona">
+    <div id="myModAnalVulPer" class="modal fade" role="dialog" style="overflow-y: scroll;" tabindex="-1">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+
+                <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                    <h4 class="modal-title title">Agregar Nuevo Aspecto de Vulnerabilidad</h4>
+                </div>
+
+                <input type="text" id="tipoVulPer" name="tipoVulPer" hidden="hidden" />
+
+                <input type="text" id="Fk_SedeVulPer" name="Fk_SedeVulPer" hidden="hidden" />
+
+
+                <div class="modal-body">
+                    <label>Agregar Nuevo Aspecto:</label>
+
+
+                    <textarea id="nuevoAspectoVulPer" name="nuevoAspectoVulPer" class="form-control" rows="6" cols="6" style="resize:none" maxlength="996"></textarea>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="boton botonactive" id="GuardarNivelVulPersona" name="GuardarNivelVulPersona" onclick="validarNivelVulPersona()" style="margin-right:2%">Guardar</button>
+                    <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+                </div>
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+</form>
+
+<form id="formAnalVulRecursos">
+    <div id="myModAnalVulReursos" class="modal fade" role="dialog" style="overflow-y: scroll;" tabindex="-1">
+        <div class=" modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+
+
+
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <h4 class="modal-title title">Agregar Nuevo Aspecto de Vulnerabilidad</h4>
+            </div>
+
+            <input type="text" id="tipoVulRec" name="tipoVulRec" hidden="hidden" />
+
+            <input type="text" id="Fk_SedeVulRec" name="Fk_SedeVulRec" hidden="hidden" />
+
+
+            <div class="modal-body">
+                <label>Agregar Nuevo Aspecto:</label>
+
+
+                <textarea id="nuevoAspectoVulRec" name="nuevoAspectoVulRec" class="form-control" rows="6" cols="6" style="resize:none" maxlength="996"></textarea>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="boton botonactive" id="GuardarNivelVulRecursos" name="GuardarNivelVulRecursos" onclick="validadNivelVulRecursos();" style="margin-right:2%">Guardar</button>
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+            </div>
+            <br />
+            <br />
+        </div>
+    </div>
+    </div>
+</form>
+
+<form id="formAnalVulSistemasYProcesos" >
+    <div id="myModAnalVulSistemasYProcesos" class="modal fade" role="dialog" style="overflow-y: scroll;" tabindex="-1">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                    <h4 class="modal-title title">Agregar Nuevo Aspecto de Vulnerabilidad</h4>
+                </div>
+
+                <input type="text" id="tipoVulSYP" name="tipoVulSYP" hidden="hidden" />
+
+                <input type="text" id="Fk_SedeVulSYP" name="Fk_SedeVulSYP" hidden="hidden" />
+                <div class="modal-body">
+                    <label>Agregar Nuevo Aspecto:</label>
+
+
+                    <textarea id="nuevoAspectoVulSYP" name="nuevoAspectoVulSYP" class="form-control" rows="6" cols="6" style="resize:none" maxlength="996"></textarea>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="boton botonactive" id="GuardarNivelVulSistemasYProcesos" name="GuardarNivelVulSistemasYProcesos" onclick="validadNivelVulSistemasYProcesos()" style="margin-right:2%">Guardar</button>
+                    <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+                </div>
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+
+<form id="formularioBDPlanAyudaMutua">
+    <!-- Modal -->
+    <div id="myModBDPlanAyuda" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+            
+                <div class="modal-body">
+                    <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                        <h4 class="modal-title title">Agregar Plan de Ayuda</h4>
+                    </div>
+
+
+                    <input type="text" id="Fk_SedePlanAyuda" name="Fk_SedePlanAyuda" hidden="hidden" />
+
+
+                    <div class="modal-body">
+
+                        <div class="row">
+
+                            <div class="col-md-6 form-group">
+                                <label>Empresa Participante</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="empresaParticipante" name="empresaParticipante" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label >Recursos a Disposición:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="recursosDisposicion" name="recursosDisposicion" class="form-control" />
+                           </div>
+
+                            <div class="col-md-6 form-group">
+                                <label> Compesación Económica por uso del Recurso:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="compesacionEconomica" name="compesacionEconomica" class="form-control" />
+                           </div>
+
+                      </div>
+                 <div class="row">
+
+                            <div class="col-md-6 form-group">
+                                <label >Reintegro del Recurso:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="reintegroDelRecurso" name="reintegroDelRecurso" class="form-control" />
+                            </div>
+
+
+                            <div class="col-md-6 form-group">
+                                <label >Nombre de Contacto:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="nombreDelContactoAM" name="nombreDelContactoAM" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Teléfono de contacto:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="telefonoDeContactoAM" name="telefonoDeContactoAM" class="form-control" />
+                            </div>
+                     </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botonactive" id="guardarPlanAyuda" name="guardarPlanAyuda" onclick="validarBDAyuda()" style="margin-right:2%">Guardar</button>
+
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+
+                            </div>
+                        </div>
+
+                </div>
+           </div>
+         </div>
+       </div>
+</form>
+
+<form id="formularioBDExterna">
+    <!-- Modal -->
+    <div id="myModBDExterna" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                        <h4 class="modal-title title">Base de Datos Externa</h4>
+                    </div>
+
+
+                    <input type="text" id="Fk_SedeBDExterna" name="Fk_SedeBDExterna" hidden="hidden" />
+
+
+                    <div class="modal-body">
+
+                       
+                        <div class="row">
+
+                            <div class="col-md-6 form-group">
+                                <label >Entidad:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="entidadBE" name="entidadBE" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Dirección:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="direccionBE" name="direccionBE" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label >Teléfono:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="telefonoBE" name="telefonoBE" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label >Nombre del Contacto:</label>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <input type="text" id="contactoBE" name="contactoBE" class="form-control" />
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="boton botonactive" id="guardarBDExterna" name="guardarBDExterna" onclick="validarBDExterna()" style="margin-right:2%">Guardar</button>
+
+                            <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<form id="formularioBDInterna">
+    <!-- Modal -->
+    <div id="myModBDInterna" class="modal fade" role="dialog" >
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                        <h4 class="modal-title title">Base de Datos Interna</h4>
+                    </div>
+
+
+                    <input type="text" id="Fk_SedeBDInterna" name="Fk_SedeBDInterna" hidden="hidden" />
+
+                    <div class="modal-body">
+
+
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label class="col-md-8">Documento:</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="documentoBI" name="documentoBI" class="form-control"  />  </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" id="buscarSiarp" title="Buscar" class="btn btn-search btn-md" name="buscarSiarp" onclick="obtenerCamposBDInterna()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        
+                          </div>
+
+                        <br />
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-md-7">Nombre:</label>
+                                    <div class="col-md-11">
+                                        <input type="text" id="nombreBI" name="nombreBI" class="form-control" readonly />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-md-7">Sexo:</label>
+                                    <div class="col-md-11">
+                                        <input type="text" id="sexoBI" name="sexoBI" class="form-control" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-md-7">EPS:</label>
+                                    <div class="col-md-11">
+                                        <input type="text" id="epsBI" name="epsBI" class="form-control" readonly />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-md-7">RH:</label>
+                                    <div class="col-md-11">
+                                        <select class="form-control" name="grupoRHBI" id="grupoRHBI">
+                                          
+                                            <option value="">Seleccione...</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                       <h4 style="text-align:center ">Información de contacto</h4>
+                        <hr style="border-top-color:lightslategray; width:97%" />
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-md-11">Nombre del Contacto:</label>
+                                    <div class="col-md-11">
+                                        <input type="text" id="nombreContactoBI" name="nombreContactoBI" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-md-11">Teléfono del Contacto:</label>
+                                    <div class="col-md-11">
+                                        <input type="text" id="telefonoContactoBI" name="telefonoContactoBI" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-md-7">Parentesco:</label>
+                                    <div class="col-md-10">
+                                        <select class="form-control" name="ParentescoBI" id="ParentescoBI">
+                                            <option value="">Seleccione...</option>
+                                            <option value="Abuelo">Abuelo</option>
+                                            <option value="Amigo">Amigo</option>
+                                            <option value="Conyugue">Conyuge</option>
+                                            <option value="Hijo">Hijo</option>
+                                            <option value="Madre">Madre</option>
+                                            <option value="Nieto">Nieto</option>
+                                            <option value="Nuera">Nuera</option>
+                                            <option value="Padre">Padre</option>
+                                            <option value="Primo">Primo</option>
+                                            <option value="Sobrino">Sobrino</option>
+                                            <option value="Suegro">Suegro</option>
+                                            <option value="Tio">Tio</option>
+                                            <option value="Yerno">Yerno</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-md-12">Requiere Manejo Especial:</label>
+                                    <select class="form-control" name="requiereManejoBI" id="requiereManejoBI" onchange="requiereManejo()">
+                                        <option value="">Seleccione...</option>
+                                        <option value="SI">SI</option>
+                                        <option value="NO">NO</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-8" hidden="hidden" id="cualBasInt" name="cualBasInt">
+                                <div class="form-group">
+                                    <label class="col-md-7">Cuál:</label>
+                                    <div class="col-md-11">
+                                        <input type="text" id="CualBI" name="CualBI" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                            
+                        <br />
+                               
+                            <div class="modal-footer">
+                                <button type="button" class="boton botonactive" id="guardarBDInterna" name="guardarBDInterna" onclick="validarBDInterna()" style="margin-right:2%">Guardar</button>
+
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@*modales de eliminar*@
+
+<div id="modEliminarProcedimientosNorm" class=" modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
+                </button>
+                <h4 class="modal-title title">Eliminar Procedimiento Operativo Normalizado</h4>
+            </div>
+            <div class="modal-body" style="color:black">
+                <input type="text" id="eliProcNor" hidden="hidden"/>
+                <center><p>¿Seguro desea eliminar el Procedimiento  Operativo Normalizado?</p></center>
+            </div>
+            <div class="modal-footer">
+     
+                <button type="button" class="boton botonactive" id="eliminarProcOpNorm" name="eliminarProcOpNorm" style="margin-right:2%">Aceptar</button>
+
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modEliminarRecursosFisTec" class=" modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
+                </button>
+                <h4 class="modal-title title">Eliminar Recursos Físico/Técnico</h4>
+            </div>
+            <div class="modal-body" style="color:black">
+                <input type="text" id="eliRecuFis" hidden="hidden" />
+                <center><p>¿Seguro desea eliminar el Recurso Físico/Técnico?</p></center>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="boton botonactive" id="eliminarRecursoFisico" name="eliminarRecursoFisico" style="margin-right:2%">Aceptar</button>
+
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modEliminarRecursosHumanos" class=" modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
+                </button>
+                <h4 class="modal-title title">Eliminar Recursos Humanos</h4>
+            </div>
+            <div class="modal-body" style="color:black">
+                <input type="text" id="eliRecuHum" hidden="hidden" />
+                <center><p>¿Seguro desea eliminar el Recurso Humano?</p></center>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="boton botonactive" id="eliminarRecursoHumano" name="eliminarRecursoHumano" style="margin-right:2%">Aceptar</button>
+
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="modEliminarBDPlanAyuda" class=" modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
+                </button>
+                <h4 class="modal-title title">Eliminar Plan de Ayuda</h4>
+            </div>
+            <div class="modal-body" style="color:black">
+                <input type="text" id="eliPlanAyuda" hidden="hidden" />
+                <center><p>¿Seguro desea eliminar este registro?</p></center>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="boton botonactive" id="eliminarPlanAyuda" name="eliminarPlanAyuda" style="margin-right:2%">Aceptar</button>
+
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modEliminarNivelEmergencia" class=" modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
+                </button>
+                <h4 class="modal-title title">Eliminar Nivel de Emergencia</h4>
+            </div>
+            <div class="modal-body" style="color:black">
+                <input type="text" id="eliNivelEmergencia" hidden="hidden" />
+                <center><p>¿Seguro desea eliminar el nivel de emergencia</p></center>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="boton botonactive" id="eliminarNivelEmergencia" name="eliminarNivelEmergencia" style="margin-right:2%">Aceptar</button>
+
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="modEliminarBDExterna" class=" modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
+                </button>
+                <h4 class="modal-title title">Eliminar Base de datos Externa</h4>
+            </div>
+            <div class="modal-body" style="color:black">
+                <input type="text" id="eliBDExterna" hidden="hidden" />
+                <center><p>¿Seguro desea eliminar este registro</p></center>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="boton botonactive" id="eliminarBDExterna" name="eliminarBDExterna" style="margin-right:2%">Aceptar</button>
+
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modEliminarBDInterna" class=" modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
+                </button>
+                <h4 class="modal-title title">Eliminar Base de datos Interna</h4>
+            </div>
+            <div class="modal-body" style="color:black">
+                <input type="text" id="eliBDInterna" hidden="hidden" />
+                <center><p>¿Seguro desea eliminar este registro</p></center>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="boton botonactive" id="eliminarBDInterna" name="eliminarBDInterna" style="margin-right:2%">Aceptar</button>
+
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="modEliminarFuncYResp" class=" modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
+                </button>
+                <h4 class="modal-title title">Eliminar Funciones y Responsabilidades</h4>
+            </div>
+            <div class="modal-body" style="color:black">
+                <input type="text" id="eliFuncYResp" hidden="hidden" />
+                <center><p>¿Seguro desea eliminar este registro</p></center>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="boton botonactive" id="eliminarFuncYRespons" name="eliminarFuncYRespons" style="margin-right:2%">Aceptar</button>
+
+                <button type="button" class="boton botoncancel" data-dismiss="modal">Cancelar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+@if (ViewBag.esEditado == true)
+{
+    <script type="text/javascript">
+       
+     
+        $(document).ready(function () {
+    
+                var sede = $("#fk_Sede").val();
+                generarNuevo(sede)
+            });
+    </script>
+
+}
+
+@Scripts.Render("~/Scripts/Emergencias/Emergencias.js")
+@Scripts.Render("~/bundles/liderazgoGerencial")

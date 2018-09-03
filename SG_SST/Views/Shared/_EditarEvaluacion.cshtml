@@ -1,0 +1,598 @@
+﻿@model SG_SST.EntidadesDominio.Planificacion.EDCiclo
+<link href="~/Content/Acciones/Acciones.css" rel="stylesheet" />
+<script src="~/Scripts/EvaluacionEstandarMinimo/evaluacion-estandar-minimo.js?n=2"></script>
+<script src="~/Scripts/Planificacion/editar_evaluacion1.js?n=2"></script>
+
+
+@{var totalPaginas = 0; var paginaActual = 1; var ultimaPagina = false; var ultpag = 0; var primpag = 0;}
+@Html.Hidden("Ciclo", Model.Id_Ciclo)
+@Html.Hidden("Ciclo", Model.Estandar.Id_Estandar)
+@Html.Hidden("IdReg", Model.Estandar.SubEstandar.Criterio.Id_Criterio)
+<div class="panel-heading" style="color:black">
+    Editar Estándares Mínimos
+</div>
+
+
+@*Boton de ayuda*@
+<div align="right" style="margin-right:5px;">
+    <div id="ayuda" style="text-align:right">
+        <a href="" data-toggle="modal" id="elIDdelModal" data-target="#@string.Format("modalAyuda")"
+           title="Ayuda" class="btn btn-ayuda btn-md">
+            <i class="glyphicon glyphicon-question-sign"></i>
+        </a>
+        <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                        <h4 class="modal-title title">Ayuda / EDITAR EVALUACIÓN ESTÁNDARES MÍNIMOS</h4>
+                    </div>
+                    <div class="modal-body " style="color:black">
+                        <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Calificar</strong></u></p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Existen tres opciones principales de calificación:<strong>Cumple Totalmente</strong>, <strong>No Cumple</strong>, <strong>No Aplica</strong></p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify"><strong>A. Cumple Totalmente:</strong> Cumple el ítem del estándar</p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify"><strong>B. No Cumple:</strong> No cumple el ítem del estándar y necesita un <strong>plan de mejora (obligatorio)</strong> para alcanzar el cumplimiento de este ítem</p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify"><strong>C. No Aplica:</strong> El ítem del estandar no aplica a la empresa evaluada, puede justificar o no esta condición, pero si ingresa 'justifica' es necesario ingresar la justificación (obligatorio) y si tiene archivos que soporten esa condición adjuntarlos (no obligatorio)</p>
+
+                        <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Guardar calificación</strong></u></p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify">Cuando se ha suministrado la respuesta al ítem del estandar el usuario debe presionar <button type="button" class="boton botonactive" style="cursor:default;">GUARDAR Y CONTINUAR</button> para guardar la respuesta y continuar a la calificación del ítem de calificación actual</p>
+
+                        <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Regresar sin guardar</strong></u></p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify">Presione <button type="button" class="boton botonactive" style="cursor:default;">REGRESAR A EVALUACIÓN</button> para regresar sin guardar y continuar a la calificación del ítem de calificación actual</p>
+
+
+                        <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Plan de mejora</strong></u></p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Cuando el usuario selecciona en la calificación 'No Cumple', un formulario llamado <strong>registrar plan de mejora</strong> es desplegado donde el usuario deberá registrar la actividad, el responsable y la fecha de finalización</p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"><strong>NOTA: la fecha de finalización no puede ser inferior a la fecha actual</strong></p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Presione <button type="button" class="boton botonactive" style="cursor:default;">AGREGAR</button> para agregar una actividad para el plan de mejora</p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify;">Presione  <i class="glyphicon glyphicon-pencil" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para editar una actividad del plan de mejora</p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify;">Presione  <i class="glyphicon glyphicon-erase" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para eliminar una actividad del plan de mejora</p>
+
+
+                        <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Adjuntar un archivo</strong></u></p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify"> Para agregar un archivo, seleccione un archivo y presione <button type="button" class="boton botonactive" style="cursor:default;">ADJUNTAR</button></p>
+                        <p style="margin-bottom:20px;line-height: 200%;text-align:justify;">Presione  <i class="glyphicon glyphicon-erase" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para eliminar un archivo adjunto</p>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="crit_encabezado">
+    <div class="inner_encabezado">
+        <h3>@Model.Nombre</h3>
+        <h4>Estándar @Model.Estandar.Descripcion</h4>
+        <h5>@Model.Estandar.SubEstandar.Descripcion</h5>
+    </div>
+</div>
+<div class="inner_criterios">
+    <div class="form-group">
+        <h4>Numeral @Model.Estandar.SubEstandar.Criterio.Numeral - Marco Legal</h4>
+        <textarea class="textarea-criterios form-control" rows="3" readonly style="resize:vertical; text-align:justify" disabled="disabled">@Model.Estandar.SubEstandar.Criterio.Marco_Legal</textarea>
+    </div>
+    <div class="form-group">
+        <h4>Criterio</h4>
+        <textarea class="textarea-criterios form-control" rows="8" readonly style="resize:vertical; text-align:justify" disabled="disabled">@Model.Estandar.SubEstandar.Criterio.Descripcion</textarea>
+    </div>
+    <div class="form-group">
+        <h4>Modo de Verificación</h4>
+        <textarea class="textarea-criterios form-control" rows="4" readonly style="resize:vertical; text-align:justify" disabled="disabled">@Model.Estandar.SubEstandar.Criterio.Modo_Verificacion</textarea>
+    </div>
+</div>
+<div class="calif_crit">
+    <div class="row">
+        <div class="col-xs-6">
+            <h4>Calificación</h4>
+            <div class="radio">
+                <label>
+                    @{
+                        if (Model.Estandar.SubEstandar.Criterio.Evaluacion.IdValoracionCriterio == 1)
+                        {
+                            <input class="opc-calificacion" type="radio" name="calificacion" id="1" value="option1" checked="checked">
+                        }
+                        else
+                        {
+                            <input class="opc-calificacion" type="radio" name="calificacion" id="1" value="option1">
+                        }
+                    }
+                    Cumple Totalmente
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    @{
+                        if (Model.Estandar.SubEstandar.Criterio.Evaluacion.IdValoracionCriterio == 2)
+                        {
+                            <input class="opc-calificacion nocumple" type="radio" name="calificacion" id="2" value="option2" checked="checked">
+                        }
+                        else
+                        {
+                            <input class="opc-calificacion nocumple" type="radio" name="calificacion" id="2" value="option2">
+                        }
+                    }
+                    No Cumple
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    @{
+                        if (Model.Estandar.SubEstandar.Criterio.Evaluacion.IdValoracionCriterio == 4 || Model.Estandar.SubEstandar.Criterio.Evaluacion.IdValoracionCriterio == 5)
+                        {
+                            <input class="opc-calificacion" type="radio" name="calificacion" id="3" value="option3" checked="checked">
+                        }
+                        else
+                        {
+                            <input class="opc-calificacion" type="radio" name="calificacion" id="3" value="option3">
+                        }
+                    }
+                    No Aplica
+                </label>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="radio_no_aplica col-xs-6 add-top-margin-05em row">
+            <label class="radio-inline">
+                @{
+                    if (Model.Estandar.SubEstandar.Criterio.Evaluacion.IdValoracionCriterio == 4)
+                    {
+                        <input class="opc-opcionnoaplica" type="radio" name="opcionnoaplica" id="4" value="option1" checked="checked">
+                    }
+                    else
+                    {
+                        <input class="opc-opcionnoaplica" type="radio" name="opcionnoaplica" id="4" value="option1">
+                    }
+                }
+                Justifica
+            </label>
+            <label class="radio-inline">
+                @{
+                    if (Model.Estandar.SubEstandar.Criterio.Evaluacion.IdValoracionCriterio == 5)
+                    {
+                        <input class="opc-opcionnoaplica" type="radio" name="opcionnoaplica" id="5" value="option2" checked="checked">
+                    }
+                    else
+                    {
+                        <input class="opc-opcionnoaplica" type="radio" name="opcionnoaplica" id="5" value="option2">
+                    }
+                }
+                No Justifica
+
+            </label>
+
+        </div>
+
+        <div id="justificacion" class="col-xs-12 add-top-margin-05em">
+            <p><h4>Justificación</h4></p>
+            <p><h5>En la sección inferior de esta página puede hacer el cargue de documentos que soporten la justificación</h5></p>
+            @{
+                if (Model.Estandar.SubEstandar.Criterio.Evaluacion.Justificacion != null)
+                {
+                    @Html.TextArea("textarea_justif", @Model.Estandar.SubEstandar.Criterio.Evaluacion.Justificacion.ToString(), new { @class = "form-control", @rows = "3" })
+                }
+                else
+                {
+                    @Html.TextArea("textarea_justif", null, new { @class = "form-control", @rows = "3" })
+                }
+            }
+        </div>
+    </div>
+
+</div>
+@if (Model.ListaCriteriosAnteriores != null)
+{
+    if (Model.ListaCriteriosAnteriores.Count() > 0)
+    {
+        int idCriterio = Model.Estandar.SubEstandar.Criterio.Id_Criterio;
+        int index = 0;
+        for (int i = 0; i < Model.ListaCriteriosAnteriores.Count(); i++)
+        {
+            if (idCriterio == Model.ListaCriteriosAnteriores[i])
+            {
+                index = i;
+            }
+            if (i == Model.ListaCriteriosAnteriores.Count() - 1)
+            {
+                ultpag = Model.ListaCriteriosAnteriores[i];
+            }
+            if (i == 0)
+            {
+                primpag = Model.ListaCriteriosAnteriores[i];
+            }
+        }
+        totalPaginas = Model.ListaCriteriosAnteriores.Count();
+        paginaActual = index + 1;
+        if (totalPaginas == paginaActual) { ultimaPagina = true; }
+        <div class="fromedicion paginado">
+            <div class="inner_paginado">
+            </div>
+        </div>
+    }
+}
+
+        <div class="internal-panel add-bottom-margin-05em mostrar add-top-margin-10em">
+            <div class="internal-panel-header panel-heading">
+                <h4>PLAN DE MEJORA</h4>
+            </div>
+            <div class="internal-panel-body">
+                <div class="row" align="center" style="margin:5px 5px 5px 5px;">
+                    <div class="col-md-12" style="margin-bottom:5px;">
+                        <button class="boton botonactive col-margin" id="btn_agr_actv" data-toggle="modal" data-target="#CrearNuevaActividad">AGREGAR</button>
+                    </div>
+                </div>
+                <div class="row" style="max-height:200px;overflow-y:scroll;margin:5px;">
+
+
+                    <table id="gridacts" class="table table-bordered" style="border: 2px solid lightslategray;margin: 10px 20px 5px 5px;">
+                        <thead>
+                            <tr class="titulos_tabla">
+                                <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                                    <span>Actividad</span>
+                                </th>
+                                <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                                    <span>Responsable</span>
+                                </th>
+                                <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                                    <span>Fecha fin</span>
+                                </th>
+                                <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                                    <span>Editar</span>
+                                </th>
+                                <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                                    <span>Eliminar</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="inner_actividades_agr" class="head-activ">
+                            @{
+                                foreach (var item in Model.Estandar.SubEstandar.Criterio.Evaluacion.Actividades)
+                                {
+                                    <tr class="fila_existente" name=@item.Id_Actividad edicion="existente" estado="sin">
+                                        <td style="border-right: 2px solid lightslategray; vertical-align:middle;text-align:center;font-weight: normal;">@item.Descripcion</td>
+                                        <td style="border-right: 2px solid lightslategray; vertical-align:middle;text-align:center;font-weight: normal;">@item.Responsable</td>
+                                        <td style="border-right: 2px solid lightslategray; vertical-align:middle;text-align:center;font-weight: normal;">@item.FechaFin.ToShortDateString()</td>
+                                        <td style="border-right: 2px solid lightslategray; vertical-align:middle;text-align:center;"><button id=@item.Id_Actividad type="button" edicion="existente" data-id=@item.Id_Actividad class="btn-edit-activ-edit btn-popup-activ btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                        <td style="border-right: 2px solid lightslategray; vertical-align:middle;text-align:center;"><button id=@item.Id_Actividad type="button" edicion="existente" data-id=@item.Id_Actividad class="btn-elim-activ-edit btn-popup-activ btn btn-default btn-sm"><span class="glyphicon glyphicon-erase"></span></button></td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @*Modal actividades*@
+        <div class="fromedicion row add-top-margin-10em" align="center">
+            <div class="col-md-6" style="margin-bottom:5px;">
+                <button onclick="editar_criterioev();" id="editar_ciclo" class="boton botonactive col-margin">GUARDAR Y CONTINUAR</button>
+            </div>
+            <div class="col-md-6" style="margin-bottom:5px;">
+                <button id="regresar" name="@Model.Id_Ciclo" class="regresar boton botonactive col-margin">REGRESAR A EVALUACIÓN</button>
+            </div>
+        </div>
+<div class="fromedicion1 row add-top-margin-10em" align="center" style="display:none;">
+    <div class="col-md-12" style="margin-bottom:5px;">
+        <button onclick="editar_criterioev1();" id="editar_ciclo" class="boton botonactive col-margin">GUARDAR</button>
+    </div>
+</div>
+
+
+
+
+
+        <div id="container_archivos_edit" class="mostrararchivos internal-panel add-bottom-margin-05em add-top-margin-10em">
+            <div class="internal-panel-header panel-heading">
+                <h4>CARGA DE ARCHIVOS PARA JUSTIFICAR - MÁXIMO 3 MB POR ARCHIVO</h4>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 add-top-margin-05em add-bottom-margin-05em">
+                    <div class="form-group">
+                        <div class="col-lg-12"><h5>Seleccione los archivos necesarios que evidencien la justificación</h5></div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 add-bottom-margin-05em">
+                            <div class="form-group">
+                                <div class="col-sm-12"><h6>Estimado usuario, recuerde respetar los derechos de autor y propiedad intelectual al intentar subir una imagen</h6></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6"><input type="file" name="File1" class="btn btn-default btn-sm form-control form-width-100 input-moz-fix" id="input-file-edit" /></div>
+                        <div class="col-sm-6"><button id="btn-add-file-edit" class="boton botonactive">ADJUNTAR</button></div>
+                    </div>
+                </div>
+                <div class="form-group add-side-padding col-sm-12" style="overflow:auto">
+                    <div class="col-sm-12 table-responsive">
+                        <table class="table table-responsive table-bordered" style="border: 2px solid lightslategray;" id="Grid2">
+                            <thead>
+                                <tr class="titulos_tabla">
+                                    <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; width:80%">
+                                        <span>Nombre del Documento</span>
+                                    </th>
+                                    <th style="border-bottom: 2px solid lightslategray; text-align:center">
+                                        <span>Acciones</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="TbodyArchvivos">
+
+                                @if (Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo1 != null)
+                                {
+                                    <tr id="csfile1">
+                                        <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify"> @Model.Estandar.SubEstandar.Criterio.Evaluacion.Filedownload1 </td>
+                                        <td style="vertical-align:middle; text-align:center">
+                                            <a onclick="jsFunction1ed();" id="delete-file1" class="btn btn-sm btn-positiva btnEliminarArchivo" title="Eliminar Archivo" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-erase"></span></a>
+                                            <a onclick="jsFunction11();" id="download-file1" class="btn btn-sm btn-positiva btnEliminarArchivo" title="Descargar Archivo" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-download-alt"></span></a>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo2 != null)
+                                {
+                                    <tr id="csfile2">
+                                        <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify"> @Model.Estandar.SubEstandar.Criterio.Evaluacion.Filedownload2 </td>
+                                        <td style="vertical-align:middle; text-align:center">
+                                            <a onclick="jsFunction2ed();" id="delete-file2" class="btn btn-sm btn-positiva btnEliminarArchivo" title="Eliminar Archivo" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-erase"></span></a>
+                                            <a onclick="jsFunction12();" id="download-file1" class="btn btn-sm btn-positiva btnEliminarArchivo" title="Descargar Archivo" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-download-alt"></span></a>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo3 != null)
+                                {
+                                    <tr id="csfile3">
+                                        <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify"> @Model.Estandar.SubEstandar.Criterio.Evaluacion.Filedownload3 </td>
+                                        <td style="vertical-align:middle; text-align:center">
+                                            <a onclick="jsFunction3ed();" id="delete-file3" class="btn btn-sm btn-positiva btnEliminarArchivo" title="Eliminar Archivo" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-erase"></span></a>
+                                            <a onclick="jsFunction13();" id="download-file1" class="btn btn-sm btn-positiva btnEliminarArchivo" title="Descargar Archivo" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-download-alt"></span></a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div id="div_novedad_archivo">
+                            <span id="msj_novedad_archivo"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Hidden("Archivo1", Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo1)
+            @Html.Hidden("Archivo2", Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo2)
+            @Html.Hidden("Archivo3", Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo3)
+
+            @Html.Hidden("Archivo_s1", Model.Estandar.SubEstandar.Criterio.Evaluacion.Filedownload1)
+            @Html.Hidden("Archivo_s2", Model.Estandar.SubEstandar.Criterio.Evaluacion.Filedownload2)
+            @Html.Hidden("Archivo_s3", Model.Estandar.SubEstandar.Criterio.Evaluacion.Filedownload3)
+
+            @Html.Hidden("Archivo1_c", Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo1)
+            @Html.Hidden("Archivo2_c", Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo2)
+            @Html.Hidden("Archivo3_c", Model.Estandar.SubEstandar.Criterio.Evaluacion.NombreArchivo3)
+        </div>
+
+
+        <div class="modal fade" id="CrearNuevaActividad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content modal-lg">
+                    <div class="modal-header cabecera">
+                        <h3 class="modal-title cabeceratitle" id="exampleModalLabel"><strong>Registrar Plan de Mejora</strong></h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:black;text-shadow:none;opacity:1;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <form id="form_agr_actv">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <input type="hidden" name="IdAusenciaModal" id="IdAusenciaModal" class="form-control" />
+                                        <input type="hidden" name="tipo" id="tipoEdicion" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <label class="lbl-activ">Actividad:</label>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <input type="text" id="Actividad" name="Actividad" class="nueva-activ form-control" placeholder="Actividad...">
+                                        <span class="msg-validacion">Este campo es obligatorio</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <label class="lbl-activ">Responsable:</label>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <input type="text" id="Responsable" name="Responsable" class="resp-actv form-control" placeholder="Responsable...">
+                                        <span class="msg-validacion">Este campo es obligatorio</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <label class="lbl-activ">Fecha fin:</label>
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <div class="form-group">
+                                            <div class="fecha-fin-activ input-group date" id='fecha_fin_actv'>
+                                                <input type='text' id="FechaFin" name="FechaFin" class="input-fecha-fin-actv form-control" />
+                                                <span onclick="ConstruirDatePickerBoton();" class="input-group-addon">
+                                                    <span onclick="ConstruirDatePickerBoton();" class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                            <span class="msg-validacion">Este campo es obligatorio</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="col-lg-12"><b class="texto-sgsst">.</b></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer form-inline">
+                        <div class="form-group">
+                            <input id="idActv" type="hidden" value="0" />
+                            <button type="submit" class="boton botonactive" id="btn_crear_act_edit">Guardar</button>
+                            <button type="submit" class="boton botonactive" id="btn_edit_act_edit" style="display:none;">EDITAR</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<div class="fromedicion internal-panel add-bottom-margin-05em add-top-margin-10em">
+    <div class="row">
+        <div class="col-lg-12 add-top-margin-05em" style="text-align:center;">
+            <br />
+            <button id="regresarinicio" class="regresar1 boton botonactive col-margin">REGRESAR</button>
+        </div>
+    </div>
+</div>
+        <script src="~/Scripts/EvaluacionEstandarMinimo/paginador.js"></script>
+
+
+        <script>
+    $(document).ready(function () {
+
+        var opc= $('input:radio[name="calificacion"]:checked').val();
+        if (opc == "option3") {
+            var radio = $('.radio_no_aplica');
+            radio.css("display", "");
+
+            var opc_no = $('input:radio[name="opcionnoaplica"]:checked').val();
+            if (opc_no == "option1") {
+                var radio_no = $('#justificacion');
+                radio_no.css("display", "");
+            }
+        }
+        var Valoracion = @Model.Estandar.SubEstandar.Criterio.Evaluacion.IdValoracionCriterio;
+        if (Valoracion==2) {
+            $('.mostrar').css('display','');
+        }
+        else {
+            $('.mostrar').css('display','none');
+        }
+
+        if (Valoracion==4) {
+            $('.mostrararchivos').css('display','');
+        }
+        else {
+            $('.mostrararchivos').css('display','none');
+        }
+
+        $('input:radio[name="calificacion"]').change(function () {
+            if (this.value == 'option2') {
+                $('.mostrar').css('display','');
+            }
+            else  {
+                $('.mostrar').css('display','none');
+            }
+        });
+    });
+
+    $('.inner_paginado').bootpag({
+        total: @totalPaginas,
+        page: @paginaActual,
+        maxVisible: 10,
+        leaps: false
+    }).on("page", function(event, num){
+        var valor = event.page;
+
+
+
+    });
+
+
+    //Habilitar estandares anteriores
+
+    var pageArray = new Array();
+    var dataArray = new Array();
+    var paginaArray = new Array();
+    var criterioactual = @Model.Estandar.SubEstandar.Criterio.Id_Criterio;
+    var primeraPag= criterioactual-@paginaActual;
+
+    for (var i = 1; i < @paginaActual; i++) {
+        primeraPag++;
+        pageArray.push(i);
+        dataArray.push(primeraPag);
+    }
+
+    for (var i = 1; i < @paginaActual; i++) {
+        primeraPag++;
+        pageArray.push(i);
+        dataArray.push(primeraPag);
+    }
+
+    for (var i1 =@primpag ; i1 < @ultpag+1; i1++) {
+        paginaArray.push(i1);
+    }
+
+
+    var cont=0;
+    $('.inner_paginado').find('li').each(function(e){
+        var elemento=$(this);
+        elemento.addClass('editpage');
+        var lp=elemento.attr('data-lp');
+        var iNum = parseInt(lp);
+        if (iNum!=null) {
+            elemento.attr('name', iNum);
+        }
+        cont++;
+    });
+    //retirar botón anterior si es la primera página
+    if('@paginaActual' == 1){
+        var cont=0;
+        var stop=0;
+        $('.inner_paginado').find('li').each(function(e){
+            cont++;
+        });
+        $('.inner_paginado').find('li').each(function(e){
+            stop++;
+            if (1==stop) {
+                $(this).hide();
+            }
+        });
+    }
+            //retirar botón siguiente
+            var contult=0;
+            var stopult=0;
+            $('.inner_paginado').find('li').each(function(e){
+                contult++;
+            });
+            $('.inner_paginado').find('li').each(function(e){
+                stopult++;
+                if (contult==stopult) {
+                    $(this).hide();
+                }
+            });
+
+    </script>
+
+        <style>
+            .btn-elim-activ-edit {
+                border: solid #ff7500 0.5px;
+                padding: 7px !important;
+            }
+
+                .btn-elim-activ-edit:hover {
+                    color: #fff !important;
+                    background-color: #ff7500 !important;
+                }
+
+            .btn-edit-activ-edit {
+                border: solid #ff7500 0.5px;
+                padding: 7px !important;
+            }
+
+                .btn-edit-activ-edit:hover {
+                    color: #fff !important;
+                    background-color: #ff7500 !important;
+                }
+        </style>

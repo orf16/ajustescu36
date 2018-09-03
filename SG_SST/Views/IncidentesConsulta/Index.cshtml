@@ -1,0 +1,91 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+<script src="~/Scripts/tinymce/tinymce.min.js"></script>
+
+<style>
+    .noborder {
+        border: none;
+        padding: 4px 4px 4px 4px;
+    }
+</style>
+<ol class="breadcrumb">
+    <li><a href="javascript:void(0)">Reporte e Investigacion</a></li>
+    <li><a href="javascript:void(0)">Investigacion, Incidentes, Accidentes y E.L</a></li>
+    <li class="active">Consultas</li>
+</ol>
+<br />
+<div class="panel panel-default std-panel-body" style="background-color: rgba(196, 202,196, 0.1)">
+    <div class="panel-heading" style="color:white">
+        CONSULTAS
+    </div>
+@{
+    string class_css_header = "style='border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center; vertical-align:middle; text-transform:uppercase'";
+    string class_css_btxt = "style='border-right: 2px solid lightslategray; vertical-align:middle; text-align:center'";
+}
+    <div class="panel-body form-horizontal">
+        <center>
+            <table width="80%" border="0" class="noborder">
+                <tr>
+                    <td class="noborder" width="10%" align="right">Fecha Inicio</td>
+                    <td class="noborder" width="20%"><input type="text" class="form-control" id="fechaini" /></td>
+                    <td class="noborder" width="10%" align="right">Fecha Fin</td>
+                    <td class="noborder" width="20%"><input type="text" class="form-control" id="fechafin" /></td>
+                </tr>
+                <tr class="noborder">
+                    <td class="noborder">&nbsp;</td>
+                    <td class="noborder">&nbsp;</td>
+                    <td class="noborder">&nbsp;</td>
+                    <td class="noborder">&nbsp;</td>
+                </tr>
+                <tr class="noborder">
+                    <td colspan="3" class="noborder">
+                        <table width="100%" border="0" class="noborder">
+                            <tr class="noborder">
+                                <td class="noborder" width="10%">Incidente</td>
+                                <td class="noborder" width="10%"><input type="radio" class="checkbox" name="op1" id="incidente" /></td>
+                                <td class="noborder" width="10%">Accidente</td>
+                                <td class="noborder" width="10%"><input type="radio" class="checkbox" name="op1" id="accidente" /></td>
+                                <td class="noborder" width="25%">Enfermerdad Laboral</td>
+                                <td class="noborder" width="10%"><input type="radio" class="checkbox" name="op1" id="enfermedad" /> </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="noborder"><button type="button" class="boton botonactive" onclick="Consultar();" style="margin-right:2%">Consultar</button></td>
+                </tr>
+                <tr class="noborder">
+                    <td class="noborder">&nbsp;</td>
+                    <td class="noborder">&nbsp;</td>
+                    <td class="noborder">&nbsp;</td>
+                    <td class="noborder">&nbsp;</td>
+                </tr>
+            </table>
+            <br />
+            <table id="gridconsulta" class="table table-bordered" style="border: 2px solid lightslategray; width:60%;">
+                <thead style="border-left:2px solid lightslategray;">
+                    <tr class="titulos_tabla">
+                        <th @class_css_header>Tipo Investigacion</th>
+                        <th @class_css_header>Fecha de Registro</th>
+                        <th @class_css_header>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody style="border-left:2px solid lightslategray;">
+                    <tr>
+                        <td @class_css_btxt>&nbsp;</td>
+                        <td @class_css_btxt>&nbsp;</td>
+                        <td @class_css_btxt>&nbsp;</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </center>
+    </div>
+</div>
+
+<br />
+@Scripts.Render("~/Scripts/Incidentes/Consultas.js")

@@ -1,0 +1,95 @@
+﻿@model List<SG_SST.Models.AdminUsuarios.EmpresaAsesorSSTModel>
+@if (Model != null && Model.Count() > 0)
+{
+    <ul>
+        @foreach (var emp in Model)
+        {
+        <li>
+            @Html.RadioButtonFor(x => emp.Activo, false, new { @Id = emp.IdEmpresa.ToString(), @Name = "radio_emp", @data_radio = "radio_emp", @data_rol = emp.CodRol.ToString() })
+            <label>@emp.RazonSocial</label>
+            <br />
+        </li>
+        }
+    </ul>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //por defecto se elimina la seleccion de los radio button
+        $('input[type="radio"][data-radio="radio_emp"]').each(function () {
+            $(this).prop('checked', false);
+        });
+        //se obtienen los recursos asociados al usuario y empresa
+        $('input[type="radio"][data-radio="radio_emp"]').on('change', function () {
+            if ($(this).is(':checked')) {
+                var idEmpresa = $(this).attr('id');
+                var rolSistemaEscogido = $(this).data('rol');
+                var documentoAsesorSST = $('#NumDocumentoAsesorSST').val();
+                if (rolSistemaEscogido != '' && idEmpresa > 0) {
+                    PopupPosition();
+                    $.ajax({
+                        url: urlBase + urlUsuario + '/ObtenerRecursosSistemaParaAccesos',
+                        data: { 'codRol': rolSistemaEscogido, 'codEmpresa': idEmpresa, 'documentoAsesorSST': documentoAsesorSST },
+                        type: 'post'
+                    }).done(function (response) {
+                        if (response != '' && response.Status == 'OK') {
+                            $('.titulo_rec').css('display', 'block');
+                            $('#recursos_sx').html('');
+                            $('#recursos_sx').html(response.Data);
+                        } else {
+                            swal({
+                                title: 'Atención',
+                                text: response.Data,
+                                type: 'warnig',
+                                confirmButtonColor: "#7E8A97",
+                                confirmButtonText: "OK",
+                                closeOnConfirm: false,
+                                closeOnCancel: false,
+                                html: true
+                            }, function () {
+                                window.location.href = '../Home/Index';
+                            });
+                        }
+                        OcultarPopupposition();
+                    }).fail(function (response) {
+                        swal({
+                            title: 'Atención',
+                            text: 'Ocurrió un error el proceso. Intente nuevamente.',
+                            type: 'warnig',
+                            confirmButtonColor: "#7E8A97",
+                            confirmButtonText: "OK",
+                            closeOnConfirm: false,
+                            closeOnCancel: false,
+                            html: true
+                        }, function () {
+                            window.location.href = '../Home/Index';
+                        });
+                        OcultarPopupposition();
+                    });
+                } else {
+                    swal({
+                        title: 'Atención',
+                        text: 'Debe seleccionar un Rol y una Empresa para poder continuar.',
+                        type: 'warning',
+                        confirmButtonColor: "#7E8A97",
+                        confirmButtonText: "OK",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    });
+                    return false;
+                }
+            }
+            else {
+                swal({
+                    title: 'Atención',
+                    text: 'Debe seleccionar un Empresa para poder continuar.',
+                    type: 'warning',
+                    confirmButtonColor: "#7E8A97",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                });
+                return false;
+            }
+        });
+    });
+</script>

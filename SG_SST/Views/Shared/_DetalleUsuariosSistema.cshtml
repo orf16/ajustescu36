@@ -1,0 +1,178 @@
+﻿@model List<SG_SST.Models.Usuarios.UsuarioModel>
+@if (Model != null && Model.Count() > 0)
+{
+    <div class="row form-group listado-ausencias" style="overflow-x:scroll">
+        <h2>Usuarios del sistema</h2>
+        <table class="table table-bordered" id="tblausentismos" style="font-size:x-small; border: 2px solid lightslategray">
+            <thead>
+                <tr class="titulos_tabla">
+                    <th>Tipo Documento Empleador</th>
+                    <th>Documento Empleador</th>
+                    <th>Razón Social</th>
+                    <th>Sede</th>
+                    <th>Tipo Documento Usuario</th>
+                    <th>Documento Usuario</th>
+                    <th>Nombre </th>
+                    <th>Apellidos</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Fecha de inicio</th>
+                    <th>Fecha de finalización</th>
+                    <th>Estado</th>
+                    <th>Editar</th>
+                    <th>Guardar</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var a in Model)
+                {
+                    <tr id="@a.IdUsuarioSistema">
+                        <td hidden>@Html.DisplayName(a.IdUsuarioSistema.ToString())</td>
+                        <td id="tdemplea_@a.IdUsuarioSistema">@string.Format("{0}", a.TipoDocumentoSiglaEmpresa)</td>
+                        <td id="docempleador_@a.IdUsuarioSistema">@string.Format("{0}", a.DocumentoEmpresa)</td>
+                        <td id="rsocial_@a.IdUsuarioSistema">@string.Format("{0}", a.RazonSocial)</td>
+                        <td id="sede_@a.IdUsuarioSistema">@string.Format("{0}", a.MunicipioSedePpalEmpresa)</td>
+                        <td id="tdusuario_@a.IdUsuarioSistema">@string.Format("{0}", a.TipoDocumentoSigla)</td>
+                        <td id="docusuario_@a.IdUsuarioSistema">@string.Format("{0}", a.Documento)</td>
+                        <td id="nombre_@a.IdUsuarioSistema">@string.Format("{0}", a.Nombres)</td>
+                        <td id="apellido_@a.IdUsuarioSistema">@string.Format("{0}", a.Apellidos)</td>
+                        <td id="correo_@a.IdUsuarioSistema">@string.Format("{0}", a.Correo)</td>
+                        <td id="rol_@a.IdUsuarioSistema">@string.Format("{0}", a.RolUsuario)</td>
+                        @if (a.ConfigurarDatosAdicionalesUsuariosModel.FechaInicioContrato == "01/01/0001")
+                        {
+                            <td></td>
+                            <td></td>
+                        }
+                        else
+                        {
+                            <td>
+                                @a.ConfigurarDatosAdicionalesUsuariosModel.FechaInicioContrato
+                            </td>
+                            <td>
+                                @a.ConfigurarDatosAdicionalesUsuariosModel.FechaFinContrato
+                            </td>
+                        }
+                        <td id="estado_@a.IdUsuarioSistema">
+                            @string.Format("{0}", a.NombreEstado)
+                        </td>
+                        <td id="estado2_@a.IdUsuarioSistema" style="display:none">
+                            @Html.DropDownListFor(x => a.IdEstado, a.EstadosUsuario, new { @style = "width:120px;", @class = "form-control cambioestado" + @a.IdUsuarioSistema })
+                        </td>
+                        <td id="@a.IdUsuarioSistema">
+                            <button type="button" id="ideditar_" style="min-width: 90px !important; padding: 2px 13px 0px 2px; font-size: xx-small !important;" class="boton botoninfo EditarBtn">Editar</button>
+                            @*<a href="javascript:void(0)" id="ideditar" class="EditarBtn" >
+                                    Editar
+                                </a>*@
+                        </td>
+                        <td id="@a.IdUsuarioSistema">
+                            <button type="button" id="guardar_@a.IdUsuarioSistema" disabled="disabled" style="min-width: 105px !important; padding: 2px 15px 0px 2px; font-size: xx-small !important;" class="boton botonactive GuardarBtn">Guardar</button>
+                            @*<a href="javascript:void(0)" class="GuardarBtn" >
+                                    Guardar
+                                </a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <input type="hidden" name="id" id="id" value="1" />
+        <div class="text-center">
+            <ul class="pagination">
+
+                <li id="traerpaginado_0"><a href="javascript:paginaInicial();">&laquo;</a></li>
+                @if (ViewBag.PageCount != null)
+                {
+                    if (ViewBag.PageCount > 0)
+                    {
+                        for (int i = 1; i <= ViewBag.PageCount; i++)
+                        {
+                            <li id="traerpaginado_@i"><a href="javascript:SiguientePagina(@i);">@i</a></li>
+                        }
+                    }
+                }
+                <li id="traerpaginado_@ViewBag.PageCount"><a href="javascript:SiguientePagina(@ViewBag.PageCount);">&raquo;</a></li>
+            </ul>
+        </div>
+    </div>
+}
+
+@{
+    <script>
+        var urlBase = utils.getBaseUrl();
+        var urlUsuario = '/AdminUsuarios';
+
+        $(document).ready(function () {
+            console.log('1')
+            $(".EditarBtn").click(function () {
+                var id = $(this).parent().attr('id');
+                var estado = $(this).parents("tr").find("#estado_" + id).html();
+                $(this).parents("tr").find("#estado_" + id).hide();
+                $(this).parents("tr").find("#estado2_" + id).show();
+                $(this).parents("tr").find("#guardar_" + id).prop("disabled", false);
+            });
+
+            $(".GuardarBtn").click(function () {
+                var id = $(this).parent().attr('id');
+                var valor = $('.cambioestado' + id).val();
+                PopupPosition();
+                $.ajax({
+                    type: "post",
+                    url: urlBase + urlUsuario + '/ActualizarUsuarioSistema',
+                    data: { idEstado: valor, idUsuario: id }
+                }).done(function (response) {
+                    if (response != undefined && response.Data != '' && response.Mensaje == 'Success') {
+                        swal({
+                            type: 'success',
+                            title: 'Estimado Usuario',
+                            text: response.Data,
+                            confirmButtonColor: '#7E8A97',
+                            confirmButtonText: "Aceptar",
+                        });
+
+                        var idEstado = 0;
+                        var nitEmpresa = 0;
+                        var i = 0;
+                        $.ajax({
+                            type: "POST",
+                            data: { idEstado: idEstado, NitEmpresa: nitEmpresa, numPagina: i },
+                            url: urlBase + urlUsuario + '/ConsultaUsuariosSistema'
+                        }).done(function (response) {
+                            if (response != undefined && response != '' && response.Mensaje == 'Success') {
+                                $('#Contenedor').empty();
+                                $('#Contenedor').html(response.Data);
+                            }
+                            else if (response.Mensaje == 'Fail') {
+                                swal({
+                                    type: 'warning',
+                                    title: 'Estimado Usuario',
+                                    text: 'No existen datos registros para los parametros de busqueda.',
+                                    confirmButtonColor: '#7E8A97',
+                                    confirmButtonText: "Aceptar",
+                                });
+                                $('#Contenedor').empty();
+                            }
+                            OcultarPopupposition();
+                        }).fail(function (response) {
+                            console.log("Error en la peticion: " + response.Data);
+                            OcultarPopupposition();
+                        });
+                    }
+                    else if (response.Mensaje == 'Fail') {
+                        swal({
+                            type: 'warning',
+                            title: 'Estimado Usuario',
+                            text: response.Data,
+                            confirmButtonColor: '#7E8A97',
+                            confirmButtonText: "Aceptar",
+                        });
+                        $('#Contenedor').empty();
+                    }
+                }).fail(function (response) {
+                    console.log("Error en la peticion: " + response.Data);
+                    OcultarPopupposition();
+                });
+            });
+        });
+
+    </script>
+}

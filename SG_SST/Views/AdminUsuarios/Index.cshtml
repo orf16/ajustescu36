@@ -1,0 +1,66 @@
+﻿@model SG_SST.Models.AdminUsuarios.AdministrarUsuariosModel
+    @{ Layout = null;}
+<title>Administración de usuarios</title>
+<link rel="shortcut icon" href="~/Images/IcoAlissta.ico" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+<link href="~/Content/miga-de-pan.css" rel="stylesheet" />
+<link href="~/Content/css/specialbuttons.css" rel="stylesheet" />
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<link href="~/Content/css/sweetalert.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-1.11.1.min.js"></script>
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/utils.js"></script>
+<script src="~/js/sweetalert.min.js"></script>
+<script src="~/Scripts/Transversal/generales.js"></script>
+
+<div class="container container-index header-alissta" style="height:26px;">
+    <div class="col-md-2 logo-empresa col-xs-6">
+        <img src="~/Images/water-mark-no-logo.png" alt="watermark-alissta" class="center-block" style="height:54px;">
+    </div>
+    <div class="col-md-3 col-md-offset-7 logo-alissta text-center col-xs-5">
+        <img src="~/Images/alissta-logo.png" alt="logo alissta">
+    </div>
+</div>
+<div class="panel panel-default" id="contenido" style="margin:53px; background-color: rgba(196, 202,196, 0.1)">
+    <div class="panel-heading" style="color:black">
+        Seleccione un Rol para solicitar su Usuario. 
+    </div>
+    @using (Html.BeginForm("Index", "AdminUsuarios", FormMethod.Post, new { @id = "formSelRol", @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel-body form-horizontal">
+            <div class="row form-group">
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-3">
+                    @Html.Label("Seleccion el Rol del Usuario a crear:", new { @class = "control-label" })
+                </div>
+                <div class="col-xs-3">
+                    @Html.DropDownListFor(x => x.IdRolSeleccionado, Model.RolesRegistrados, "Seleccione una opción...", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.IdRolSeleccionado, string.Empty, new { @class = "error" })
+                </div>
+                </div>
+            <div class="row form-group">
+                </div>
+            <div class="row form-group">
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="boton botonactive">Siguiente</button>
+                </div>
+                <div class="col-md-1">
+                    @Html.ActionLink("Ir a Inicio", "Index", "Home", null, new { @class = "boton botoncancel" })
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#formSelRol').on('submit', function (evt) {
+        evt.preventDefault();
+        $('#formSelRol select option:selected').val();
+        this.submit();
+                });
+});
+</script>

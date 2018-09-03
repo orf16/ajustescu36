@@ -1,0 +1,1175 @@
+﻿
+@model SG_SST.EntidadesDominio.Planificacion.EDEvaluacionEmpresa
+
+@{
+    ViewBag.Title = "Ver Evaluación Estándares Mínimos";
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+<link href="~/Content/Acciones/Acciones.css" rel="stylesheet" />
+<script src="~/Scripts/flaviusmatis-simplePagination.js-e32c66e/jquery.simplePagination.js"></script>
+<script src="~/Scripts/Chart.js"></script>
+
+<style>
+    .infogen {
+        font-size: 18px;
+    }
+
+    .nomostrar {
+        display: none;
+    }
+
+    .mostrar {
+    }
+</style>
+<script>
+    $(document).ready(function () {
+
+        $('#button1').on('click', function () {
+            var table=$('#tbl_1');
+            var table1=$('#tbl_2');
+            var table2=$('#tbl_3');
+            var table3=$('#tbl_4');
+
+            table.removeClass("table table-bordered nomostrar").addClass("table table-bordered mostrar");
+            table1.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table2.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table3.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+        });
+
+        $('#button2').on('click', function () {
+            var table=$('#tbl_1');
+            var table1=$('#tbl_2');
+            var table2=$('#tbl_3');
+            var table3=$('#tbl_4');
+
+            table1.removeClass("table table-bordered nomostrar").addClass("table table-bordered mostrar");
+            table.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table2.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table3.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+        });
+        $('#button3').on('click', function () {
+            var table=$('#tbl_1');
+            var table1=$('#tbl_2');
+            var table2=$('#tbl_3');
+            var table3=$('#tbl_4');
+
+            table2.removeClass("table table-bordered nomostrar").addClass("table table-bordered mostrar");
+            table.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table1.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table3.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+        });
+        $('#button4').on('click', function () {
+            var table=$('#tbl_1');
+            var table1=$('#tbl_2');
+            var table2=$('#tbl_3');
+            var table3=$('#tbl_4');
+
+            table3.removeClass("table table-bordered nomostrar").addClass("table table-bordered mostrar");
+            table.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table1.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table2.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+        });
+    });
+    $(document).ready(function () {
+        $('#regresar').on('click', function () {
+            window.location.href = "/EvaluacionEstandarMinimo/inicio"
+        });
+    });
+
+    $(document).ready(function () {
+        var modal = document.getElementById('myModal');
+        var span = document.getElementById("close_modal");
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+        document.addEventListener('keyup', function (e) {
+            if (e.keyCode == 27) {
+                modal.style.display = "none";
+            }
+        });
+    });
+    $(function () {
+        $(".btn-archivos").click(function () {
+            $('#tabla_modal').html('');
+            var button = $(this);
+
+            $('#justificacion').val(null);
+            $('#justificacion').text(null);
+
+            $("#Archivo1").val(null);
+            $("#Archivo_s1").val(null);
+
+            $("#Archivo2").val(null);
+            $("#Archivo_s2").val(null);
+
+            $("#Archivo3").val(null);
+            $("#Archivo_s3").val(null);
+
+            $("#IdReg").val(null);
+            $("#Ciclo").val(null);
+
+            var Idval = $('#Idval').val();
+            var IdElem = button.attr('elem');
+            var IdCiclo = button.attr('name');
+
+            var nombres_down= new Array();
+            var nombres = new Array();
+            //Ajax para buscar modelo guardar info en los dos array
+            var stringArray = new Array();
+            stringArray[0] = Idval;
+            stringArray[1] = IdElem;
+            stringArray[2] = IdCiclo;
+            var postData = { values: stringArray };
+            var contarchivos = 0;
+            PopupPosition();
+            $.ajax({
+                type: "POST",
+                url: "/EvaluacionEstandarMinimo/listaArchivos",
+                data: postData,
+                success: function (data) {
+                    if (data.probar) {
+                        OcultarPopupposition();
+                        var htmltable = '<table id="grid1" class="table table-bordered" style="border: 2px solid lightslategray"><thead><tr class="titulos_tabla"><th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;"><span>Nombre Archivo</span></th><th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;"><span>Acción</span></th></tr></thead><tbody></tbody></table>';
+                        $('#tabla_modal').append(htmltable);
+
+                        var table_id = document.getElementById('grid1');
+                        table_id.style.display = "none";
+
+                        if (data.NombreArchivoBd[0]!=null) {
+                            if (data.NombreArchivoBd[0] != '') {
+
+                                $("#Archivo1").val(data.NombreArchivoBd1[0]);
+                                $("#Archivo_s1").val(data.NombreArchivoBd[0]);
+                                $("#IdReg").val(IdElem);
+                                $("#Ciclo").val(IdCiclo);
+
+                                table_id.style.display = "table";
+                                var html = "<tr id=\"csfile1\">";
+                                html += "<td style=\"border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify\">" + data.NombreArchivoBd[0] + "</td>";
+                                html += "<td style=\"vertical-align:middle; text-align:center\">" + "<a name1=\""+Idval+"\" name2=\""+IdElem+"\" name3=\""+IdCiclo+"\" style=\"height:35px;margin-bottom:5px;margin-left:2px\" onclick=\"jsFunction11();\" id=\"donwload-file1\" class=\"btn btn-sm btn-positiva btndescargar\" title=\"Descargar Archivo\"><span class=\"glyphicon glyphicon-download-alt\"></span></a>" + "</td>";
+                                $("#grid1 tbody").append(html);
+                            }
+                            else {
+                                contarchivos++;
+                            }
+                        }
+                        else {
+                            contarchivos++;
+                        }
+                        if (data.NombreArchivoBd[1] != null) {
+                            if (data.NombreArchivoBd[1] != '') {
+
+                                $("#Archivo2").val(data.NombreArchivoBd1[1]);
+                                $("#Archivo_s2").val(data.NombreArchivoBd[1]);
+                                $("#IdReg").val(IdElem);
+                                $("#Ciclo").val(IdCiclo);
+
+                                table_id.style.display = "table";
+                                var html = "<tr id=\"csfile1\">";
+                                html += "<td style=\"border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify\">" + data.NombreArchivoBd[1] + "</td>";
+                                html += "<td style=\"vertical-align:middle; text-align:center\">" + "<a name1=\"" + Idval + "\" name2=\"" + IdElem + "\" name3=\"" + IdCiclo + "\" style=\"height:35px;margin-bottom:5px;margin-left:2px\" onclick=\"jsFunction12();\" id=\"donwload-file1\" class=\"btn btn-sm btn-positiva btndescargar\" title=\"Descargar Archivo\"><span class=\"glyphicon glyphicon-download-alt\"></span></a>" + "</td>";
+                                $("#grid1 tbody").append(html);
+                            }
+                            else {
+                                contarchivos++;
+                            }
+                        }
+                        else {
+                            contarchivos++;
+                        }
+                        if (data.NombreArchivoBd[2] != null) {
+                            if (data.NombreArchivoBd[2] != '') {
+
+                                $("#Archivo3").val(data.NombreArchivoBd1[2]);
+                                $("#Archivo_s3").val(data.NombreArchivoBd[2]);
+                                $("#IdReg").val(IdElem);
+                                $("#Ciclo").val(IdCiclo);
+
+
+                                table_id.style.display = "table";
+                                var html = "<tr id=\"csfile1\">";
+                                html += "<td style=\"border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify\">" + data.NombreArchivoBd[2] + "</td>";
+                                html += "<td style=\"vertical-align:middle; text-align:center\">" + "<a name1=\"" + Idval + "\" name2=\"" + IdElem + "\" name3=\"" + IdCiclo + "\" style=\"height:35px;margin-bottom:5px;margin-left:2px\" onclick=\"jsFunction13();\" id=\"donwload-file1\" class=\"btn btn-sm btn-positiva btndescargar\" title=\"Descargar Archivo\"><span class=\"glyphicon glyphicon-download-alt\"></span></a>" + "</td>";
+                                $("#grid1 tbody").append(html);
+                            }
+                            else {
+                                contarchivos++;
+                            }
+                        }
+                        else {
+                            contarchivos++;
+                        }
+
+                        if (contarchivos==3) {
+                            table_id.style.display = "table";
+                            var html = "<tr  id=\"csfile1\">";
+                            html += "<td colspan=\"2\" style=\"border-right: 2px solid lightslategray; vertical-align:middle; text-align:center\"><span>No existen archivos adjuntos</span></td>";
+                            $("#grid1 tbody").append(html);
+                        }
+
+                        if (data.justificacion!=null) {
+                            $('#justificacion').val(data.justificacion);
+                            $('#justificacion').text(data.justificacion);
+                        }
+
+
+                    }
+                    else {
+                        console.log(data.resultado);
+                    }
+                },
+                dataType: "json",
+                traditional: true
+            });
+
+
+            //$("#Nombre_EPP").empty();
+
+            //$("#val-error").css("display", "none");
+            //$("#val-error").text('');
+
+            var modal = document.getElementById('myModal');
+
+            //var row = $(this).attr('name');
+           // var NombreEPP = $(this).attr('nameEPP');
+           // $("#Nombre_EPP").append(NombreEPP);
+          //  $('#IdTabla').val(row.toString());
+         //   var IdTabla = 'TablaCargoEPP ' + row;
+        //    var TablaElegida = document.getElementById(IdTabla);
+         //   $('#tabla_modal').html($(TablaElegida).html());
+            //$(TablaElegida).contents().appendTo('#tabla_modal');
+            modal.style.display = "block";
+        });
+    });
+
+    $(document).ready(function () {
+        var modal = document.getElementById('myModal1');
+        var span = document.getElementById("close_modal1");
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+        document.addEventListener('keyup', function (e) {
+            if (e.keyCode == 27) {
+                modal.style.display = "none";
+            }
+        });
+    });
+    $(function () {
+        $(".btn-actividades").click(function () {
+            $('#tabla_modal1').html('');
+            var button = $(this);
+            var stringArray = new Array();
+
+            var Idval = $('#Idval').val();
+            var IdElem = button.attr('elem');
+            var IdCiclo = button.attr('name');
+
+            stringArray[0] = Idval;
+            stringArray[1] = IdElem;
+            stringArray[2] = IdCiclo;
+            var postData = { values: stringArray };
+            PopupPosition();
+            $.ajax({
+                type: "POST",
+                url: "/EvaluacionEstandarMinimo/listaPlanMejora",
+                data: postData,
+                success: function (data) {
+                    if (data.probar) {
+                        OcultarPopupposition();
+                        var htmltable = '<table id="grid2" class="table table-bordered" style="border: 2px solid lightslategray"><thead><tr class="titulos_tabla"><th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;"><span>Actividad</span></th><th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;"><span>Responsable</span></th><th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;"><span>Fecha Finalización</span></th></tr></thead><tbody></tbody></table>';
+                        $('#tabla_modal1').append(htmltable);
+                        var table_id = document.getElementById('grid2');
+                        table_id.style.display = "none";
+
+                        if (data.Listaplan != null) {
+                            table_id.style.display = "table";
+                            $.each(data.Listaplan, function (i, val) {
+                                var Descripcion = val.Descripcion;
+                                var Responsable = val.Responsable;
+                                var FechaFinString = val.FechaFinString;
+                                JSON.stringify(Descripcion);
+                                JSON.stringify(Responsable);
+                                JSON.stringify(FechaFinString);
+                                var html = "<tr id=\"planmej\">";
+                                html += "<td style=\"border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify\">" + Descripcion + "</td>";
+                                html += "<td style=\"border-right: 2px solid lightslategray; vertical-align:middle; text-align:justify\">" + Responsable + "</td>";
+                                html += "<td style=\"vertical-align:middle; text-align:center\">" + FechaFinString + "</td>";
+                                $("#grid2 tbody").append(html);
+
+                            });
+
+
+                        }
+
+
+                    }
+                    else {
+                        console.log(data.resultado);
+                    }
+                },
+                dataType: "json",
+                traditional: true
+            });
+
+            var modal = document.getElementById('myModal1');
+            modal.style.display = "block";
+        });
+    });
+
+
+    //Descargar Archivo
+    function jsFunction11() {
+        var stringArray = new Array();
+        stringArray[0] = $("#Archivo1").val();
+        stringArray[1] = $("#Archivo_s1").val();
+
+        stringArray[2] = $("#IdReg").val();
+        stringArray[3] = "1";
+        stringArray[4] = $("#Idval").val();
+        stringArray[5] = $("#Ciclo").val();
+
+        var postData = { values: stringArray };
+        PopupPosition();
+        $.ajax({
+            type: "POST",
+            url: "/EvaluacionEstandarMinimo/DescargarArchivo",
+            data: postData,
+            dataType: "json",
+            traditional: true,
+            success: function (data) {
+                OcultarPopupposition();
+                if (data.probar == false) {
+
+                }
+                else {
+                    window.location.href = "/EvaluacionEstandarMinimo/Download?Nombre=" + data.NombreArchivo + "&Proviene=" + data.proviene + "&Numero=1" + "&Ndownload=" + data.nombre_download + "&ruta=" + data.ruta;
+
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OcultarPopupposition();
+            }
+        });
+    }
+    function jsFunction12() {
+        var stringArray = new Array();
+
+        stringArray[0] = $("#Archivo2").val();
+        stringArray[1] = $("#Archivo_s2").val();
+        stringArray[2] = $("#IdReg").val();
+        stringArray[3] = "2";
+        stringArray[4] = $("#Idval").val();
+        stringArray[5] = $("#Ciclo").val();
+
+
+
+        var postData = { values: stringArray };
+        PopupPosition();
+        $.ajax({
+            type: "POST",
+            url: "/EvaluacionEstandarMinimo/DescargarArchivo",
+            data: postData,
+            dataType: "json",
+            traditional: true,
+            success: function (data) {
+                OcultarPopupposition();
+                if (data.probar == false) {
+
+                }
+                else {
+                    window.location.href = "/EvaluacionEstandarMinimo/Download?Nombre=" + data.NombreArchivo + "&Proviene=" + data.proviene + "&Numero=1" + "&Ndownload=" + data.nombre_download + "&ruta=" + data.ruta;
+
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OcultarPopupposition();
+            }
+        });
+    }
+    function jsFunction13() {
+        var stringArray = new Array();
+        stringArray[0] = $("#Archivo3").val();
+        stringArray[1] = $("#Archivo_s3").val();
+        stringArray[2] = $("#IdReg").val();
+        stringArray[3] = "3";
+        stringArray[4] = $("#Idval").val();
+        stringArray[5] = $("#Ciclo").val();
+        var postData = { values: stringArray };
+        PopupPosition();
+        $.ajax({
+            type: "POST",
+            url: "/EvaluacionEstandarMinimo/DescargarArchivo",
+            data: postData,
+            dataType: "json",
+            traditional: true,
+            success: function (data) {
+                OcultarPopupposition();
+                if (data.probar == false) {
+
+                }
+                else {
+                    window.location.href = "/EvaluacionEstandarMinimo/Download?Nombre=" + data.NombreArchivo + "&Proviene=" + data.proviene + "&Numero=1" + "&Ndownload=" + data.nombre_download + "&ruta=" + data.ruta;
+
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OcultarPopupposition();
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        $("#_planAccion").on('click', function (event) {
+            console.log('11');
+            var Idval = $('#Idval').val();
+            PopupPosition();
+            $.ajax({
+                url: '/EvaluacionEstandarMinimo/PlanDeAccion',
+                data: '{ideval: "' + Idval + '" }',
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                cache: false,
+                dataType: "json"
+            }).done(function (response) {
+                if (response.Mensaje == 'OK') {
+                    $('#containeplanaccion').empty();
+                    $('#containeplanaccion').html(response.Data);
+                    $('#PlanAccionModal').modal('show');
+                }
+                else {
+                    swal({
+                        title: "Atención",
+                        text: 'No existen planes de mejora disponibles para esta evaluación',
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "OK",
+                        type: "warning",
+                        closeOnConfirm: true
+                    })
+                }
+                OcultarPopupposition();
+            }).fail(function (response) {
+                OcultarPopupposition();
+            });
+        });
+        $('#inf_final').on('click', function (e) {
+
+            var cargado = $('#cargado').val();
+
+            if (cargado!="cargado") {
+                console.log('10');
+                var ideval = $('#Idval').val();
+                PopupPosition();
+                $.ajax({
+                    type: "POST",
+                    url: '/EvaluacionEstandarMinimo/ObtenerInformeFinal',
+                    data: '{ideval: "' + ideval + '" }',
+                    contentType: "application/json; charset=utf-8",
+                    cache: false,
+                    dataType: "json",
+                }).done(function (response) {
+                    if (response != undefined && response.Mensaje == 'OK') {
+                        $('#container_est_min').empty();
+                        $('#container_est_min').html(response.Datos);
+                        $("#remover1").remove();
+                        $("#remover1").empty();
+                        $("#remover2").remove();
+                        $("#remover2").empty();
+                        $("#remover3").remove();
+                        $("#remover3").empty();
+                        $('#cargado').val('cargado');
+                    }
+                    OcultarPopupposition();
+                }).fail(function (response) {
+                    OcultarPopupposition();
+                });
+            }
+            
+            
+        });
+        $('#btn_inf_parcial').on('click', function () {
+
+        });
+
+        $('#informe').on('click', function () {
+            var cargado = $('#cargado').val();
+            if (cargado != "cargado") {
+                var menu = $('#menu3');
+                var estado = menu.attr('name');
+                if (estado == '1') {
+                    console.log('9');
+                    var ideval = $('#Idval').val();
+                    PopupPosition();
+                    $.ajax({
+                        type: "POST",
+                        url: '/EvaluacionEstandarMinimo/ObtenerInformeParcial',
+                        data: '{ideval: "' + ideval + '" }',
+                        contentType: "application/json; charset=utf-8",
+                        cache: false,
+                        dataType: "json",
+                    }).done(function (response) {
+                        if (response != undefined && response.Mensaje == 'OK') {
+                            $('#container_est_min').empty();
+                            $('#container_est_min').html(response.Datos);
+                            $("#remover1").remove();
+                            $("#remover1").empty();
+                            $("#remover2").remove();
+                            $("#remover2").empty();
+                            $("#remover3").remove();
+                            $("#remover3").empty();
+                            $('#cargado').val('cargado');
+                            $("#volver_calf_est").remove();
+                            $("#volver_calf_est").empty();
+                        }
+                        OcultarPopupposition();
+                    }).fail(function (response) {
+                        OcultarPopupposition();
+                    });
+                }
+                else {
+                    console.log('10');
+                    var ideval = $('#Idval').val();
+                    PopupPosition();
+                    $.ajax({
+                        type: "POST",
+                        url: '/EvaluacionEstandarMinimo/ObtenerInformeFinal',
+                        data: '{ideval: "' + ideval + '" }',
+                        contentType: "application/json; charset=utf-8",
+                        cache: false,
+                        dataType: "json",
+                    }).done(function (response) {
+                        if (response != undefined && response.Mensaje == 'OK') {
+                            $('#container_est_min').empty();
+                            $('#container_est_min').html(response.Datos);
+                            $("#remover1").remove();
+                            $("#remover1").empty();
+                            $("#remover2").remove();
+                            $("#remover2").empty();
+                            $("#remover3").remove();
+                            $("#remover3").empty();
+                            $('#cargado').val('cargado');
+                        }
+                        OcultarPopupposition();
+                    }).fail(function (response) {
+                        OcultarPopupposition();
+                    });
+                    //DescargarExcelEstandesMinimosFinla();
+                }
+            }
+            
+        });
+
+
+    });
+
+
+</script>
+
+@Html.Hidden("Idval", Model.Pk_Id_EvaluacionEmpresa)
+@Html.Hidden("ideval", Model.Pk_Id_EvaluacionEmpresa)
+@Html.Hidden("cargado", "")
+
+@section OpcionesEvaluacion
+{
+    <ul class="nav nav-tabs">
+        <li><a href="@Url.Action("Index","Evaluacion")" style="color:gray">Evaluación Inicial SGSST</a></li>
+        <li class="active"><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")" style="color:#ff7500;cursor:pointer">Estándares Mínimos SGSST</a></li>
+        <li><a href="@Url.Action("EvaluacionPositiva", "EvaluacionEstandarMinimo")" style="color:gray">Evaluación SST Positiva</a></li>
+    </ul>
+
+}
+<br />
+
+<ol class="breadcrumb">
+    <li><a>Planificación</a></li>
+    <li><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")">Evaluación de Estándares Mínimos</a></li>
+    <li class="active">Ver Evaluación</li>
+</ol>
+
+<div class="panel panel-default std-panel-body">
+    <div class="panel-heading panel-heading-custom">EVALUACIÓN ESTÁNDARES MÍNIMOS</div>
+    <div class="panel-body">
+        @*ayuda*@
+        <div align="right" style="margin-right:5px;margin-top:5px;">
+            <div id="ayuda" style="text-align:right">
+                <a href="" data-toggle="modal" id="elIDdelModal" data-target="#@string.Format("modalAyuda")"
+                   title="Ayuda" class="btn btn-ayuda btn-md">
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                </a>
+                <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                                <h4 class="modal-title title">Ayuda / VER EVALUACIÓN</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Resultado de evaluación</strong></u></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> En esta sección el usuario puede consultar el registro de las respuestas de la evaluación de estándares mínimos</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> 1. Seleccione el ciclo que desee examinar</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> 2. Si la calificación del registro es <strong>No cumple</strong> o <strong>No aplica - justifica</strong> se habilitará un botón para verificar el plan de mejora o la justificación con sus respectivos archivos. Presione <i class="glyphicon glyphicon-list-alt" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para mostrar el plan de mejora o la justificación</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Presione <i class="glyphicon glyphicon-download-alt" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> si desea descargar el archivo adjunto en el caso que este ítem alguna evidencia de su justificación cuando la respuesta sea 'no aplica'</p>
+
+                                <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Informe</strong></u></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> En esta sección el usuario puede ver el informe de la evaluación</p>
+
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"><strong>1. Informes cuando el estado es: En Elaboración</strong> </p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Seleccione el tipo de informe parcial</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Presione <button type="button" class="boton botoninfo" style="cursor:default;">DESCARGAR ESTÁNDARES MÍNIMOS</button> para descargar una hoja de cálculo con los resultados e informe de la presente evaluación</p>
+
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"><strong>2. Informes cuando el estado es: Finalizado o cerrado</strong> </p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Seleccione el ciclo que desee examinar</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Presione <button type="button" class="boton botoninfo" style="cursor:default;">PLAN DE MEJORA</button> para ver el plan de mejora si existen registros con plan de mejora</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Presione <button type="button" class="boton botoninfo" style="cursor:default;">DESCARGAR ESTÁNDARES MÍNIMOS</button> para descargar una hoja de cálculo con los resultados e informe de la presente evaluación</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="internal-panel add-bottom-margin-05em">
+
+            <div class="internal-panel-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" class="navigation-formulario" href="#menu1">INFORMACIÓN GENERAL</a></li>
+                    <li><a data-toggle="tab" class="navigation-formulario" href="#menu2">RESULTADO DE EVALUACIÓN</a></li>
+                    <li><a id="informe" data-toggle="tab" class="navigation-formulario" href="#menu3">INFORMES</a></li>
+
+                </ul>
+                <div class="tab-content">
+                    <div id="menu1" class="tab-pane fade in active" style="min-height:500px;padding-top:10px;">
+
+                        <div class="col-sm-12">
+                            <h4>INFORMACIÓN GENERAL</h4>
+                        </div>
+                        <div class="col-sm-12 infogen">
+                            <span>Vigencia @Model.Vigencia</span>
+                        </div>
+
+                        <div class="col-sm-12 infogen">
+                            <span>Fecha Creación: @Model.Fecha_Elab.ToShortDateString()</span>
+                        </div>
+                        <div class="col-sm-12 infogen">
+                            @{
+                                if (Model.Estado == 1)
+                                {
+                                    <span style="color:#000">Estado: En elaboración</span>
+                                }
+                                if (Model.Estado == 2)
+                                {
+                                    <span style="color:#ff870f">Estado: Finalizado</span>
+                                }
+                                if (Model.Estado == 3)
+                                {
+                                    <span style="color:#36a144">Estado: Cerrado</span>
+                                }
+                            }
+
+                        </div>
+                        @{
+                            int CriteriosTotalG = 0;
+                            int CriteriosSinEvG = 0;
+
+
+                            foreach (var item in Model.ListaCiclos)
+                            {
+                                CriteriosTotalG = CriteriosTotalG + item.CantidadCriterios;
+                                CriteriosSinEvG = CriteriosSinEvG + item.StandPorEvaluar;
+                            }
+                            int CriterioEvG = CriteriosTotalG - CriteriosSinEvG;
+                            decimal ProgressG = ((decimal)CriterioEvG / (decimal)CriteriosTotalG) * 100;
+                            int ProgressIntG = (int)ProgressG;
+                            string percRealG = ProgressIntG.ToString() + "%";
+                            string percG = ProgressIntG.ToString() + "%";
+                            string perc1G = ProgressIntG.ToString();
+                        }
+                        <div class="col-sm-12 infogen">
+                            <span>Progreso: @percRealG - Criterios evaluados: @CriterioEvG de @CriteriosTotalG - Criterios por evaluar: @CriteriosSinEvG</span>
+                        </div>
+                        @{
+                            foreach (var item in Model.ListaCiclos)
+                            {
+                                int CriteriosTotal = item.CantidadCriterios;
+                                int CriteriosSinEv = item.StandPorEvaluar;
+                                int CriterioEv = CriteriosTotal - CriteriosSinEv;
+
+                                decimal Progress = ((decimal)CriterioEv / (decimal)CriteriosTotal) * 100;
+                                int ProgressInt = (int)Progress;
+                                string percReal = ProgressInt.ToString() + "%";
+                                string perc = ProgressInt.ToString() + "%";
+                                string perc1 = ProgressInt.ToString();
+
+                                if (ProgressInt == 0)
+                                {
+                                    perc = "0.1" + "%";
+                                    perc1 = "1";
+                                }
+
+                                <div class="col-sm-12  add-top-margin-25em">
+                                    <div class="col-sm-12 add-bottom-margin-05em">
+                                        @{
+                                            if (CriteriosSinEv != 0)
+                                            {
+                                                <span>@item.Nombre (@percReal) - Criterios evaluados: @CriterioEv de @CriteriosTotal - Criterios por evaluar: @CriteriosSinEv</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@item.Nombre (@percReal)</span>
+                                            }
+                                        }
+
+                                    </div>
+                                    <div class="col-sm-12 progress" style="background-color:#ccd3fa;padding:0px;">
+                                        <div class="progress-bar  bg-info" role="progressbar" style="background-color:#36a144;width:@perc" aria-valuenow="@perc1" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                            }
+                        }
+
+
+
+
+
+                    </div>
+                    <div id="menu2" class="tab-pane fade in" style="min-height:500px;padding-top:10px;">
+                        <h4>RESULTADO DE LA AUTOEVALUACIÓN DE ESTÁNDARES MÍNIMOS</h4>
+
+                        @{
+                            if (ViewBag.CriterioValoracion != null && ViewBag.Valoracion != null && ViewBag.puntoObtenidos != null)
+                            {
+                                decimal puntos1 = (decimal)ViewBag.puntoObtenidos;
+                                puntos1 = Decimal.Round(puntos1, 2);
+                                <div class="col-xs-12">
+                                    <div class="col-xs-12 col-sm-12 col-md-4">
+                                        <div class="col-xs-12" style="background-color:#EAEDED;padding:2px 5px 2px 5px;border-radius:5px;min-height:100px;">
+                                            <div class="col-xs-12" style="text-align:center;color:#000">
+                                                <h4>CRITERIO</h4>
+                                            </div>
+                                            <div class="col-xs-12" style="text-align:center;color:#000">
+                                                <h4>@ViewBag.CriterioValoracion</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-4">
+                                        <div class="col-xs-12" style="background-color:#EAEDED;padding:2px 5px 2px 5px;border-radius:5px;min-height:100px;">
+                                            <div class="col-xs-12" style="text-align:center;color:#000">
+                                                <h4>VALORACIÓN</h4>
+                                            </div>
+                                            <div class="col-xs-12" style="text-align:center;color:#000">
+                                                <h4>@ViewBag.Valoracion</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-4">
+                                        <div class="col-xs-12" style="background-color:#EAEDED;padding:2px 5px 2px 5px;border-radius:5px;min-height:100px;">
+                                            <div class="col-xs-12" style="text-align:center;color:#000">
+                                                <h4>PUNTAJE</h4>
+                                            </div>
+                                            <div class="col-xs-12" style="text-align:center;color:#000">
+                                                <h4>@puntos1%</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            if (ViewBag.Accion != null)
+                            {
+                                <div class="col-xs-12" style="margin-top:5px;">
+                                    <div class="col-xs-12" style="background-color:#EAEDED;padding:2px 5px 2px 5px;border-radius:5px;">
+                                        <div class="col-xs-12" style="text-align:center;color:#000">
+                                            <h4>ACCIÓN</h4>
+                                        </div>
+                                        <div class="col-xs-12" style="color:#000">
+                                            @Html.Raw(@ViewBag.Accion)
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                        <div class="row add-bottom-margin-10em add-side-padding ini_est_min">
+                            <div class="inner_ciclos col-sm-12">
+                                @{
+                                    int id = 1;
+                                    string[] rom = new string[4] { "I.", "II.", "III.", "IV." };
+                                    foreach (var item in Model.ListaCiclos)
+                                    {
+                                        string btnid = "button" + id.ToString();
+                                        <button id="@btnid" type="button" class="btn_est_min btn btn-default btn-lg add-bottom-margin-05em">@rom[id - 1] @item.Nombre</button>
+                                        id++;
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="row add-bottom-margin-10em">
+                            @{
+                                foreach (var item in Model.ListaCiclos)
+                                {
+                                    string tableid = "tbl_" + item.Id_Ciclo.ToString();
+
+                                    <div id="@tableid" class="col-lg-12 add-top-margin-05em nomostrar form-width-100" style="overflow-x:scroll;border:none">
+
+                                        @{
+                                            if (item.Estandares.Count() > 0)
+                                            {
+
+
+                                                <table id="grid" class="table table-bordered" name="@item.Id_Ciclo" style="border: 2px solid lightslategray; ">
+                                                    <thead>
+                                                        <tr class="titulos_tabla">
+                                                            <th colspan="6" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;">
+                                                                <span>@item.Nombre</span>
+                                                            </th>
+                                                        </tr>
+                                                        <tr class="titulos_tabla">
+                                                            <th colspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;">
+                                                                <span>ESTANDAR</span>
+                                                            </th>
+                                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                                <span>CRITERIO</span>
+                                                            </th>
+                                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                                <span>MARCO LEGAL</span>
+                                                            </th>
+                                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                                <span>CALIFICACIÓN</span>
+                                                            </th>
+                                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                                <span>ACCIÓN</span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            int numest = item.Estandares.Count();
+                                                            List<int> ListaEstandarNumFilas = new List<int>();
+                                                            List<int> ListaSubEstandarNumFilas = new List<int>();
+                                                            foreach (var item1 in item.Estandares)
+                                                            {
+                                                                int numeval = 0;
+                                                                var sube = item1.SubEstandares;
+                                                                foreach (var item2 in sube)
+                                                                {
+                                                                    int numeval1 = 0;
+                                                                    var crit = item2.Criterios;
+                                                                    foreach (var item3 in crit)
+                                                                    {
+                                                                        var eval = item3.Evaluaciones;
+                                                                        foreach (var item4 in eval)
+                                                                        {
+                                                                            numeval++;
+                                                                            numeval1++;
+                                                                        }
+                                                                    }
+                                                                    ListaSubEstandarNumFilas.Add(numeval1);
+                                                                }
+                                                                ListaEstandarNumFilas.Add(numeval);
+                                                            }
+
+                                                            int numsubestandar = 0;
+                                                            int numestandar = 0;
+                                                            foreach (var item1 in item.Estandares)
+                                                            {
+
+
+                                                                var sube = item1.SubEstandares;
+                                                                int numfila = 0;
+                                                                int numfila1 = 0;
+                                                                foreach (var item2 in sube)
+                                                                {
+                                                                    int numsubs = ListaSubEstandarNumFilas[numsubestandar];
+                                                                    var crit = item2.Criterios;
+
+                                                                    numfila1 = 0;
+                                                                    foreach (var item3 in crit)
+                                                                    {
+                                                                        var eval = item3.Evaluaciones;
+                                                                        foreach (var item4 in eval)
+                                                                        {
+
+                                                                            if (numfila == 0)
+                                                                            {
+                                                                                if (numfila1 == 0)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td rowspan="@ListaEstandarNumFilas[numestandar]" style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>Estandar @item1.Descripcion</span></td>
+                                                                                        <td rowspan="@ListaSubEstandarNumFilas[numsubestandar]" style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item2.Descripcion</span></td>
+                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Descripcion_Corta</span></td>
+                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Marco_Legal</span></td>
+                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item4.Respuesta</span></td>
+                                                                                        @{
+                                                                                            if (item4.Respuesta == "No aplica - Justifica" || item4.Respuesta == "No cumple")
+                                                                                            {
+                                                                                                if (item4.Respuesta == "No aplica - Justifica")
+                                                                                                {
+                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a elem="@item4.IdCriterio" id="@item4.IdEvalEstandarMinimo.ToString()" name="@item.Id_Ciclo" class="btn btn-sm btn-positiva btn-archivos" title="Ver evidencias" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-list-alt"></span></a></td>
+                                                                                                }
+                                                                                                if (item4.Respuesta == "No cumple")
+                                                                                                {
+                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a elem="@item4.IdCriterio" id="@item4.IdEvalEstandarMinimo.ToString()" name="@item.Id_Ciclo" class="btn btn-sm btn-positiva btn-actividades" title="Ver plan de mejora" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-list-alt"></span></a></td>
+                                                                                                }
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"></td>
+                                                                                            }
+                                                                                        }
+
+                                                                                    </tr>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+
+
+                                                                                                }
+
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                if (numfila1 == 0)
+                                                                                                {
+                                                                                                    <tr>
+                                                                                                        <td rowspan="@ListaSubEstandarNumFilas[numsubestandar]" style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item2.Descripcion</span></td>
+                                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Descripcion_Corta</span></td>
+                                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Marco_Legal</span></td>
+                                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item4.Respuesta</span></td>
+                                                                                                        @{
+                                                                                                            if (item4.Respuesta == "No aplica - Justifica" || item4.Respuesta == "No cumple")
+                                                                                                            {
+                                                                                                                if (item4.Respuesta == "No aplica - Justifica")
+                                                                                                                {
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a elem="@item4.IdCriterio" id="@item4.IdEvalEstandarMinimo.ToString()" name="@item.Id_Ciclo" class="btn btn-sm btn-positiva btn-archivos" title="Ver evidencias" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-list-alt"></span></a></td>
+                                                                                                                }
+                                                                                                                if (item4.Respuesta == "No cumple")
+                                                                                                                {
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a elem="@item4.IdCriterio" id="@item4.IdEvalEstandarMinimo.ToString()" name="@item.Id_Ciclo" class="btn btn-sm btn-positiva btn-actividades" title="Ver plan de mejora" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-list-alt"></span></a></td>
+                                                                                                                }
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+                                                                                                                <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"></td>
+                                                                                                            }
+                                                                                                        }
+                                                                                                    </tr>
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+
+                                                                                                                <tr>
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Descripcion_Corta</span></td>
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Marco_Legal</span></td>
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item4.Respuesta</span></td>
+                                                                                                                    @{
+                                                                                                                        if (item4.Respuesta == "No aplica - Justifica" || item4.Respuesta == "No cumple")
+                                                                                                                        {
+                                                                                                                            if (item4.Respuesta == "No aplica - Justifica")
+                                                                                                                            {
+                                                                                                                                <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a elem="@item4.IdCriterio" id="@item4.IdEvalEstandarMinimo.ToString()" name="@item.Id_Ciclo" class="btn btn-sm btn-positiva btn-archivos" title="Ver evidencias" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-list-alt"></span></a></td>
+                                                                                                                            }
+                                                                                                                            if (item4.Respuesta == "No cumple")
+                                                                                                                            {
+                                                                                                                                <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a elem="@item4.IdCriterio" id="@item4.IdEvalEstandarMinimo.ToString()" name="@item.Id_Ciclo" class="btn btn-sm btn-positiva btn-actividades" title="Ver plan de mejora" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-list-alt"></span></a></td>
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                        else
+                                                                                                                        {
+                                                                                                                            <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"></td>
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                </tr>
+                                                                                                                                            }
+
+                                                                                                                                        }
+
+                                                                                                                                    }
+                                                                                                                                    numfila++;
+                                                                                                                                    numfila1++;
+                                                                                                                                }
+
+                                                                                                                                numsubestandar++;
+
+                                                                                                                            }
+                                                                                                                            numestandar++;
+
+
+                                                                                                                        }
+
+                                                        }
+
+
+                                                    </tbody>
+                                                </table>
+                                                                                                                        }
+                                                                                                                        else
+                                                                                                                        {
+                                                                                                                            <div class="row" style="text-align:center">
+                                                                                                                                <h4>No existe registro de respuestas a este ciclo</h4>
+                                                                                                                            </div>
+
+                                                                                                                        }
+
+                                        }
+
+                                    </div>
+
+                                                                                                                        }
+                            }
+                        </div>
+
+
+
+
+
+                    </div>
+                    <div id="menu3" class="tab-pane fade in" style="min-height:500px;padding-top:10px;" name="@Model.Estado">
+
+                        @{
+                            if (CriteriosSinEvG != 0)
+                            {
+                                int critevaluados = 0;
+                                foreach (var item in Model.ListaCiclos)
+                                {
+                                    if (item.Estandares.Count() == 0)
+                                    {
+                                        critevaluados++;
+                                    }
+                                }
+                                if (critevaluados != Model.ListaCiclos.Count)
+                                {
+                                    <div id="container_est_min" class="col-xs-12">
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div id="sincriterios" class="row">
+                                        <div id="sincriterios" class="col-xs-12">
+                                            <h4>No existen criterios evaluados para generar un informe</h4>
+                                        </div>
+                                    </div>
+                                }
+
+                            }
+                            else
+                            {
+                                <div class="col-sm-12 infogen add-top-margin-05em">
+                                    <button id="_planAccion" class="regresar boton botoninfo col-margin">Plan de mejora</button>
+                                </div>
+                                <div id="container_est_min" class="col-xs-12">
+
+                                </div>
+
+
+                            }
+                        }
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        <div class="col-lg-12 add-top-margin-05em" style="text-align:center;">
+            <button id="regresar" class="regresar boton botonactive col-margin">REGRESAR</button>
+        </div>
+    </div>
+</div>
+
+<div id="myModal" class="modalAnalisis">
+    @Html.Hidden("Archivo1", "")
+    @Html.Hidden("Archivo_s1", "")
+
+    @Html.Hidden("Archivo2", "")
+    @Html.Hidden("Archivo_s2", "")
+
+    @Html.Hidden("Archivo3", "")
+    @Html.Hidden("Archivo_s3", "")
+
+    @Html.Hidden("IdReg", "")
+    @Html.Hidden("ideval", "")
+    @Html.Hidden("Ciclo", "")
+
+    <div class="modal_table col-md-offset-2 col-md-8" style="background-color:white;min-height:400px;border-radius: 10px;">
+        <CENTER><H3>ARCHIVOS ADJUNTOS</H3></CENTER>
+        <div class="col-md-12" style="margin-bottom:5px;">
+            <label id="Nombre_EPP"></label>
+        </div>
+
+        <span id="val-error" class="text-danger field-validation-error val-message col-sm-12" style="display:none;"></span>
+        <input id="IdTabla" type="text" style="display:none" />
+        <div id="tabla_modal">
+
+        </div>
+
+        <div class="col-md-12 add-top-margin-05em add-bottom-margin-05em">
+            <div class="col-md-12 remove-left-padding">
+                <span>Justificación</span>
+            </div>
+            @Html.TextArea("justificacion", null, new { @class = "form-control", @rows = "3", @style = "resize:vertical", @disabled = "disabled" })
+        </div>
+
+
+        <center><button id="close_modal" class="boton botoncancel col-margin">CERRAR</button></center>
+    </div>
+</div>
+<div id="myModal1" class="modalAnalisis">
+
+    <div class="modal_table col-md-offset-2 col-md-8" style="background-color:white;min-height:400px;border-radius: 10px;">
+        <CENTER><H3>PLAN DE MEJORA</H3></CENTER>
+        <div class="col-md-12" style="margin-bottom:5px;">
+            <label id="Nombre_EPP"></label>
+        </div>
+
+        <span id="val-error1" class="text-danger field-validation-error val-message col-sm-12" style="display:none;"></span>
+        <input id="IdTabla1" type="text" style="display:none" />
+        <div id="tabla_modal1"></div>
+        <center><button id="close_modal1" class="boton botoncancel col-margin">CERRAR</button></center>
+    </div>
+</div>
+<div class="modal fade" id="PlanAccionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header cabecera">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:black;text-shadow:none;opacity:1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body" id="containeplanaccion">
+
+                </div>
+                <div class="row">
+                    <div class="col-xs-12" style="text-align:center">
+                        <div class="col-xs-12 col-md-6" style="margin-bottom:5px;">
+                            <a class="boton botoninfo" href="../EvaluacionEstandarMinimo/DescargarPlanAccionExccel?ideval=@Model.Pk_Id_EvaluacionEmpresa">Descargar hoja de cálculo</a>
+                        </div>
+                        <div class="col-xs-12 col-md-6" style="margin-bottom:5px;">
+                            <a class="boton botoninfo" href="../EvaluacionEstandarMinimo/DescargarPlanAccionPDF?ideval=@Model.Pk_Id_EvaluacionEmpresa">Descargar PDF</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="modal-footer" style="text-align:center;margin-top:5px;">
+                        <button type="button" class="boton botoncancel" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+

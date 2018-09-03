@@ -1,0 +1,88 @@
+﻿@model SG_SST.Models.Emergencias.Eme_EstructuraOrganizacion
+
+@{
+    ViewBag.Title = "Editar Cargo Organigrama";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index", "Home")">Planificación</a></li>
+    <li><a href="javascript:void(0)">Generar Plan de Emergencia</a></li>
+    <li class="active">Editar Organigrama Estructural</li>
+</ol>
+
+
+
+
+@using (Html.BeginForm("EditarEstructuraOrganizacional", "PlanEmergencias", FormMethod.Post, new { @id = "formEditarEstructuraOrganizacional", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+        <div class="panel-heading" style="color:white">EDITAR ORGANIGRAMA ESTRUCTURAL</div>
+        <div class="panel-body form-horizontal">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.id_EstucturaOrg)
+
+            @*<div class="form-group">
+                        @Html.LabelFor(model => model.Jefe_Inmediato, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Jefe_Inmediato, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Jefe_Inmediato, "", new { @class = "text-danger" })
+                        </div>
+                </div>*@
+
+            <div class="form-group">
+                <br />
+
+                @Html.LabelFor(model => model.Fk_Id_EstructuraOrg, "Cargo Jefe Emergencia", htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-3">
+                    @Html.DropDownList("Fk_Id_EstructuraOrg", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Fk_Id_EstructuraOrg, "", new { @class = "text-danger" })
+                </div>
+
+                @Html.LabelFor(model => model.cargo_Empleado,"Cargo Empleado Emergencia", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.cargo_Empleado, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.cargo_Empleado, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+
+            <input name="id_EstucturaOrg" hidden="hidden" value="@Model.id_EstucturaOrg" />
+
+            <input name="fk_id_sede"  hidden="hidden" id="fk_id_sede" value="@Model.fk_id_sede" />
+            @*<div class="form-group">
+                    @Html.LabelFor(model => model.Fk_Id_Organigrama, "Fk_Id_Organigrama", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("Fk_Id_Organigrama", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Fk_Id_Organigrama, "", new { @class = "text-danger" })
+                    </div>
+                </div>*@
+
+            <hr />
+
+            <div class="row" align="center">
+                <div class="form-group">
+                    <button type="button" id="editarEstructura" class="boton botonactive">Guardar Cambios</button>
+                    <a href="@Url.Action("Listado","PlanEmergencias") " class="boton botoninfo" style="margin-left:5%">Listado Estructura</a>
+                </div>
+            </div>
+
+            @*<div class="row" align="center">
+                    <a href="@Url.Action("Index","EmpleadoOrg") " class="boton botoninfo" style="text-decoration:none">Listado Cargos</a>
+                    <a href="@Url.Action("organigrama", "Empleado") " class="boton botoninfo" style="margin-left:70px; text-decoration:none">Ver Organigrama</a>
+                </div>*@
+
+        </div>
+    </div>
+}
+
+@Scripts.Render("~/Scripts/Emergencias/Emergencias.js")

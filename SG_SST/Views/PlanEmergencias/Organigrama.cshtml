@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "Organigrama Empresa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script src="~/Scripts/go.js"></script>
+   @Scripts.Render("~/Scripts/Emergencias/EstructuraOrganizacional.js")
+
+
+
+
+
+
+
+
+
+
+
+    @if (ViewBag.Message1a != null)
+    {
+
+        <script type="text/javascript">
+        swal({
+            type: 'warning',
+            title: 'Estimado Usuario',
+            text: '@ViewBag.Message1a',
+
+            showConfirmButton: true,
+            confirmButtonText: 'Registrar',
+            confirmButtonColor: '#7E8A97'
+
+
+        });
+
+        //$('.confirm').on('click', function () {
+        //    window.location.href = "../EmpleadoOrg/Create";
+        //});
+
+
+
+        </script>
+    }
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index", "Home")">Planificación</a></li>
+    <li><a href="javascript:void(0)">Prevención, Preparación y Respuesta ante Emergencias</a></li>
+    <li class="active">Visualizar Organigrama de Emergencia</li>
+</ol>
+
+
+
+<div id="DiagramaEstructuraOrganizacional" style="border:solid 1px lightslategray; height:75%" class="panel panel-default">
+
+</div>
+
+<input type="text" id="IdSede" name="IdSede" hidden="hidden" value="@(ViewBag.IdSede)"><br />
+
+<div class="row" align="center">
+    @*<div class="col-sm-3">*@
+    <a href="@Url.Action("Listado", "PlanEmergencias") " class="boton botonactive" style="text-decoration:none">
+        Listar Estructura
+    </a>
+    @*</div>*@
+    @*<div class="col-sm-3">*@
+    <a href="@Url.Action("CrearEstructuraOrganizacional", "PlanEmergencias") " class="boton botonactive" style="margin-left:8.5%">
+        Agregar Cargo
+    </a>
+  
+
+</div>
+<br />
+<a href="@Url.Action("index", new { esEditado = 1 })" class="boton botoninfo" style="text-decoration:none; margin-left:30px">Regresar Plan Emergencia</a>

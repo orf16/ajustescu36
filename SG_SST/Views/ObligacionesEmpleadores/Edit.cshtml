@@ -1,0 +1,45 @@
+﻿@model SG_SST.Models.LiderazgoGerencial.ObligacionesEmpleadores
+
+@{
+    ViewBag.Title = "Editar Obligación del Empleador";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+        <div class="panel-heading" style="color:white">
+            Editar Obligaciones de los Empleadores
+        </div>
+        <div class="form-horizontal">
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Pk_Id_Obligaciones_Empleadores)
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Descripcion, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Descripcion, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Descripcion, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row" align="center">
+                    <div class="col-md-6" text-center">
+                        <button type="submit" class="boton botonactive">Guardar</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="boton botoncancel" onclick="location.href='@Url.Action("Index", "ObligacionesEmpleadores")';return false;">CANCELAR</button>
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+}
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>
+

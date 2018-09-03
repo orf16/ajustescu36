@@ -1,0 +1,631 @@
+﻿@model IEnumerable<SG_SST.EntidadesDominio.Planificacion.EDEvaluacionEmpresa>
+
+@{
+    ViewBag.Title = "Principal Evaluación Estándares Mínimos";
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+<link href="~/Content/Acciones/Acciones.css" rel="stylesheet" />
+<script src="~/Scripts/flaviusmatis-simplePagination.js-e32c66e/jquery.simplePagination.js"></script>
+
+
+<script>
+    //Paginador
+    jQuery(function ($) {
+        var items = $("table tbody tr");
+        var numItems = items.length;
+        var perPage = 10;
+        items.slice(perPage).hide();
+        $(".pagination").pagination({
+            items: numItems,
+            itemsOnPage: perPage,
+            cssStyle: "compact-theme",
+            invertPageOrder: false,
+            currentPage: 1,
+            nextText: '<i class="fa fa-chevron-right"><i class="fa fa-chevron-right">',
+            prevText: '<i class="fa fa-chevron-left"><i class="fa fa-chevron-left">',
+            onPageClick: function (pageNumber) {
+                var showFrom = perPage * (pageNumber - 1);
+                var showTo = showFrom + perPage;
+                items.hide()
+                     .slice(showFrom, showTo).show();
+            }
+        });
+        function checkFragment() {
+            var hash = window.location.hash || "#page-1";
+            hash = hash.match(/^#page-(\d+)$/);
+            if (hash) {
+                $(".pagination-page").pagination("selectPage", parseInt(hash[1]));
+            }
+        };
+        $(window).bind("popstate", checkFragment);
+        checkFragment();
+    });
+    //Guardar Plan
+    $(function () {
+        $("#CrearEval").bind("click", function () {
+
+            $("#val-vigencia").css("display", "none");
+            $("#val-vigencia").text('');
+
+            swal({
+                title: "Estimado Usuario",
+                text: "Esta seguro(a) que desea crear una evaluación de estándares mínimos?",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Si",
+                cancelButtonText: "No",
+                type:"warning",
+                closeOnConfirm: false
+            },
+            function () {
+                var vigencia = $("#Vigencia").val();
+                if (vigencia!=null) {
+                    var onEventLaunchGuardar = new postGuardar();
+                    onEventLaunchGuardar.launchGuardar();
+                }
+                else {
+                    $("#val-vigencia").css("display", "block");
+                    $("#val-vigencia").text('Por favor seleccione la vigencia');
+                }
+            });
+        });
+    });
+    function postGuardar() {
+        this.launchGuardar = function () {
+
+            var stringArray = new Array();
+            stringArray[0] = $("#Vigencia").val();
+            var EDEvaluacionEmpresa = {
+                Vigencia: stringArray[0]
+            };
+
+            PopupPosition();
+            $.ajax({
+                type: "POST",
+                url: '/EvaluacionEstandarMinimo/CrearPlan',
+                traditional: true,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(EDEvaluacionEmpresa),
+                success: function (data) {
+                    OcultarPopupposition();
+
+                    if (data.Estado == "El usuario no ha iniciado sesión en el sistema") {
+                        swal({
+                            title: "Estimado Usuario",
+                            text: data.Estado,
+                            type: "warning",
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "OK",
+                            closeOnConfirm: true
+                        },
+                    function () {
+
+                    });
+                        location.reload(true);
+                    }
+
+
+
+                    if (data.Probar == false) {
+                        swal("Advertencia", data.Estado,"warning");
+                    }
+                    else {
+                        swal({
+                            title: "Estimado Usuario",
+                            text: "La evaluación de estándares mínimos con vigencia del " + stringArray[0] + " ha sido creada",
+                            type: "success",
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "OK",
+                            closeOnConfirm: false
+                        },
+                    function () {
+                        window.location = data.url;
+                    });
+                    }
+                },
+                error: function (data) {
+                    OcultarPopupposition();
+                    console.log(data.Estado)
+                }
+            });
+        }
+    }
+    //Redirigir a formulario
+    $(function () {
+
+        $("#ContinuarEval").bind("click", function () {
+            var onEventLaunchGuardar1 = new postGuardar1();
+            onEventLaunchGuardar1.launchGuardar1();
+        });
+    });
+    function postGuardar1() {
+        this.launchGuardar1 = function () {
+
+            var IdPlanSeg = 0;
+
+            var IdString = $('input:radio[name="SeleccionarRadio"]:checked').val();
+            if (IdString!=null) {
+                if (IdString != "0") {
+                    IdPlanSeg = $('input:radio[name="SeleccionarRadio"]:checked').val();
+                }
+            }
+
+            if (IdPlanSeg != 0) {
+
+                var url = "/PromocionPrevencion/SeguridadVialFormulario?IdSegVial=" + IdPlanSeg;
+                window.location.href = url;
+            }
+        }
+    }
+    //Eliminar
+    $(document).ready(function () {
+        $('.btnEliminar').click(function () {
+            var Id_Ev = $(this).attr('name');
+
+            swal({
+                title: "Estimado Usuario",
+                text: "Esta seguro(a) que desea eliminar esta evaluación?",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Si",
+                cancelButtonText: "No",
+                type: "warning",
+                closeOnConfirm: true
+            },
+            function () {
+                PopupPosition();
+                $.ajax({
+                    type: "POST",
+                    url: "/EvaluacionEstandarMinimo/EliminarEvaluacion",
+                    data: '{ideval: "' + Id_Ev + '" }',
+                    contentType: "application/json; charset=utf-8",
+                    cache: false,
+                    dataType: "json",
+                    success: function (response) {
+                        OcultarPopupposition();
+                        if (response.probar == false) {
+                            if (response.resultado == "El usuario no ha iniciado sesión en el sistema") {
+                                location.reload(true);
+                            }
+                            swal({
+                                title: "Estimado Usuario",
+                                text: response.resultado,
+                                type: "warning",
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "OK",
+                                closeOnConfirm: false
+                            });
+                        }
+                        else {
+                            swal({
+                                title: "Estimado Usuario",
+                                text: response.resultado,
+                                type: "success",
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "OK",
+                                closeOnConfirm: false
+                            },
+                            function () {
+                                location.reload(true);
+                            });
+                        }
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        OcultarPopupposition();
+                    }
+                });
+
+            });
+        });
+        $('#evalaños').click(function () {
+            window.location.href = '/EvaluacionEstandarMinimo/comparativoaños';
+        });
+    });
+    $(function () {
+        $("#consultar").click(function () {
+            var vigencia = $("#VigenciaBusqueda").val();
+            var estado = $("#ListaEstados").val();
+
+            if (vigencia!=null) {
+                if (vigencia == -1) {
+                    vigencia = null;
+                }
+            }
+            if (estado != null) {
+                if (estado == -1) {
+                    estado = null;
+                }
+            }
+
+            if (vigencia != null && estado != null) {
+                window.location.href = "/EvaluacionEstandarMinimo/inicio?vigencia=" + vigencia + "&estado=" + estado + "";
+            }
+            else {
+                var probar = false;
+                if (vigencia != null) {
+                    probar = true;
+                    window.location.href = "/EvaluacionEstandarMinimo/inicio?vigencia=" + vigencia
+                }
+                if (estado != null) {
+                    probar = true;
+                    window.location.href = "/EvaluacionEstandarMinimo/inicio?estado=" + estado
+                }
+                if (!probar) {
+                    window.location.href = "/EvaluacionEstandarMinimo/inicio";
+                }
+            }
+        });
+    });
+</script>
+@Html.AntiForgeryToken()
+@section OpcionesEvaluacion
+{
+    <ul class="nav nav-tabs">
+        <li><a href="@Url.Action("Index","Evaluacion")" style="color:gray">Evaluación Inicial SGSST</a></li>
+        <li class="active"><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")" style="color:#ff7500;cursor:pointer">Estándares Mínimos SGSST</a></li>
+        <li><a href="@Url.Action("EvaluacionPositiva", "EvaluacionEstandarMinimo")" style="color:gray">Evaluación SST Positiva</a></li>
+    </ul>
+}
+<br />
+<ol class="breadcrumb">
+    <li><a>Planificación</a></li>
+    <li class="active">Evaluación de Estándares Mínimos</li>
+</ol>
+
+<div class="panel panel-default std-panel-body">
+    <div class="panel-heading panel-heading-custom">EVALUACIÓN ESTÁNDARES MÍNIMOS</div>
+    <div class="panel-body">
+        @*Boton de ayuda*@
+        <div align="right" style="margin: 5px 5px 0px 0px">
+            <div id="ayuda" style="text-align:right">
+                <a href="" data-toggle="modal" id="elIDdelModal" data-target="#@string.Format("modalAyuda")"
+                   title="Ayuda" class="btn btn-ayuda btn-md">
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                </a>
+                <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                                <h4 class="modal-title title">Ayuda / EVALUACIÓN DE ESTÁNDARES MÍNIMOS</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Información de evaluaciones</strong></u></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> En esta funcionalidad el usuario puede consultar las evaluaciones de estándares mínimos creadas</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Si el usuario desea filtrar las evaluaciones lo podrá hacer mediante los parámetros: <strong>Vigencia</strong> y <strong>Estado</strong>. Presione <button type="button" class="boton botonactive" style="cursor:default;">FILTRAR</button> para filtrar las evaluaciones</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Dentro de la tabla de consulta de evaluaciones el usuario podrá ejecutar las siguientes acciones:</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> <strong>Ver la evaluación</strong> en cualquiera de los estados, el usuario puede consultar las respuesta que ha consignado, ver archivos adjuntos, ver planes de mejora y visualizar reportes de la evaluación. Presione <i class="glyphicon glyphicon-eye-open" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para ver una evaluación</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> <strong>Editar la evaluación</strong> y cualquiera de las respuestas ya consignadas dentro de la evaluación seleccionada. Presione  <i class="glyphicon glyphicon-pencil" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para editar una evaluación</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> <strong>Continuar la evaluación</strong> en curso, el usuario puede continuar diligenciando la evaluación. Presione <i class="glyphicon glyphicon-play" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para continuar diligenciando la evaluación</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> <strong>Eliminar la evaluación</strong>. Presione <i class="glyphicon glyphicon-erase" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para eliminar una evaluación</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> <strong>Cerrar la evaluación</strong>. Si la evaluación se encuentra en estado <strong>FINALIZADA</strong>. Presione  <i class="glyphicon glyphicon-cog" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i> para cerrar una evaluación. Una vez cerrada una evaluación los planes de mejora registrados se pueden administrar en el módulo <strong>PLANES DE ACCIÓN</strong> y además se pueden comparar con otras evaluaciones de vigencias pasadas o futuras</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Si desea comparar evaluaciones cerradas de dos o varias vigencias presione <button type="button" class="boton botonactive" style="cursor:default;">EVALUACIONES POR VIGENCIAS</button></p>
+
+                                <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Crear Evaluación</strong></u></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Para crear una evaluación seleccione la vigencia y presione <button type="button" class="boton botonactive" style="cursor:default;">CREAR EVALUACIÓN</button></p>
+
+                                <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Información básica</strong></u></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> <strong>VIGENCIA:</strong> Periodo de tiempo en el cual aplica la evaluación (AÑO)</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Estado <strong style="color:#000">En elaboración:</strong> es decir que falta diligenciar parte de la evaluación</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Estado <strong style="color:#ff870f">Finalizada:</strong> cuando se ha diligenciado toda la evaluación y falta el proceso de cierre</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Estado <strong style="color:#36a144">Cerrada:</strong> cuando el usuario decide cerrar una evaluación no se permitirá cerrar otras evaluaciones de la misma vigencia. Utilice este estado cuando la evaluación no necesite modificaciones</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> <strong>CICLO PHVA:</strong> planear, hacer, verificar y actuar</p>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Contenido del Panel*@
+        <div class="row">
+            <div class="col-lg-12" style="text-align:center;">
+                <b style="font-size:12px;">Basado en la Resolución 1111 de 2017 por la cual se definen los Estándares Mínimos del Sistema de Gestión en Seguridad y Salud en el Trabajo para empleadores y contratantes.</b>
+            </div>
+        </div>
+        
+        <div class="internal-panel add-bottom-margin-05em add-top-margin-10em">
+            <div class="internal-panel-header panel-heading">
+                <h4>Información de evaluaciones</h4>
+            </div>
+            <div class="internal-panel-body add-top-margin-05em">
+                <div class="form-group row">
+                    <div class="col-md-4">
+                        <label style="line-height:22px;">Vigencia</label>
+                        @{
+
+                            List<SelectListItem> ListaAños1 = new List<SelectListItem>();
+                            ListaAños1.Add(new SelectListItem { Text = "-- Seleccione una vigencia --", Value = "-1", Selected = true });
+                            for (int i = 2017; i < 2051; i++)
+                            {
+                                if ((string)ViewBag.Vigenciapage != "")
+                                {
+                                    if ((string)ViewBag.Vigenciapage == i.ToString())
+                                    {
+                                        ListaAños1.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString(), Selected = true });
+                                    }
+                                    else
+                                    {
+                                        ListaAños1.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+
+                                    }
+                                }
+                                else
+                                {
+                                    DateTime Hoy1 = DateTime.Today;
+                                    int year1 = Hoy1.Year;
+                                    if (i == year1)
+                                    {
+                                        ListaAños1.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString(), Selected = true });
+                                    }
+                                    else
+                                    {
+                                        ListaAños1.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                                    }
+
+
+
+                                }
+
+                            }
+                        }
+                        @Html.DropDownList("VigenciaBusqueda", ListaAños1, htmlAttributes: new { @class = "form-control form-width-100" })
+                    </div>
+                    <div class="col-md-4">
+                        <label style="line-height:22px;">Estado</label>
+                        @{
+                            List<SelectListItem> ListaEstados = new List<SelectListItem>();
+                            ListaEstados.Add(new SelectListItem { Text = "-- Seleccione un estado --", Value = "-1", Selected = true });
+                            if ((string)ViewBag.Estadopage != "")
+                            {
+                                if ((string)ViewBag.Estadopage == "1")
+                                {
+                                    ListaEstados.Add(new SelectListItem { Text = "En Elaboración", Value = "1", Selected = true });
+                                }
+                                else
+                                {
+                                    ListaEstados.Add(new SelectListItem { Text = "En Elaboración", Value = "1" });
+                                }
+                                if ((string)ViewBag.Estadopage == "2")
+                                {
+                                    ListaEstados.Add(new SelectListItem { Text = "Finalizado", Value = "2", Selected = true });
+                                }
+                                else
+                                {
+                                    ListaEstados.Add(new SelectListItem { Text = "Finalizado", Value = "2" });
+                                }
+                                if ((string)ViewBag.Estadopage == "3")
+                                {
+                                    ListaEstados.Add(new SelectListItem { Text = "Cerrado", Value = "3", Selected = true });
+                                }
+                                else
+                                {
+                                    ListaEstados.Add(new SelectListItem { Text = "Cerrado", Value = "3" });
+                                }
+                            }
+                            else
+                            {
+                                ListaEstados.Add(new SelectListItem { Text = "En Elaboración", Value = "1" });
+                                ListaEstados.Add(new SelectListItem { Text = "Finalizado", Value = "2" });
+                                ListaEstados.Add(new SelectListItem { Text = "Cerrado", Value = "3" });
+                            }
+
+
+
+                        }
+                        @Html.DropDownList("ListaEstados", ListaEstados, htmlAttributes: new { @class = "form-control form-width-100" })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-width-100" style="line-height:22px;">&nbsp;</label>
+                        <p><button id="consultar" class="boton botonactive col-margin">FILTRAR</button></p>
+
+                    </div>
+                    <div class="col-sm-12 add-top-margin-10em">
+                        @{
+                            if (Model.Count() > 0)
+                            {
+                                <table id="Grid3" class="table table-bordered" style="border: 2px solid lightslategray">
+                                    <thead>
+                                        <tr class="titulos_tabla">
+                                            
+                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;">
+                                                <span>VIGENCIA</span>
+                                            </th>
+                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                <span>FECHA DE CREACIÓN</span>
+                                            </th>
+                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                <span>ESTADO</span>
+                                            </th>
+                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                <span>PROGRESO</span>
+                                            </th>
+                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                <span>ACCIONES</span>
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    
+                                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;">
+                                                        <span>@item.Vigencia.ToString()</span>
+                                                    </td>
+                                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;">
+                                                        @{
+                                                            string Fecha_str = "";
+                                                            try
+                                                            {
+                                                                Fecha_str = item.Fecha_Elab.ToString("dd/MM/yyyy");
+                                                            }
+                                                            catch (Exception)
+                                                            {
+
+                                                            }
+                                                            <span>@Fecha_str</span>
+                                                        }
+                                                    </td>
+                                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;">
+                                                        @{
+                                                            if (item.Estado == 1)
+                                                            {
+                                                                <b style="color:#000">En Elaboración</b>
+                                                            }
+                                                            if (item.Estado == 2)
+                                                            {
+                                                                <b style="color:#ff870f">Finalizado</b>
+                                                            }
+                                                            if (item.Estado == 3)
+                                                            {
+                                                                <b style="color:#36a144">Cerrado</b>
+                                                            }
+                                                        }
+
+
+                                                    </td>
+                                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;">
+                                                        @{
+                                                            int cantidadporevaluar = item.Numeroevaluar;
+                                                            int cantidadTotal = item.NumeroTotal;
+                                                            int CantidadEval = cantidadTotal - cantidadporevaluar;
+                                                            if (cantidadTotal != 0)
+                                                            {
+                                                                decimal Progress = ((decimal)CantidadEval / (decimal)cantidadTotal) * 100;
+                                                                int ProgressInt = (int)Progress;
+                                                                string percReal = ProgressInt.ToString() + "%";
+                                                                string perc = ProgressInt.ToString() + "%";
+                                                                string perc1 = ProgressInt.ToString();
+                                                                <span>@percReal</span>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;">
+                                                       @{
+                                                           if (item.Estado == 2)
+                                                           {
+                                                            <a id="@item.Pk_Id_EvaluacionEmpresa.ToString()" href="@Url.Action("cerraevaluacion", "EvaluacionEstandarMinimo", new { ideval = item.Pk_Id_EvaluacionEmpresa })" class="btn btn-sm btn-positiva" title="Cerrar Evaluación" style="height:35px;margin-bottom:5px">
+                                                                <span class="glyphicon glyphicon-lock"></span>
+                                                            </a>
+                                                           }
+                                                    }
+                                                         @{
+                                                            if (item.Estado != 3)
+                                                            {
+                                                                <a id="@item.Pk_Id_EvaluacionEmpresa.ToString()" href="@Url.Action("Index", "EvaluacionEstandarMinimo", new { ideval = item.Pk_Id_EvaluacionEmpresa })" class="btn btn-sm btn-positiva" title="Continuar Evaluación" style="height:35px;margin-bottom:5px">
+                                                                    <span class="glyphicon glyphicon-play"></span>
+                                                                </a>
+                                                            }
+                                                        }
+                                                        
+                                                        <a id="@item.Pk_Id_EvaluacionEmpresa.ToString()" href="@Url.Action("Ver", "EvaluacionEstandarMinimo", new { ideval = item.Pk_Id_EvaluacionEmpresa })" class="btn btn-sm btn-positiva" title="Ver" style="height:35px;margin-bottom:5px">
+                                                            <span class="glyphicon glyphicon-eye-open"></span>
+                                                        </a>
+
+                                                        @{
+                                                            if (item.Estado != 3)
+                                                            {
+                                                                <a id="@item.Pk_Id_EvaluacionEmpresa.ToString()" href="@Url.Action("Editar", "EvaluacionEstandarMinimo", new { ideval = item.Pk_Id_EvaluacionEmpresa })" class="btn btn-sm btn-positiva" title="Editar" style="height:35px;margin-bottom:5px">
+                                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                                </a>
+                                                            }
+
+                                                        }
+                                                        <a id="@item.Pk_Id_EvaluacionEmpresa.ToString()" class="btn btn-sm btn-positiva btnEliminar" name="@item.Pk_Id_EvaluacionEmpresa" title="Eliminar" style="height:35px;margin-bottom:5px">
+                                                            <span class="glyphicon glyphicon-erase"></span>
+                                                        </a>
+                                                    </td>
+
+                                                </tr>
+                                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <center><div class="pagination" id="paginador1"></div></center>
+                                                            }
+
+
+                        }
+                    </div>
+
+
+
+
+
+                </div>
+
+            </div>
+        </div>
+        <div class="internal-panel add-bottom-margin-05em add-top-margin-10em">
+            <div class="internal-panel-header panel-heading">
+                <h4>Crear Evaluación</h4>
+            </div>
+            <div class="internal-panel-body add-top-margin-05em">
+                <div class="form-group row remove-bottom-margin">
+                    <div class="col-sm-6 add-top-margin-10em">
+                        <label>Razón Social</label>
+                        @Html.TextBox("RazonSocial", (string)ViewBag.RazonSocial, new { @class = "form-control form-width-100", @disabled = "disabled" })
+                    </div>
+                    <div class="col-sm-6 add-top-margin-10em">
+                        <label>NIT</label>
+                        @Html.TextBox("Nit", (string)ViewBag.Nit, new { @class = "form-control form-width-100", @disabled = "disabled" })
+                    </div>
+                    <div class="col-sm-4 col-xs-12 col-lg-3 add-top-margin-10em add-bottom-margin-10em">
+                        <label>Vigencia</label>
+                        @{
+                            DateTime Hoy = DateTime.Today;
+                            int year = Hoy.Year;
+                            List<SelectListItem> ListaAños = new List<SelectListItem>();
+                            for (int i = 2017; i < 2051; i++)
+                            {
+                                if (i == year)
+                                {
+                                    ListaAños.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString(), Selected = true });
+                                }
+                                else
+                                {
+                                    ListaAños.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                                }
+                            }
+                            @Html.DropDownList("Vigencia", ListaAños, htmlAttributes: new { @class = "form-control form-width-100" })
+                        }
+                        <span id="val-vigencia" class="text-danger field-validation-error val-message" style="display:none;"></span>
+                    </div>
+                    <center>
+                        <div class="col-md-12 add-bottom-margin-10em add-top-margin-10em" style="margin-bottom:5px;">
+                            <button id="CrearEval" class="boton botonactive col-margin">CREAR EVALUACIÓN</button>
+                        </div>
+                    </center>
+                </div>
+            </div>
+        </div>
+        <div class="internal-panel add-bottom-margin-05em add-top-margin-10em">
+            <div class="internal-panel-header panel-heading">
+                <h4>Comparar Evaluaciones por vigencias</h4>
+            </div>
+            <div class="internal-panel-body add-top-margin-05em">
+                <div class="form-group row">
+                    <center>
+                        <div class="col-md-12 add-bottom-margin-10em add-top-margin-10em" style="margin-bottom:5px;">
+                            <button id="evalaños" class="boton botonactive col-margin">EVALUACIONES POR VIGENCIAS</button>
+                        </div>
+                    </center>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

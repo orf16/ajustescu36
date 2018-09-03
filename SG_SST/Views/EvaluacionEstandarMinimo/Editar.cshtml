@@ -1,0 +1,423 @@
+﻿@model SG_SST.EntidadesDominio.Planificacion.EDEvaluacionEmpresa
+
+@{
+    ViewBag.Title = "Editar Evaluación Estándares Mínimos";
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+<link href="~/Content/Acciones/Acciones.css" rel="stylesheet" />
+<script src="~/Scripts/flaviusmatis-simplePagination.js-e32c66e/jquery.simplePagination.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#regresar').on('click', function () {
+            window.location.href = "/EvaluacionEstandarMinimo/inicio";
+        });
+    });
+
+    //Cerrar Evaluación
+    $(function () {
+        $("#cerrar").bind("click", function () {
+            var onEventLaunchGuardar = new postGuardar();
+            onEventLaunchGuardar.launchGuardar();
+        });
+    });
+    function postGuardar() {
+        this.launchGuardar = function () {
+            var stringArray = new Array();
+            stringArray[0] = $('input:radio[name="Respuesta"]:checked').val();
+            stringArray[1] = $("#IdEval").val();
+
+
+
+            if (stringArray[0] == null) {
+                swal({
+                    title: "Estimado Usuario",
+                    text: "Debe seleccionar si desea o no cerrar la evaluación",
+                    type: "warning",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                });
+            }
+            else {
+                if (stringArray[0] == "Si") {
+
+
+                    swal({
+                        title: "Estimado Usuario",
+                        text: "Esta seguro(a) que desea cerrar esta evaluación?. Una vez cerrada la evaluación esta no podrá cambiar de estado.",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Si",
+                        cancelButtonText: "No",
+                        type: "warning",
+                        closeOnConfirm: false
+                    },
+                function () {
+                    PopupPosition();
+                    $.ajax({
+                        type: "POST",
+                        url: "/EvaluacionEstandarMinimo/CerrarEvaluacion",
+                        data: '{ideval: "' + stringArray[1] + '" }',
+                        contentType: "application/json; charset=utf-8",
+                        cache: false,
+                        dataType: "json",
+                        success: function (response) {
+                            OcultarPopupposition();
+                            if (response.resultado == "El usuario no ha iniciado sesión en el sistema") {
+                                window.location.href = "/EvaluacionEstandarMinimo/inicio";
+                            }
+                            if (response.probar) {
+
+                                $(".divfinalizada").css("display", "none");
+                                $("#textocerrada").html("Evaluación Cerrada");
+                                swal({
+                                    title: "Estimado Usuario",
+                                    text: response.resultado,
+                                    type: "success",
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "OK",
+                                    closeOnConfirm: true
+                                });
+                            }
+                            else {
+
+
+                                swal({
+                                    title: "Estimado Usuario",
+                                    text: response.resultado,
+                                    type: "warning",
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "OK",
+                                    closeOnConfirm: true
+                                });
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            OcultarPopupposition();
+                        }
+                    });
+                });
+                }
+                else {
+                    window.location.href = "/EvaluacionEstandarMinimo/inicio";
+                }
+            }
+
+
+
+
+        }
+    }
+
+    $(document).ready(function () {
+
+        $('#button1').on('click', function () {
+            var table = $('#tbl_1');
+            var table1 = $('#tbl_2');
+            var table2 = $('#tbl_3');
+            var table3 = $('#tbl_4');
+
+            table.removeClass("table table-bordered nomostrar").addClass("table table-bordered mostrar");
+            table1.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table2.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table3.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+        });
+
+        $('#button2').on('click', function () {
+            var table = $('#tbl_1');
+            var table1 = $('#tbl_2');
+            var table2 = $('#tbl_3');
+            var table3 = $('#tbl_4');
+
+            table1.removeClass("table table-bordered nomostrar").addClass("table table-bordered mostrar");
+            table.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table2.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table3.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+        });
+        $('#button3').on('click', function () {
+            var table = $('#tbl_1');
+            var table1 = $('#tbl_2');
+            var table2 = $('#tbl_3');
+            var table3 = $('#tbl_4');
+
+            table2.removeClass("table table-bordered nomostrar").addClass("table table-bordered mostrar");
+            table.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table1.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table3.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+        });
+        $('#button4').on('click', function () {
+            var table = $('#tbl_1');
+            var table1 = $('#tbl_2');
+            var table2 = $('#tbl_3');
+            var table3 = $('#tbl_4');
+
+            table3.removeClass("table table-bordered nomostrar").addClass("table table-bordered mostrar");
+            table.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table1.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+            table2.removeClass("table table-bordered mostrar").addClass("table table-bordered nomostrar");
+        });
+    });
+</script>
+<style>
+    .infogen {
+        font-size: 18px;
+    }
+
+    .nomostrar {
+        display: none;
+    }
+
+    .mostrar {
+    }
+</style>
+@section OpcionesEvaluacion
+{
+    <ul class="nav nav-tabs">
+        <li><a href="@Url.Action("Index","Evaluacion")" style="color:gray">Evaluación Inicial SGSST</a></li>
+        <li class="active"><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")" style="color:#ff7500;cursor:pointer">Estándares Mínimos SGSST</a></li>
+        <li><a href="@Url.Action("EvaluacionPositiva", "EvaluacionEstandarMinimo")" style="color:gray">Evaluación SST Positiva</a></li>
+    </ul>
+
+}
+<br />
+
+<ol class="breadcrumb">
+    <li><a>Planificación</a></li>
+    <li><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")">Evaluación de Estándares Mínimos</a></li>
+    <li class="active">Editar Evaluación</li>
+</ol>
+
+<div class="panel panel-default std-panel-body">
+    <div class="panel-heading panel-heading-custom">EVALUACIÓN ESTÁNDARES MÍNIMOS</div>
+    <div class="panel-body">
+        @*ayuda*@
+        <div align="right" style="margin-right:5px;margin-top:5px;">
+            <div id="ayuda" style="text-align:right">
+                <a href="" data-toggle="modal" id="elIDdelModal" data-target="#@string.Format("modalAyuda")"
+                   title="Ayuda" class="btn btn-ayuda btn-md">
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                </a>
+                <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                                <h4 class="modal-title title">Ayuda / EDITAR EVALUACIÓN</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> El sistema le mostrará los items evaluados previamente organizados por ciclo, el usuario puede entrar en el modo edición presionando <i class="glyphicon glyphicon-pencil" style="color: #FF7500; border: 1px solid #ff7500; padding: 6px 6px; width: auto"></i></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("IdEval", (string)ViewBag.ideval)
+
+        
+
+        <div class="col-lg-12 add-top-margin-05em">
+
+            @{
+
+                    <div class="row add-bottom-margin-10em add-side-padding ini_est_min">
+                        <div class="inner_ciclos col-sm-12">
+                            @{
+                                int id = 1;
+                                string[] rom = new string[4] { "I.", "II.", "III.", "IV." };
+                                foreach (var item in Model.ListaCiclos)
+                                {
+                                    string btnid = "button" + id.ToString();
+                                    <button id="@btnid" type="button" class="btn_est_min btn btn-default btn-lg add-bottom-margin-05em">@rom[id - 1] @item.Nombre</button>
+                                    id++;
+                                }
+                            }
+                        </div>
+                    </div>
+                        <div class="row add-bottom-margin-10em" >
+                            @{
+                                foreach (var item in Model.ListaCiclos)
+                                {
+                                    string tableid = "tbl_" + item.Id_Ciclo.ToString();
+
+                                    <div id="@tableid" class="col-lg-12 add-top-margin-05em nomostrar form-width-100" style="overflow-x:scroll;border:none">
+
+                                        @{
+                                            if (item.Estandares.Count() > 0)
+                                            {
+
+
+                                                <table id="grid" class="table table-bordered" name="@item.Id_Ciclo" style="border: 2px solid lightslategray; ">
+                                                    <thead>
+                                                        <tr class="titulos_tabla">
+                                                            <th colspan="6" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;">
+                                                                <span>@item.Nombre</span>
+                                                            </th>
+                                                        </tr>
+                                                        <tr class="titulos_tabla">
+                                                            <th colspan="2" style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;">
+                                                                <span>ESTANDAR</span>
+                                                            </th>
+                                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                                <span>CRITERIO</span>
+                                                            </th>
+                                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                                <span>MARCO LEGAL</span>
+                                                            </th>
+                                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                                <span>CALIFICACIÓN</span>
+                                                            </th>
+                                                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center">
+                                                                <span>ACCIÓN</span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            int numest = item.Estandares.Count();
+                                                            List<int> ListaEstandarNumFilas = new List<int>();
+                                                            List<int> ListaSubEstandarNumFilas = new List<int>();
+                                                            foreach (var item1 in item.Estandares)
+                                                            {
+                                                                int numeval = 0;
+                                                                var sube = item1.SubEstandares;
+                                                                foreach (var item2 in sube)
+                                                                {
+                                                                    int numeval1 = 0;
+                                                                    var crit = item2.Criterios;
+                                                                    foreach (var item3 in crit)
+                                                                    {
+                                                                        var eval = item3.Evaluaciones;
+                                                                        foreach (var item4 in eval)
+                                                                        {
+                                                                            numeval++;
+                                                                            numeval1++;
+                                                                        }
+                                                                    }
+                                                                    ListaSubEstandarNumFilas.Add(numeval1);
+                                                                }
+                                                                ListaEstandarNumFilas.Add(numeval);
+                                                            }
+
+                                                            int numsubestandar = 0;
+                                                            int numestandar = 0;
+                                                            foreach (var item1 in item.Estandares)
+                                                            {
+
+
+                                                                var sube = item1.SubEstandares;
+                                                                int numfila = 0;
+                                                                int numfila1 = 0;
+                                                                foreach (var item2 in sube)
+                                                                {
+                                                                    int numsubs = ListaSubEstandarNumFilas[numsubestandar];
+                                                                    var crit = item2.Criterios;
+
+                                                                    numfila1 = 0;
+                                                                    foreach (var item3 in crit)
+                                                                    {
+                                                                        var eval = item3.Evaluaciones;
+                                                                        foreach (var item4 in eval)
+                                                                        {
+
+                                                                            if (numfila == 0)
+                                                                            {
+                                                                                if (numfila1 == 0)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td rowspan="@ListaEstandarNumFilas[numestandar]" style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>Estandar @item1.Descripcion</span></td>
+                                                                                        <td rowspan="@ListaSubEstandarNumFilas[numsubestandar]" style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item2.Descripcion</span></td>
+                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Descripcion_Corta</span></td>
+                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Marco_Legal</span></td>
+                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item4.Respuesta</span></td>
+                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a id="@item4.IdEvalEstandarMinimo.ToString()" href="@Url.Action("Index_ed", "EvaluacionEstandarMinimo", new { ideval = (string)ViewBag.ideval, Idcrit = item4.IdCriterio, idciclo = item.Id_Ciclo })" class="btn btn-sm btn-positiva" title="Editar" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-pencil"></span></a></td>
+
+                                                                                    </tr>
+                                                                                }
+                                                                                else
+                                                                                {
+
+
+                                                                                }
+
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (numfila1 == 0)
+                                                                                {
+                                                                                                    <tr>
+                                                                                                        <td rowspan="@ListaSubEstandarNumFilas[numsubestandar]" style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item2.Descripcion</span></td>
+                                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Descripcion_Corta</span></td>
+                                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Marco_Legal</span></td>
+                                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item4.Respuesta</span></td>
+                                                                                                        <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a id="@item4.IdEvalEstandarMinimo.ToString()" href="@Url.Action("Index_ed", "EvaluacionEstandarMinimo", new { ideval = (string)ViewBag.ideval, Idcrit = item4.IdCriterio, idciclo = item.Id_Ciclo })" class="btn btn-sm btn-positiva" title="Editar" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                                                                                                    </tr>
+                                                                                }
+                                                                                else
+                                                                                {
+
+                                                                                                                <tr>
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Descripcion_Corta</span></td>
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item3.Marco_Legal</span></td>
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><span>@item4.Respuesta</span></td>
+                                                                                                                    <td style="border-bottom:2px solid lightslategray;border-right: 2px solid lightslategray; vertical-align:middle; text-align:center;"><a id="@item4.IdEvalEstandarMinimo.ToString()" href="@Url.Action("Index_ed", "EvaluacionEstandarMinimo", new { ideval = (string)ViewBag.ideval, Idcrit = item4.IdCriterio, idciclo = item.Id_Ciclo })" class="btn btn-sm btn-positiva" title="Editar" style="height:35px;margin-bottom:5px"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                                                                                                                </tr>
+                                                                                }
+
+                                                                            }
+
+                                                                        }
+                                                                        numfila++;
+                                                                        numfila1++;
+                                                                    }
+
+                                                                    numsubestandar++;
+
+                                                                }
+                                                                numestandar++;
+
+
+                                                            }
+
+                                                        }
+
+
+                                                    </tbody>
+                                                </table>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                                                                            <div class="row" style="text-align:center">
+                                                                                                                                <h4>No existe registro de respuestas a este ciclo</h4>
+                                                                                                                            </div>
+
+                                                                }
+
+                                                            }
+
+                                    </div>
+
+                                                                }
+                                                            }
+                        </div>
+                                                                                                                        
+            }
+        </div>
+
+        <div class="col-lg-12 add-top-margin-05em" style="text-align:center;">
+            <button id="regresar" class="regresar boton botonactive col-margin">REGRESAR</button>
+        </div>
+    </div>
+</div>
+
+

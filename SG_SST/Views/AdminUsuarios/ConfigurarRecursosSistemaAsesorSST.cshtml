@@ -1,0 +1,53 @@
+﻿@model SG_SST.Models.AdminUsuarios.ConfiguracionRecursosSistemaPorRolModel
+@{
+    ViewBag.Title = "ConfigurarRecursosSistemaAsesorSST";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .checkConfMenu {
+        color: black;
+    }
+    .btn-rl {
+        width: auto !important;
+    }
+    .btn-rl a {
+        color: #ff7500 !important;
+    }
+</style>
+<div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+    <div class="panel-heading" style="color:black">
+        CONFIGURAR PERMISOS A RECURSOS DEL SISTEMA ALISSTA PARA EL USUARIO ASESOR SST
+    </div>
+    <div class="panel-body form-horizontal">
+        <div id="containerRecSx">
+            <div class="row form-group">
+                <div class="col-md-4">
+                    No. Documento de Usuario Asesor SST
+                </div>
+                <div class="col-md-4">
+                    @Html.TextBoxFor(x => x.NumDocumentoAsesorSST, new { @class = "form-control" })
+                </div>
+                <div class="col-md-1 btn-rl">
+                    <a id="busarAsesorSST" class="glyphicon glyphicon-search form-control" href="javascrip:void(0);"></a>
+                </div>
+            </div>
+            <div id="">
+                <div class="row form-group">
+                    <div class="col-md-4">
+                        <strong>Empresas Asociadas</strong>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div id="emp_asesorSST" class="col-md-4">
+                    </div>
+                </div>
+            </div>
+            <strong class="titulo_rec" style="display:none;">Recursos del sistema</strong>
+            <br />
+            <div id="recursos_sx"></div>
+            <br />
+            <button id="btnGuardarConfRecSx" class="boton botonactive" type="button">Guardar</button>
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/Scripts/AdminUsuarios/configuracionRecursosSistemaAsesorSST.js")

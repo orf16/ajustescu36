@@ -1,0 +1,125 @@
+﻿@model SG_SST.Models.AdminUsuarios.ConfiguracionRecursosSistemaPorRolModel
+@if (Model != null && Model.MenuRecursoSistemaModel != null && Model.MenuRecursoSistemaModel.Count() > 0)
+            {
+    <ul>
+        @foreach (var pn in Model.MenuRecursoSistemaModel)
+        {
+            //var activo = pn.RecursosSistemaHijos.Where(rs => rs.Activo == true || (rs.RecursosSistemaHijos.Where(rsh => rsh.Activo == true).Select(rsh => rsh.Activo).FirstOrDefault()) == true).Select(rs => rs.Activo).FirstOrDefault();
+            //if(!pn.Activo)
+            //{
+            //    pn.Activo = activo;
+            //}
+            <li id="pn_@pn.IdRecursoSistema">
+                @Html.CheckBox(string.Format("Check_{0}", pn.IdRecursoSistema), pn.Activo, new { data_tipo = "pn", data_id = pn.IdRecursoSistema, data_idpadre = pn.CodRecursoSistemaPadre })
+                @if (pn.RecursosSistemaHijos != null && pn.RecursosSistemaHijos.Count() > 0)
+                    {
+                    <a id="click_@pn.IdRecursoSistema" class="checkConfMenu" data-link="pn" href="javascript:void(0);">
+                        <span class="glyphicon glyphicon-minus"></span>
+                    </a>
+                }
+                @Html.Raw("<label class=\"control-label\">")@pn.NombreRecursoSistema@Html.Raw("</label>")
+                @*@Html.Label(pn.NombreRecursoSistema, new { @class = "control-label" })*@
+                @if (pn.RecursosSistemaHijos != null && pn.RecursosSistemaHijos.Count() > 0)
+                    {
+                    <ul>
+                        @foreach (var sn in pn.RecursosSistemaHijos)
+                        {
+                            //var activoSN = sn.RecursosSistemaHijos.Where(rs => rs.Activo == true).Select(rs => rs.Activo).FirstOrDefault();
+                            //if (!sn.Activo)
+                            //{
+                            //    sn.Activo = activoSN;
+                            //}
+                            <li id="sn_@sn.IdRecursoSistema">
+                                @Html.CheckBox(string.Format("Check_{0}", sn.IdRecursoSistema), sn.Activo, new { data_tipo = "sn", data_id = sn.IdRecursoSistema, data_idpadre = sn.CodRecursoSistemaPadre })
+                                @if (sn.RecursosSistemaHijos != null && sn.RecursosSistemaHijos.Count() > 0)
+                                {
+                                    <a class="checkConfMenu" href="javascript:void(0);" data-link="sn">
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    </a>
+                                }
+                                @Html.Raw("<label class=\"control-label\">")@sn.NombreRecursoSistema@Html.Raw("</label>")
+                                @*@Html.Label(sn.NombreRecursoSistema, new { @class = "control-label" })*@
+                                @if (sn.RecursosSistemaHijos != null && sn.RecursosSistemaHijos.Count() > 0)
+                                {
+                                    <ul>
+                                        @foreach (var tn in sn.RecursosSistemaHijos)
+                                        {
+                                            <li id="tn_@tn.IdRecursoSistema">
+                                                @Html.CheckBox(string.Format("Check_{0}", tn.IdRecursoSistema), tn.Activo, new { data_tipo = "tn", data_id = tn.IdRecursoSistema, data_idpadre = tn.CodRecursoSistemaPadre })
+                                                @if (tn.RecursosSistemaHijos != null && tn.RecursosSistemaHijos.Count() > 0)
+                                                {
+                                                    <a class="checkConfMenu" href="javascript:void(0);" data-link="tn">
+                                                        <span class="glyphicon glyphicon-minus"></span>
+                                                    </a>
+                                                }
+                                                @Html.Raw("<label class=\"control-label\">")@tn.NombreRecursoSistema@Html.Raw("</label>")
+                                                @*@Html.Label(tn.NombreRecursoSistema, new { @class = "control-label" })*@
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //configuracion inicial
+        $('a[data-link="pn"]').find('span').attr('class', 'glyphicon glyphicon-plus');
+        $('a[data-link="pn"]').siblings('ul').find('li').hide();
+        //manejo de check para el primer nivel
+        $('input[data-tipo="pn"]').on('change', function (evt) {
+            evt.preventDefault();
+            if ($(this).is(':checked')) {
+                $(this).parent().find('input[type="checkbox"]').each(function (index, value) {
+                    $(this).prop('checked', true);
+                });
+            } else {
+                $(this).parent().find('input[type="checkbox"]').each(function (index, value) {
+                    $(this).prop('checked', false);
+                });
+            }
+        });
+        $('a[data-link="pn"]').on('click', function (evt) {
+            var clase = $(this).find('span').attr('class');
+            if (clase == 'glyphicon glyphicon-minus') {
+                $(this).find('span').removeClass('glyphicon glyphicon-minus');
+                $(this).find('span').addClass('glyphicon glyphicon-plus');
+                $(this).siblings('ul').find('li').hide();
+            } else if (clase == 'glyphicon glyphicon-plus') {
+                $(this).find('span').removeClass('glyphicon glyphicon-plus');
+                $(this).find('span').addClass('glyphicon glyphicon-minus');
+                $(this).siblings('ul').find('li').show();
+            }
+        });
+        //manejo de check para el segundo nivel
+        $('input[data-tipo="sn"]').on('change', function (evt) {
+            evt.preventDefault();
+            if ($(this).is(':checked')) {
+                $(this).parent().find('input[type="checkbox"]').each(function (index, value) {
+                    $(this).prop('checked', true);
+                });
+            } else {
+                $(this).parent().find('input[type="checkbox"]').each(function (index, value) {
+                    $(this).prop('checked', false);
+                });
+            }
+        });
+        $('a[data-link="sn"]').on('click', function (evt) {
+            var clase = $(this).find('span').attr('class');
+            if (clase == 'glyphicon glyphicon-minus') {
+                $(this).find('span').removeClass('glyphicon glyphicon-minus');
+                $(this).find('span').addClass('glyphicon glyphicon-plus');
+                $(this).siblings('ul').find('li').hide();
+            } else if (clase == 'glyphicon glyphicon-plus') {
+                $(this).find('span').removeClass('glyphicon glyphicon-plus');
+                $(this).find('span').addClass('glyphicon glyphicon-minus');
+                $(this).siblings('ul').find('li').show();
+            }
+        });
+    });
+</script>

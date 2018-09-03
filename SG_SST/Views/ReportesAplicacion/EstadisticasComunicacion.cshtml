@@ -1,0 +1,189 @@
+﻿
+
+<style>
+    td {
+        border: 0px;
+    }
+</style>
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index","Home")">Organización</a></li>
+    <li><a href="javascript:void(0)">Comunicación</a></li>
+    <li class="active">Estadísticas</li>
+</ol>
+
+
+<div class="row">
+
+    @*Boton ayuda*@
+    <div align="right">
+        <div id="ayuda" style="text-align:right">
+            <a href="" data-toggle="modal" data-target="#@string.Format("modalAyuda")"
+               title="Ayuda" class="btn btn-ayuda btn-md">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+            <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                @*<span aria-hidden="true">&times;</span>*@
+                            </button>
+                            <h4 class="modal-title title">Ayuda </h4>
+                        </div>
+
+                        <div class="modal-body" style="color:black">
+                            @* ayuda*@
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+        <div class="panel-heading" style="color:white">Estadísticas</div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <div class="col-md-12">
+                    <br />
+                    <br />
+                    <label>Tipo de Estadísticas:</label>
+                    <br />
+                    <select class="form-control" name="estadisticasComunicaciones" id="estadisticasComunicaciones" oninput="SeleccionarEstadisticasComunicaciones()">
+                        <option value="">
+                            --Seleccionar--
+                        </option>
+
+                        <option value="Comunicaciones">Comunicaciones</option>
+                        <option value="Encuestas">Encuestas</option>
+                        <option value="TabulacionDeEncuestas">Gráfica de Tabulación de Encuestas</option>
+                        <option value="TabulacionDeEncuestasDatos">Tabulación de Encuestas</option>
+                        <option value="EncuestasDatos">Histórico de Envío de Encuestas</option>
+                        <option value="ComunicacionesDatos">Detalle de Comunicaciones</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <br />
+ 
+    <br />
+    <div class="row" id="paramCom" hidden="hidden" >
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label class="col-md-7"> Parámetros:</label>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <br />
+    <div class="row">
+
+
+        <div class="col-sm-4" id="divAnioCom" hidden="hidden">
+            <div class=" form-group">
+                <label class="col-md-7">Año:</label>
+                <div class="col-md-10">
+
+                    @{
+                        var anioStr = DateTime.Today.Year.ToString();
+                        var anioStr1 = DateTime.Today.AddYears(-1).Year.ToString();
+                        var anioStr2 = DateTime.Today.AddYears(-2).Year.ToString();
+                        var anioStr3 = DateTime.Today.AddYears(-3).Year.ToString();
+                        var anioStr4 = DateTime.Today.AddYears(-4).Year.ToString();
+                        var anioStr5 = DateTime.Today.AddYears(-5).Year.ToString();
+                        var anioStr6 = DateTime.Today.AddYears(-6).Year.ToString();
+                        var anioStr7 = DateTime.Today.AddYears(-7).Year.ToString();
+                        var anioStr8 = DateTime.Today.AddYears(-8).Year.ToString();
+                        var anioStr9 = DateTime.Today.AddYears(-9).Year.ToString();
+
+                        <select class="form-control" id="anioCom" name="anioCom">
+                            <option value="">--Seleccionar--</option>
+                            <option value=@anioStr>@anioStr</option>
+                            <option value=@anioStr1>@anioStr1</option>
+                            <option value=@anioStr2>@anioStr2</option>
+                            <option value=@anioStr3>@anioStr3</option>
+                            <option value=@anioStr4>@anioStr4</option>
+                            <option value=@anioStr5>@anioStr5</option>
+                            <option value=@anioStr6>@anioStr6</option>
+                            <option value=@anioStr7>@anioStr7</option>
+                            <option value=@anioStr8>@anioStr8</option>
+                            <option value=@anioStr9>@anioStr9</option>
+                        </select>
+                    }
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-4" id="divEncuesta" hidden="hidden">
+            <div class="form-group">
+                <label class="col-md-7">Encuesta:</label>
+                <div class="col-md-10">
+                    @Html.DropDownList("Encuesta", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "-- Seleccionar --")
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <br />
+
+    <div class="row">
+
+        <div class="col-md-5">
+            <button type="button" id="graficar" onclick="MostrarEstadisticasComunicaciones()" class="boton botonactive">Mostrar Estadísticas</button>
+        </div>
+
+    </div>
+
+
+
+    <form id="formEstadisticasComunicaciones" >
+        <div id="divEstadisticasComunicaciones" class="panel-body" >
+            @Html.Partial("VisorDeReportesComunicaciones")
+        </div>
+    </form>
+
+
+    @Scripts.Render("~/Scripts/Reportes/Estadisticas.js")
+
+<script>
+
+    $(document).ready(function () {
+        $("a[title='PDF']").parent().hide();
+        var nitEmpresa = @Html.Raw(Json.Encode(ViewBag.nitEmpresa));
+
+        if (nitEmpresa == "")
+        {
+            $("#divEstadisticasComunicaciones").hide();
+
+
+        }
+        else
+        {
+            $("#divEstadisticasComunicaciones").show();
+
+        }
+
+    });
+</script>

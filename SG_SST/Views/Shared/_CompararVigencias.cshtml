@@ -1,0 +1,509 @@
+﻿@model IEnumerable<SG_SST.EntidadesDominio.Planificacion.EDEvaluacionEmpresa>
+
+<script>
+    //Graficas Ciclos
+    $(document).ready(function () {
+
+        Chart.pluginService.register({
+            beforeDraw: function (chart, easing) {
+                if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
+                    var helpers = Chart.helpers;
+                    var ctx = chart.chart.ctx;
+                    var chartArea = chart.chartArea;
+
+                    ctx.save();
+                    ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
+                    ctx.fillRect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+                    ctx.restore();
+                }
+            }
+        });
+
+        console.log('graph');
+        var tables1 = document.getElementById("general");
+        var tbody = $('#general tbody');
+        var ctx1 = document.getElementById("canvasgen");
+        //Colores
+        var coloresgen = ['rgba(13,149,188,1)',
+'rgba(92,167,147,1)',
+'rgba(235,203,56,1)',
+'rgba(243,111,19,1)',
+'rgba(193,48,24,1)',
+'rgba(208, 178, 109,1)',
+'rgba(109, 208, 189,1)',
+'rgba(208, 109, 152,1)',
+'rgba(255, 176, 128,1)',
+'rgba(151, 165, 158,1)',
+'rgba(6,57,81,1)',
+'rgba(13,149,188,1)',
+'rgba(92,167,147,1)',
+'rgba(235,203,56,1)',
+'rgba(243,111,19,1)',
+'rgba(193,48,24,1)',
+'rgba(208, 178, 109,1)',
+'rgba(109, 208, 189,1)',
+'rgba(208, 109, 152,1)',
+'rgba(255, 135, 61,1)',
+'rgba(6,57,81,1)',
+'rgba(151, 165, 158,1)'];
+        //Nombre del elemento
+        var labsArray = new Array();
+        //Aqui se ubican los resultados
+        var datasArray = new Array();
+        //Colores del resultado
+        var ColorArray = new Array();
+        var sumaResultados = 100;
+        tbody.find('tr').each(function () {
+            var fila = $(this);
+            fila.find('td.graphDesc').each(function () {
+                var Descripcion = this;
+                var descParametro = $(Descripcion).attr('descripcion');
+                labsArray.push(descParametro);
+            });
+            fila.find('td.graphResult').each(function () {
+                var resultado = this;
+                var resultadoParametro = $(resultado).attr('resultado');
+                var decimal = resultadoParametro.replace(",", ".");
+                datasArray.push(decimal);
+                sumaResultados = sumaResultados - decimal;
+            });
+        });
+        var cont = 0;
+        $.each(labsArray, function (key, value) {
+            var color = coloresgen[key];
+            ColorArray.push(color);
+            cont++;
+        });
+
+        var chartOptions = {
+            responsive: true,
+            scales: {
+                xAxes: [{
+                    barPercentage: 0.5
+                }],
+                yAxes: [{
+
+                    ticks: {
+                        min: 0,
+                        max: 110,
+                        stepSize: 10
+                    },
+                    afterFit: function (scaleInstance) {
+                        scaleInstance.width = 100;
+                    }
+                }]
+            },
+            title: {
+                display: true,
+                text: 'RESULTADO DE EVALUACIÓN ESTANDARES MÍNIMOS DEL SGSST POR VIGENCIAS',
+                fontSize: 20
+            },
+            "animation": {
+                "duration": 1
+            },
+            legend: {
+                display: false
+            },
+            "animation": {
+                "duration": 1,
+                "onComplete": function () {
+                    var chartInstance = this.chart,
+                      ctx = chartInstance.ctx;
+
+                    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillStyle = "#000000";
+
+                    this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            ctx.fillText(data, bar._model.x - 15, bar._model.y - 5);
+                        });
+                    });
+                }
+            },
+            chartArea: {
+                backgroundColor: 'rgba(242, 242, 242, 1)'
+    }
+        };
+
+        var myChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                label: 'Puntaje',
+                labels: labsArray,
+                datasets: [{
+                    data: datasArray,
+                    backgroundColor: ColorArray
+
+                }]
+            }
+        ,
+            options: chartOptions
+            , onAnimationComplete: function () {
+
+
+            }
+
+
+        });
+    });
+
+    $(document).ready(function () {
+
+        Chart.pluginService.register({
+            beforeDraw: function (chart, easing) {
+                if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
+                    var helpers = Chart.helpers;
+                    var ctx = chart.chart.ctx;
+                    var chartArea = chart.chartArea;
+
+                    ctx.save();
+                    ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
+                    ctx.fillRect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+                    ctx.restore();
+                }
+            }
+        });
+        //Colores
+        var coloresgen = ['rgba(13,149,188,1)',
+'rgba(92,167,147,1)',
+'rgba(235,203,56,1)',
+'rgba(243,111,19,1)',
+'rgba(193,48,24,1)',
+'rgba(208, 178, 109,1)',
+'rgba(109, 208, 189,1)',
+'rgba(208, 109, 152,1)',
+'rgba(255, 176, 128,1)',
+'rgba(151, 165, 158,1)',
+'rgba(6,57,81,1)',
+'rgba(13,149,188,1)',
+'rgba(92,167,147,1)',
+'rgba(235,203,56,1)',
+'rgba(243,111,19,1)',
+'rgba(193,48,24,1)',
+'rgba(208, 178, 109,1)',
+'rgba(109, 208, 189,1)',
+'rgba(208, 109, 152,1)',
+'rgba(255, 135, 61,1)',
+'rgba(6,57,81,1)',
+'rgba(151, 165, 158,1)'];
+        console.log('graph1');
+        var ctx1 = document.getElementById("canvascicl");
+        var tbody = $('#inner_body_cicl');
+        var thead = $('#inner_head_cicl');
+
+        //Nombre del elemento
+        var Array0 = new Array();
+        var Array1 = new Array();
+        var Array2 = new Array();
+        var Array3 = new Array();
+        var Array4 = new Array();
+
+        tbody.find('tr').each(function () {
+            var fila = $(this);
+            fila.find('td.dtplanear').each(function () {
+                var Descripcion = this;
+                var descParametro = $(Descripcion).attr('valor');
+                var parse = parseInt(descParametro);
+                if (parse != descParametro) {
+                    var cambio = false;
+                    if (descParametro.indexOf(",") >= 0)
+                    {
+                        descParametro = descParametro.replace(",", ".");
+                        cambio = true;
+                    }
+                    if (descParametro.indexOf(".") >= 0 && !cambio) {
+                        descParametro = descParametro.replace(".", ",");
+                    }
+                }
+                else {
+                    descParametro = parse;
+                }
+                Array1.push(descParametro);
+            });
+            fila.find('td.dthacer').each(function () {
+                var Descripcion = this;
+                var descParametro = $(Descripcion).attr('valor');
+                var parse = parseInt(descParametro);
+                if (parse != descParametro) {
+                    var cambio = false;
+                    if (descParametro.indexOf(",") >= 0) {
+                        descParametro = descParametro.replace(",", ".");
+                        cambio = true;
+                    }
+                    if (descParametro.indexOf(".") >= 0 && !cambio) {
+                        descParametro = descParametro.replace(".", ",");
+                    }
+                }
+                else {
+                    descParametro = parse;
+                }
+                Array2.push(descParametro);
+            });
+            fila.find('td.dtverificar').each(function () {
+                var Descripcion = this;
+                var descParametro = $(Descripcion).attr('valor');
+                var parse = parseInt(descParametro);
+                if (parse != descParametro) {
+                    var cambio = false;
+                    if (descParametro.indexOf(",") >= 0) {
+                        descParametro = descParametro.replace(",", ".");
+                        cambio = true;
+                    }
+                    if (descParametro.indexOf(".") >= 0 && !cambio) {
+                        descParametro = descParametro.replace(".", ",");
+                    }
+                }
+                else {
+                    descParametro = parse;
+                }
+                Array3.push(descParametro);
+            });
+            fila.find('td.dtactuar').each(function () {
+                var Descripcion = this;
+                var descParametro = $(Descripcion).attr('valor');
+                var parse = parseInt(descParametro);
+                if (parse != descParametro) {
+                    var cambio = false;
+                    if (descParametro.indexOf(",") >= 0) {
+                        descParametro = descParametro.replace(",", ".");
+                        cambio = true;
+                    }
+                    if (descParametro.indexOf(".") >= 0 && !cambio) {
+                        descParametro = descParametro.replace(".", ",");
+                    }
+                }
+                else {
+                    descParametro = parse;
+                }
+                Array4.push(descParametro);
+            });
+        });
+        thead.find('tr').each(function () {
+            var fila = $(this);
+            fila.find('th.dtaños').each(function () {
+                var Descripcion = this;
+                var descParametro = $(Descripcion).attr('valor');
+                Array0.push(descParametro);
+            });
+        });
+
+        
+        var Arraydts = new Array();
+
+        $.each(Array0, function (i, value) {
+
+            var dt1= {
+                label: value,
+                backgroundColor: coloresgen[i],
+                borderColor: coloresgen[i],
+                borderWidth: 1,
+                data: [Array1[i], Array2[i], Array3[i], Array4[i]],
+            }
+            Arraydts.push(dt1);
+        });
+
+        var chartOptions = {
+            responsive: true,
+            scales: {
+                xAxes: [{
+                    barPercentage: 0.5
+                }],
+                yAxes: [{
+
+                    ticks: {
+                        min: 0,
+                        max: 100,
+                        stepSize: 10
+                    },
+                    afterFit: function (scaleInstance) {
+                        scaleInstance.width = 100;
+                    }
+                }]
+            },
+            title: {
+                display: true,
+                text: 'RESULTADO DE EVALUACIÓN ESTANDARES MÍNIMOS DEL SGSST POR VIGENCIAS',
+                fontSize: 20
+            },
+            "animation": {
+                "duration": 1
+            },
+            legend: {
+                display: true
+            },
+            "animation": {
+                "duration": 1,
+                "onComplete": function () {
+                    var chartInstance = this.chart,
+                      ctx = chartInstance.ctx;
+
+                    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillStyle = "#000000";
+
+                    this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            ctx.fillText(data, bar._model.x - 15, bar._model.y - 5);
+                        });
+                    });
+                }
+            },
+            chartArea: {
+                backgroundColor: 'rgba(242, 242, 242, 1)'
+            }
+        };
+        var data = {
+            labels: ["PLANEAR", "HACER", "VERIFICAR", "ACTUAR"]
+        };
+        var myChart = new Chart(ctx1, {
+            type: 'bar',
+            data: data,
+            options: chartOptions
+        });
+        $.each(Arraydts, function (i, value) {
+            data.datasets.push(Arraydts[i]);
+        });
+        myChart.update();
+        
+
+    });
+</script>
+
+<div class="row">
+    <div id="general" class="col-sm-12">
+
+        <canvas id="canvasgen" style="display: block;" class="chartjs-render-monitor"></canvas>
+        
+            <div class="col-sm-12 col-md-12 ">
+                <table id="tbl_gen" class="table table-bordered col-sm-5" style="border: 2px solid lightslategray;margin: 10px 5px 5px 5px">
+                    <thead>
+                        <tr class="titulos_tabla">
+                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                                <span>Año</span>
+                            </th>
+                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                                <span>Resultado Obtenido</span>
+                            </th>
+                            <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                                <span>Valoración</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="inner_gen" class="head-activ">
+                        @{
+                            foreach (var eval in Model)
+                            {
+                                decimal total = 0;
+                                foreach (var item in eval.ListaCiclos)
+                                {
+                                    total = total + item.puntoObtenidos;
+                                }
+                                <tr class="fila_existente" edicion="existente" estado="sin">
+                                    <td class="graphDesc" descripcion="@eval.Vigencia" style="border-right: 2px solid lightslategray; vertical-align:middle;text-align:center;">@eval.Vigencia</td>
+                                    <td class="graphResult" resultado="@total" style="border-right: 2px solid lightslategray; vertical-align:middle;text-align:center;">@total</td>
+                                    <td style="border-right: 2px solid lightslategray; vertical-align:middle;text-align:center;">@eval.ValoracionFinal.Valoracion</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        
+        
+        
+    </div>
+</div>
+
+<div class="row">
+    <div id="ciclos" class="col-sm-12">
+        <canvas id="canvascicl" style="display: block;" class="chartjs-render-monitor"></canvas>
+        <div class="col-sm-12 col-md-12 ">
+            <table id="tbl_cicl" class="table table-bordered " style="border: 2px solid lightslategray;margin: 10px 5px 5px 5px">
+                <thead id="inner_head_cicl">
+                    <tr class="titulos_tabla">
+                        <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;">
+                            <span>Ciclo</span>
+                        </th>
+                        @{
+                            foreach (var eval in Model)
+                            {
+                                <th style="border-right: 2px solid lightslategray; border-bottom: 2px solid lightslategray; text-align:center;vertical-align:middle;" class="dtaños" valor="@eval.Vigencia">
+                                    <span>VIGENCIA @eval.Vigencia</span>
+                                </th>
+                            }
+                        }
+
+                    </tr>
+                </thead>
+                <tbody id="inner_body_cicl" class="head-activ">
+                    <tr>
+                        <td style="border-right: 2px solid lightslategray;">
+                            <span>PLANEAR</span>
+                        </td>
+                        @{
+                            foreach (var eval in Model)
+                            {
+                                var ciclo1 = eval.ListaCiclos.Where(s => s.Id_Ciclo == 1).FirstOrDefault();
+                                <td class="dtplanear" valor="@ciclo1.puntoObtenidos">
+                                    <span>@ciclo1.puntoObtenidos</span>
+                                </td>
+                            }
+                        }
+                    </tr>
+                    <tr>
+                        <td style="border-right: 2px solid lightslategray;">
+                            <span>HACER</span>
+                        </td>
+                        @{
+                            foreach (var eval in Model)
+                            {
+                                var ciclo1 = eval.ListaCiclos.Where(s => s.Id_Ciclo == 2).FirstOrDefault();
+                                <td class="dthacer" valor="@ciclo1.puntoObtenidos">
+                                    <span>@ciclo1.puntoObtenidos</span>
+                                </td>
+                            }
+                        }
+                    </tr>
+                    <tr>
+                        <td style="border-right: 2px solid lightslategray;">
+                            <span>VERIFICAR</span>
+                        </td>
+                        @{
+                            foreach (var eval in Model)
+                            {
+                                var ciclo1 = eval.ListaCiclos.Where(s => s.Id_Ciclo == 3).FirstOrDefault();
+                                <td class="dtverificar" valor="@ciclo1.puntoObtenidos">
+                                    <span>@ciclo1.puntoObtenidos</span>
+                                </td>
+                            }
+                        }
+                    </tr>
+                    <tr>
+                        <td style="border-right: 2px solid lightslategray;">
+                            <span>ACTUAR</span>
+                        </td>
+                        @{
+                            foreach (var eval in Model)
+                            {
+                                var ciclo1 = eval.ListaCiclos.Where(s => s.Id_Ciclo == 4).FirstOrDefault();
+                                <td class="dtactuar" valor="@ciclo1.puntoObtenidos">
+                                    <span>@ciclo1.puntoObtenidos</span>
+                                </td>
+                            }
+                        }
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        
+
+    </div>
+</div>

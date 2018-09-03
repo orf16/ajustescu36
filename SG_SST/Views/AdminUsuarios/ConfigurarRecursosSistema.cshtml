@@ -1,0 +1,48 @@
+﻿@model SG_SST.Models.AdminUsuarios.ConfiguracionRecursosSistemaPorRolModel
+@{
+    ViewBag.Title = "ConfigurarRecursosSistema";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .checkConfMenu {
+        color: black;
+    }
+</style>
+<div class="panel panel-default" style="background-color: rgba(196, 202,196, 0.1)">
+    <div class="panel-heading" style="color:black">
+        CONFIGURAR PERMISOS A RECURSOS DEL SISTEMA ALISSTA
+    </div>
+    <div class="panel-body form-horizontal">
+        <div id="containerRecSx">
+            <div class="row form-group">
+                <div class="col-xs-12 col-sm-3 col-sm-3 linea02">
+                    <h4>Empresas registradas</h4>
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 linea02">
+                    @Html.TextBoxFor(x => x.EmpresaSeleccionada, new { display = "none", @class = "form-control" })
+                    @Html.Hidden("IdEmpresaSeleccionada", new { name = "IdEmpresaSeleccionada" })
+                    @Html.ValidationMessageFor(x => x.EmpresaSeleccionada)
+                    <span class="error" id="errorempresa" style="display:none;">Debe seleccionar un empresa válida </span>
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-2 linea02">
+                    @Html.TextBoxFor(x => x.NitEmpresa, new { @class = "form-control bloqueado", @disabled = "disabled" })
+                </div>                
+            </div>
+            <div class="row form-group">
+                <div class="col-xs-12 col-sm-4 col-sm-3 linea02">
+                    <h4>Roles del Sistema</h4>
+                </div>
+                <div class="col-xs-12 col-md-6 col-md-4 linea02">
+                    @Html.DropDownList("Roles del sistema", Model.RolesSistema, "Seleccione el Rol a configurar...", new { @class = "form-control" })
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-3 linea02">
+                    <button id="btnBuscarRecursos" class="boton botonactive" type="button">Cargar recursos</button>
+                </div>
+            </div>
+            <div id="recursos_sx"></div>
+            @*@Html.Partial("_RecursosParaAccesos")*@
+            <button id="btnGuardarConfRecSx" class="boton botonactive" type="button">Guardar</button>
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/Scripts/AdminUsuarios/configuracionRecursosSistema.js")

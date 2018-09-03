@@ -1,0 +1,243 @@
+﻿
+
+@{
+    ViewBag.Title = "Cerrar Evaluación Estándares Mínimos";
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+<link href="~/Content/Acciones/Acciones.css" rel="stylesheet" />
+<script src="~/Scripts/flaviusmatis-simplePagination.js-e32c66e/jquery.simplePagination.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#regresar').on('click', function () {
+            window.location.href = "/EvaluacionEstandarMinimo/inicio";
+        });
+    });
+
+    //Cerrar Evaluación
+    $(function () {
+        $("#cerrar").bind("click", function () {
+            var onEventLaunchGuardar = new postGuardar();
+            onEventLaunchGuardar.launchGuardar();
+        });
+    });
+    function postGuardar() {
+        this.launchGuardar = function () {
+            var stringArray = new Array();
+            stringArray[0] = $('input:radio[name="Respuesta"]:checked').val();
+            stringArray[1] = $("#IdEval").val();
+
+
+
+            if (stringArray[0] == null) {
+                swal({
+                    title: "Estimado Usuario",
+                    text: "Debe seleccionar si desea o no cerrar la evaluación",
+                    type: "warning",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: false
+                });
+            }
+            else {
+                if (stringArray[0] == "Si") {
+
+
+                    swal({
+                        title: "Estimado Usuario",
+                        text: "Esta seguro(a) que desea cerrar esta evaluación?. Una vez cerrada la evaluación esta no podrá cambiar de estado.",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Si",
+                        cancelButtonText: "No",
+                        type: "warning",
+                        closeOnConfirm: false
+                    },
+                function () {
+                    PopupPosition();
+                    $.ajax({
+                        type: "POST",
+                        url: "/EvaluacionEstandarMinimo/CerrarEvaluacion",
+                        data: '{ideval: "' + stringArray[1] + '" }',
+                        contentType: "application/json; charset=utf-8",
+                        cache: false,
+                        dataType: "json",
+                        success: function (response) {
+                            OcultarPopupposition();
+                            if (response.resultado == "El usuario no ha iniciado sesión en el sistema") {
+                                window.location.href = "/EvaluacionEstandarMinimo/inicio";
+                            }
+                            if (response.probar) {
+
+                                $(".divfinalizada").css("display", "none");
+                                $("#textocerrada").html("Evaluación Cerrada");
+                                swal({
+                                    title: "Estimado Usuario",
+                                    text: response.resultado,
+                                    type: "success",
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "OK",
+                                    closeOnConfirm: true
+                                });
+                            }
+                            else {
+
+
+                                swal({
+                                    title: "Estimado Usuario",
+                                    text: response.resultado,
+                                    type: "warning",
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "OK",
+                                    closeOnConfirm: true
+                                });
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            OcultarPopupposition();
+                        }
+                    });
+                });
+                }
+                else {
+                    window.location.href = "/EvaluacionEstandarMinimo/inicio";
+                }
+            }
+
+
+
+
+        }
+    }
+
+</script>
+<style>
+    .infogen {
+        font-size: 18px;
+    }
+
+    .nomostrar {
+        display: none;
+    }
+
+    .mostrar {
+    }
+</style>
+@section OpcionesEvaluacion
+{
+    <ul class="nav nav-tabs">
+        <li><a href="@Url.Action("Index","Evaluacion")" style="color:gray">Evaluación Inicial SGSST</a></li>
+        <li class="active"><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")" style="color:#ff7500;cursor:pointer">Estándares Mínimos SGSST</a></li>
+        <li><a href="@Url.Action("EvaluacionPositiva", "EvaluacionEstandarMinimo")" style="color:gray">Evaluación SST Positiva</a></li>
+    </ul>
+}
+<br />
+
+<ol class="breadcrumb">
+    <li><a>Planificación</a></li>
+    <li><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")">Evaluación de Estándares Mínimos</a></li>
+    <li class="active">Cerrar Evaluación</li>
+</ol>
+
+<div class="panel panel-default std-panel-body">
+    <div class="panel-heading panel-heading-custom">EVALUACIÓN ESTÁNDARES MÍNIMOS</div>
+    <div class="panel-body">
+        @*ayuda*@
+        <div align="right" style="margin-right:5px;margin-top:5px;">
+            <div id="ayuda" style="text-align:right">
+                <a href="" data-toggle="modal" id="elIDdelModal" data-target="#@string.Format("modalAyuda")"
+                   title="Ayuda" class="btn btn-ayuda btn-md">
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                </a>
+                <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                                <h4 class="modal-title title">Ayuda / CERRAR EVALUACIÓN</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Cuando una evaluación es finalizada el usuario puede cerrarla respondiendo la pregunta <strong>Desea cerrar esta evaluación?</strong> y presionando <button type="button" class="boton botonactive" style="cursor:default;">CERRAR EVALUACIÓN</button></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"><strong>NOTA: El usuario puede cerrar una evaluación bajo las siguientes condiciones:</strong></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"><strong>1. Ha finalizado la evaluación</strong></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"><strong>2. No existe una evaluación cerrada para la vigencia de la presente evaluación, ej: para la vigencia 2018 no existe una evaluación cerrada. Si esta es la evaluación que desea cerrar elimine la evaluación cerrada anteriormente y cierre la evaluación presente</strong></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.Hidden("IdEval", (string)ViewBag.ideval)
+        @{
+            if ((int)ViewBag.finalizado == 2)
+            {
+                <div class="divfinalizada col-lg-12 add-top-margin-05em" style="text-align:center;">
+                    <h3>Evaluación Finalizada</h3>
+                </div>
+                <div class="divfinalizada col-sm-12 col-md-12 add-bottom-margin-05em add-top-margin-05em">
+                    <span class="titulosorganigrama" style="font-size:18px;text-align:justify;">Estimado usuario para cerrar una evaluación no deben existir evaluaciones cerradas para la vigencia de la presente evaluación. Si necesita cerrar esta evaluación elimine la evaluación que actualmente esta cerrada para esta vigencia.</span>
+                </div>
+                <div class="divfinalizada col-sm-12 col-md-12 add-bottom-margin-05em add-top-margin-05em">
+                    <span class="titulosorganigrama" style="font-size:18px;text-align:justify;">Una vez cerrada esta evaluación no se puede modificar su estado, solo podrá eliminarla.</span>
+                </div>
+            }
+            if ((int)ViewBag.finalizado == 3)
+            {
+                <div class="col-lg-12 add-top-margin-05em" style="text-align:center;">
+                    <h3>Evaluación Cerrada</h3>
+                </div>
+            }
+            <div class="col-lg-12 add-top-margin-05em" style="text-align:center;">
+                <h3 id="textocerrada"></h3>
+            </div>
+        }
+
+        <div class="col-lg-12 add-top-margin-05em" style="text-align:center;">
+            <button id="regresar" class="regresar boton botonactive col-margin">REGRESAR</button>
+        </div>
+
+        @{
+            if ((int)ViewBag.finalizado == 2)
+            {
+                <div class="divfinalizada col-lg-12 add-top-margin-25em add-bottom-margin-10em" style="text-align:center;">
+                    <div id="respuesta_cerrar_evaluacion" class="col-sm-12">
+                        <label class="radio-inline remove-left-padding">
+                            <b>Desea cerrar esta evaluación?</b>
+                        </label>
+                        <label class="radio-inline">
+
+                            @Html.RadioButton("Respuesta", "null", new { id = "Respuesta", type = "hidden", name = "Respuesta" })
+                            @Html.RadioButton("Respuesta", "No", new { id = "Respuesta", name = "Respuesta" })
+                            No
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButton("Respuesta", "Si", new { id = "Respuesta", name = "Respuesta" })
+                            Si
+                        </label>
+
+                        <span id="val-respuesta" class="text-danger field-validation-error val-message" style="display:none;"></span>
+                    </div>
+
+                </div>
+                <div class="divfinalizada col-lg-12 add-top-margin-05em" style="text-align:center;">
+                    <div class="col-sm-12">
+                        <button id="cerrar" class="cerrar boton botonactive col-margin">CERRAR EVALUACIÓN</button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+
+

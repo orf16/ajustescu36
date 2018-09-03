@@ -1,0 +1,231 @@
+﻿@{
+    ViewBag.Title = "Evaluación Estándares Mínimos";
+}
+
+<link href="~/Content/Site.css" rel="stylesheet" />
+<!-- Bootstrap core CSS -->
+<link href="~/Content/miga-de-pan.css" rel="stylesheet">
+<!-- Referencia a botones -->
+<link rel="stylesheet" href="~/Content/css/specialbuttons.css">
+<link href="~/Content/Acciones/Acciones.css" rel="stylesheet" />
+<script src="~/Scripts/Chart.js"></script>
+
+<script>
+    $(document).ready(function () {
+        
+        $('#consultar').click(function () {
+            $('#container').empty();
+            var stringArray = new Array();
+            stringArray[0] = $("#VigenciaIncio").val();
+            stringArray[1] = $("#VigenciaFin").val();
+
+            if (stringArray[0] != null && stringArray[1] != null) {
+                if (stringArray[0] != '' && stringArray[1] != '') {
+                    var i = parseInt(stringArray[0]);
+                    var f = parseInt(stringArray[1]);
+                    if (i > f) {
+                        swal({
+                            title: 'Estimado Usuario',
+                            text: 'La vigencia inicio debe ser menor a la vigencia fin, por favor seleccione las vigencias de incio y fin nuevamente',
+                            type: 'warning',
+                            confirmButtonColor: '#DD6B55',
+                            confirmButtonText: 'OK',
+                            closeOnConfirm: true
+                        });
+                    }
+                    else {
+                        PopupPosition();
+                        $.ajax({
+                            type: "POST",
+                            url: "/EvaluacionEstandarMinimo/compararevaluaciones",
+                            data: '{fi: "' + i + '",ff: "' + f + '"  }',
+                            contentType: "application/json; charset=utf-8",
+                            cache: false,
+                            dataType: "json",
+                            success: function (response) {
+                                OcultarPopupposition();
+                                if (response.Estado == "El usuario no ha iniciado sesión en el sistema") {
+                                    window.location.href = '/EvaluacionEstandarMinimo/comparativoaños';
+                                }
+                                if (response.Probar == false) {
+                                    swal({
+                                        title: 'Estimado Usuario',
+                                        text: response.Estado,
+                                        type: 'warning',
+                                        confirmButtonColor: '#DD6B55',
+                                        confirmButtonText: 'OK',
+                                        closeOnConfirm: true
+                                    });
+                                }
+                                else {
+                                    $('#container').empty();
+                                    $('#container').html(response.Datos);
+                                }
+
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                OcultarPopupposition();
+                            }
+                        });
+                    }
+                }
+                else {
+                    swal({
+                        title: 'Estimado Usuario',
+                        text: 'Seleccione las vigencias inicio y fin para comparar los resultados',
+                        type: 'warning',
+                        confirmButtonColor: '#DD6B55',
+                        confirmButtonText: 'OK',
+                        closeOnConfirm: true
+                    });
+                }
+                
+            }
+            else {
+                swal({
+                    title: 'Estimado Usuario',
+                    text: 'Seleccione las vigencias inicio y fin para comparar los resultados',
+                    type: 'warning',
+                    confirmButtonColor: '#DD6B55',
+                    confirmButtonText: 'OK',
+                    closeOnConfirm: true
+                });
+            }
+        });
+    });
+    $(document).ready(function () {
+        $('#regresar').on('click', function () {
+            window.location.href = "/EvaluacionEstandarMinimo/inicio"
+        });
+    });
+</script>
+
+@Html.AntiForgeryToken()
+
+@section OpcionesEvaluacion
+{
+    <ul class="nav nav-tabs">
+        <li><a href="@Url.Action("Index","Evaluacion")" style="color:gray">Evaluación Inicial SGSST</a></li>
+        <li class="active"><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")" style="color:#ff7500;cursor:pointer">Estándares Mínimos SGSST</a></li>
+        <li><a href="@Url.Action("EvaluacionPositiva", "EvaluacionEstandarMinimo")" style="color:gray">Evaluación SST Positiva</a></li>
+    </ul>
+}
+
+<br />
+
+<ol class="breadcrumb">
+    <li><a>Planificación</a></li>
+    <li><a href="@Url.Action("Inicio", "EvaluacionEstandarMinimo")">Evaluación de Estándares Mínimos</a></li>
+    <li class="active">Comparar Evaluaciones</li>
+</ol>
+
+<div class="panel panel-default std-panel-body">
+    <div class="panel-heading panel-heading-custom">EVALUACIÓN ESTÁNDARES MÍNIMOS</div>
+    <div class="panel-body">
+        @*Boton de ayuda*@
+        <div align="right" style="margin: 5px 5px 0px 0px">
+            <div id="ayuda" style="text-align:right">
+                <a href="" data-toggle="modal" id="elIDdelModal" data-target="#@string.Format("modalAyuda")"
+                   title="Ayuda" class="btn btn-ayuda btn-md">
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                </a>
+                <div id="@string.Format("modalAyuda")" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header encabezado" style="background-color:transparent; border-bottom:none">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                                <h4 class="modal-title title">Ayuda / COMPARAR EVALUACIONES</h4>
+                            </div>
+                            <div class="modal-body " style="color:black">
+                                <p style="margin-bottom:20px;line-height: 200%;">Seleccione el rango de vigencias y presione <button type="button" class="boton botonactive" style="cursor:default;">CONSULTAR</button></p>
+                                <p style="margin-bottom:20px;line-height: 200%;">El límite de evaluaciones cerradas a consultar es de 10 evaluaciones</p>
+
+                                <p style="margin-bottom:20px;line-height: 200%;"><u><strong>Información básica</strong></u></p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> <strong>VIGENCIA:</strong> Periodo de tiempo en el cual aplica la evaluación (AÑO)</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Estado <strong style="color:#000">En elaboración:</strong> es decir que falta diligenciar parte de la evaluación</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Estado <strong style="color:#ff870f">Finalizada:</strong> cuando se ha diligenciado toda la evaluación y falta el proceso de cierre</p>
+                                <p style="margin-bottom:20px;line-height: 200%;text-align:justify;"> Estado <strong style="color:#36a144">Cerrada:</strong> cuando el usuario decide cerrar una evaluación no se permitirá cerrar otras evaluaciones de la misma vigencia. Utilice este estado cuando la evaluación no necesite modificaciones</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="boton botoncancel" data-dismiss="modal">Salir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Contenido del Panel*@
+
+        <div class="internal-panel add-bottom-margin-05em add-top-margin-10em">
+            <div class="internal-panel-header panel-heading">
+                <h4>Comparativo vigencias</h4>
+            </div>
+            <div class="divfinalizada col-sm-12 col-md-12 add-bottom-margin-05em add-top-margin-05em">
+                <center>
+                    <span class="titulosorganigrama" style="font-size:18px;text-align:justify;">Compare los resultados de dos (2) o más evaluaciones de estándares mínimos con estado CERRADO.</span>
+                </center>
+            </div>
+            
+
+            <div class="internal-panel-body add-top-margin-05em">
+                <div class="form-group row remove-bottom-margin">
+
+                    <div class="col-sm-4 col-xs-12 col-lg-3 add-top-margin-10em add-bottom-margin-10em">
+                        <label style="line-height:22px;">Vigencia Inicio</label>
+                        @{
+                            DateTime Hoy = DateTime.Today;
+                            int year = Hoy.Year;
+                            List<SelectListItem> ListaAños = new List<SelectListItem>();
+                            ListaAños.Add(new SelectListItem { Text = "-- Seleccione una vigencia --", Value = "", Selected = true });
+                            for (int i = 2017; i < 2051; i++)
+                            {
+                                ListaAños.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                            }
+                            List<SelectListItem> ListaAños1 = new List<SelectListItem>();
+                            ListaAños1.Add(new SelectListItem { Text = "-- Seleccione una vigencia --", Value = "", Selected = true });
+                            for (int i = 2017; i < 2051; i++)
+                            {
+                                ListaAños1.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                            }
+
+                            @Html.DropDownList("VigenciaIncio", ListaAños, htmlAttributes: new { @class = "form-control form-width-100" })
+                        }
+                    </div>
+
+                    <div class="col-sm-4 col-xs-12 col-lg-3 add-top-margin-10em add-bottom-margin-10em">
+                        <label style="line-height:22px;">Vigencia Fin</label>
+                        @Html.DropDownList("VigenciaFin", ListaAños, htmlAttributes: new { @class = "form-control form-width-100" })
+                    </div>
+                    <div class="col-sm-4 col-xs-12 col-lg-3 add-top-margin-10em add-bottom-margin-10em">
+                        <label style="line-height:22px;">&nbsp;</label>
+                        <p><button id="consultar" class="boton botonactive col-margin">CONSULTAR</button></p>
+                        
+                    </div>
+
+                </div>
+                <div id="container" class="form-group row remove-bottom-margin">
+
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-12 add-top-margin-05em" style="text-align:center;">
+                <button id="regresar" class="regresar boton botonactive col-margin">REGRESAR</button>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
